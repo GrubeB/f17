@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: comment-service
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      password: password
+      database: comment_service
+      authentication-database: admin

@@ -1,0 +1,5 @@
+// COMMON
+include "common:shared"
+// SERVICES
+include "service:comment:comment-service"
+
