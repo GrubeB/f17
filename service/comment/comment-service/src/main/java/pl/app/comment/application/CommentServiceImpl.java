@@ -1,25 +1,23 @@
-package pl.app.comment.impl;
+package pl.app.comment.application;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import pl.app.comment.Comment;
-import pl.app.comment.CommentContainer;
-import pl.app.comment.CommentQueryService;
-import pl.app.comment.CommentService;
-import pl.app.comment.command.*;
+import pl.app.comment.application.domain.Comment;
+import pl.app.comment.application.domain.CommentContainer;
+import pl.app.comment.application.port.in.command.*;
+import pl.app.comment.query.CommentContainerQueryService;
+import pl.app.comment.application.port.in.CommentService;
+import pl.app.comment.query.CommentQueryService;
 
 @Service
 @RequiredArgsConstructor
 class CommentServiceImpl implements CommentService {
 
     private final MongoTemplate template;
+    private final CommentContainerQueryService commentContainerQueryService;
     private final CommentQueryService commentQueryService;
-
     @Override
     public CommentContainer createCommentContainer(@Valid CreateCommentContainerCommand command) {
         //TODO without duplicates
@@ -30,7 +28,7 @@ class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment addComment(@Valid AddCommentCommand command) {
-        CommentContainer commentContainer =  commentQueryService.findCommentContainerByDomainObject(command.getDomainObjectId(), command.getDomainObjectType());
+        CommentContainer commentContainer =  commentContainerQueryService.fetchByDomainObject(command.getDomainObjectId(), command.getDomainObjectType());
         Comment newComment = new Comment(command.getContent(), command.getUserId());
         commentContainer.addComment(newComment);
         template.insert(newComment);
@@ -40,7 +38,7 @@ class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment addReply(@Valid AddReplyCommand command) {
-        Comment parentComment = commentQueryService.findCommentById(command.getParentCommentId());
+        Comment parentComment = commentQueryService.fetchById(command.getParentCommentId());
         Comment newComment = new Comment(command.getContent(), command.getUserId());
         parentComment.addComment(newComment);
         template.insert(newComment);
@@ -50,7 +48,7 @@ class CommentServiceImpl implements CommentService {
 
     @Override
     public void updateComment(@Valid UpdateCommentCommand command) {
-        Comment comment = commentQueryService.findCommentById(command.getCommentId());
+        Comment comment = commentQueryService.fetchById(command.getCommentId());
         comment.setContent(comment.getContent());
         comment.setUserId(comment.getUserId());
         template.save(comment);

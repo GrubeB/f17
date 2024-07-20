@@ -1,4 +1,4 @@
-package pl.app.comment.command;
+package pl.app.comment.application.port.in.command;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

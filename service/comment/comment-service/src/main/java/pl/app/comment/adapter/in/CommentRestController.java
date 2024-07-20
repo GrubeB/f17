@@ -1,10 +1,16 @@
-package pl.app.comment;
+package pl.app.comment.adapter.in;
 
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.comment.command.*;
+import pl.app.comment.application.domain.Comment;
+import pl.app.comment.application.port.in.CommentService;
+import pl.app.comment.application.port.in.command.AddCommentCommand;
+import pl.app.comment.application.port.in.command.AddReplyCommand;
+import pl.app.comment.application.port.in.command.DeleteCommentCommand;
+import pl.app.comment.application.port.in.command.UpdateCommentCommand;
+import pl.app.comment.query.CommentContainerQueryService;
 
 
 @RestController
@@ -15,7 +21,7 @@ class CommentRestController {
     public static final String resourcePath = "/api/v1/" + resourceName;
 
     private final CommentService service;
-    private final CommentQueryService queryService;
+    private final CommentContainerQueryService queryService;
     @PostMapping
     public ResponseEntity<Comment> addComment(@RequestBody AddCommentCommand command) {
         Comment comment = service.addComment(command);

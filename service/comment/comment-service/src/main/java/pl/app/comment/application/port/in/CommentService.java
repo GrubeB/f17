@@ -1,8 +1,9 @@
-package pl.app.comment;
+package pl.app.comment.application.port.in;
 
 import jakarta.validation.Valid;
-import org.bson.types.ObjectId;
-import pl.app.comment.command.*;
+import pl.app.comment.application.domain.Comment;
+import pl.app.comment.application.domain.CommentContainer;
+import pl.app.comment.application.port.in.command.*;
 
 public interface CommentService {
     CommentContainer createCommentContainer(@Valid CreateCommentContainerCommand command);

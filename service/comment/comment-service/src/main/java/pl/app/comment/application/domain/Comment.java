@@ -1,4 +1,4 @@
-package pl.app.comment;
+package pl.app.comment.application.domain;
 
 import lombok.Getter;
 import org.bson.types.ObjectId;
@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Document(collection = "comments")
 @Getter

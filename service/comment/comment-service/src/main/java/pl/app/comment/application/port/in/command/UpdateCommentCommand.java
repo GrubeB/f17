@@ -1,4 +1,4 @@
-package pl.app.comment.command;
+package pl.app.comment.application.port.in.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,9 +11,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddReplyCommand implements
+public class UpdateCommentCommand implements
         Serializable {
-    private ObjectId parentCommentId;
+    private ObjectId commentId;
     private String userId;
     private String content;
 }

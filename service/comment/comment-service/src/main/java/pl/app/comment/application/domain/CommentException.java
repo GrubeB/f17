@@ -1,4 +1,4 @@
-package pl.app.comment;
+package pl.app.comment.application.domain;
 
 import pl.app.common.shared.exception.NotFoundException;
 
