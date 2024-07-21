@@ -1,6 +1,7 @@
 package pl.app.comment.application.domain;
 
 import pl.app.common.shared.exception.NotFoundException;
+import pl.app.common.shared.exception.ValidationException;
 
 public interface CommentException {
     class NotFoundCommentException extends NotFoundException {
@@ -30,6 +31,18 @@ public interface CommentException {
         }
         public static NotFoundCommentContainerException fromDomainObject(String domainObjectId, String domainObjectType) {
             return new NotFoundCommentContainerException("not found comment container for domain object id: " + domainObjectId + " of type: " + domainObjectType);
+        }
+    }
+    class DuplicatedDomainObjectException extends ValidationException {
+        public DuplicatedDomainObjectException() {
+            super("there is a container for given domain object");
+        }
+
+        public DuplicatedDomainObjectException(String message) {
+            super(message);
+        }
+        public static DuplicatedDomainObjectException fromDomainObject(String domainObjectId, String domainObjectType) {
+            return new DuplicatedDomainObjectException("there is a container for domain object with id: " + domainObjectId + " of type: " + domainObjectType);
         }
     }
 }

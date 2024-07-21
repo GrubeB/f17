@@ -19,7 +19,7 @@ public class CommentContainer {
     @DocumentReference
     private Set<Comment> comments;
 
-    public CommentContainer(String domainObjectType, String domainObjectId) {
+    public CommentContainer(String domainObjectId, String domainObjectType) {
         this.id = new ObjectId();
         this.domainObjectType = domainObjectType;
         this.domainObjectId = domainObjectId;

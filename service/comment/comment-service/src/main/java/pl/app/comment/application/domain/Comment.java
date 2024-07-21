@@ -16,6 +16,7 @@ public class Comment {
     private ObjectId id;
     private String content;
     private String userId;
+    private CommentStatus status;
     @DocumentReference
     private Set<Comment> comments;
 
@@ -23,6 +24,7 @@ public class Comment {
         this.id = new ObjectId();
         this.content = content;
         this.userId = userId;
+        this.status = CommentStatus.ACTIVE;
         this.comments = new LinkedHashSet<>();
     }
 
@@ -36,5 +38,8 @@ public class Comment {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+    public void setDeleteStatus(){
+        this.status = CommentStatus.DELETED;
     }
 }
