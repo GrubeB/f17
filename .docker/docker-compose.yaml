@@ -1,15 +1,6 @@
 version: '3'
 
 services:
-#  mongo:
-#    container_name: 'mongo'
-#    restart: unless-stopped
-#    image: mongodb/mongodb-community-server:7.0.8-ubuntu2204
-#    environment:
-#      - MONGODB_INITDB_ROOT_USERNAME=root
-#      - MONGODB_INITDB_ROOT_PASSWORD=password
-#    ports:
-#      - 27017:27017
   mongo:
     container_name: 'mongo'
     restart: unless-stopped
@@ -29,3 +20,31 @@ services:
       - ME_CONFIG_MONGODB_ADMINPASSWORD=password
     ports:
       - 8081:8081
+  kafka:
+    image: docker.io/bitnami/kafka:3.7
+    container_name: 'kafka'
+    hostname: kafka
+    ports:
+      - "9092:9092"
+      - "19092:19092"
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_KRAFT_CLUSTER_ID=abcdefghijklmnopqrstuv
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,CONNECTIONS_FROM_HOST://:19092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: 'kafdrop'
+    hostname: kafdrop
+    ports:
+      - 9000:9000
+    environment:
+      - KAFKA_BROKERCONNECT=kafka:9092
+      - SERVER_SERVLET_CONTEXTPATH=/
