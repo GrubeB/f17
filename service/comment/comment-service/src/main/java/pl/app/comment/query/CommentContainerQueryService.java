@@ -13,5 +13,6 @@ public interface CommentContainerQueryService {
     Page<CommentContainer> fetchByPageable(Pageable pageable);
     CommentContainer fetchById(@NonNull ObjectId id);
     CommentContainer fetchByDomainObject(String domainObjectId, String domainObjectType);
+    CommentContainer fetchByCommentId(@NonNull ObjectId commentId);
     List<CommentContainer> fetchByIds(@NonNull List<ObjectId> ids);
 }
