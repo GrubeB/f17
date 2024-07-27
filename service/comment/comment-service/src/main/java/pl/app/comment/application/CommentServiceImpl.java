@@ -3,6 +3,8 @@ package pl.app.comment.application;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,6 +23,7 @@ import pl.app.comment.query.CommentQueryService;
 @Service
 @RequiredArgsConstructor
 class CommentServiceImpl implements CommentService {
+    private final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
 
     private final MongoTemplate template;
     private final CommentContainerQueryService commentContainerQueryService;
@@ -45,6 +48,7 @@ class CommentServiceImpl implements CommentService {
                 commentContainer.getDomainObjectType(),
                 commentContainer.getDomainObjectId())
         );
+        logger.debug("created comment container with id: " + commentContainer.getId() + ", for domain object: " + commentContainer.getDomainObjectId() + " of type:" + commentContainer.getDomainObjectType());
         return commentContainer;
     }
 
@@ -72,6 +76,7 @@ class CommentServiceImpl implements CommentService {
                 comment.getId(),
                 comment.getContent())
         );
+        logger.debug("created comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
         return comment;
     }
 
@@ -90,6 +95,7 @@ class CommentServiceImpl implements CommentService {
                 comment.getId(),
                 comment.getContent())
         );
+        logger.debug("created comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
         return comment;
     }
 
@@ -97,8 +103,8 @@ class CommentServiceImpl implements CommentService {
     public void updateComment(@Valid UpdateCommentCommand command) {
         CommentContainer commentContainer = commentContainerQueryService.fetchByCommentId(command.getCommentId());
         Comment comment = commentContainer.getCommentById(command.getCommentId()).get();
-        comment.setContent(comment.getContent());
-        comment.setUserId(comment.getUserId());
+        comment.setContent(command.getContent());
+        comment.setUserId(command.getUserId());
         template.save(comment);
         kafkaTemplate.send(commentUpdatedTopicName, commentContainer.getId(), new CommentEvent.CommentUpdatedEvent(
                 commentContainer.getId(),
@@ -107,6 +113,7 @@ class CommentServiceImpl implements CommentService {
                 comment.getId(),
                 comment.getContent())
         );
+        logger.debug("updated comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
     }
 
     @Override
@@ -121,5 +128,6 @@ class CommentServiceImpl implements CommentService {
                 commentContainer.getDomainObjectId(),
                 comment.getId())
         );
+        logger.debug("deleted comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
     }
 }

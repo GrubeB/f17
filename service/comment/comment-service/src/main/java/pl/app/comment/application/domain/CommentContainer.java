@@ -18,11 +18,11 @@ import java.util.stream.Stream;
 @Getter
 public class CommentContainer {
     @Id
-    private ObjectId id;
-    private String domainObjectType;
-    private String domainObjectId;
+    private final ObjectId id;
+    private final String domainObjectType;
+    private final String domainObjectId;
     @DocumentReference
-    private Set<Comment> comments;
+    private final Set<Comment> comments;
 
     public CommentContainer(String domainObjectId, String domainObjectType) {
         this.id = new ObjectId();

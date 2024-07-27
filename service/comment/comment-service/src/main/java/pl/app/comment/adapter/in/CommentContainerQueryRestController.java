@@ -35,6 +35,7 @@ class CommentContainerQueryRestController {
                 .status(HttpStatus.OK)
                 .body(queryService.fetchById(id));
     }
+
     @GetMapping("/{domainObjectType}/domain-objects/{domainObjectId}")
     ResponseEntity<CommentContainer> fetchByDomainObject(@PathVariable String domainObjectType, @PathVariable String domainObjectId) {
         return ResponseEntity

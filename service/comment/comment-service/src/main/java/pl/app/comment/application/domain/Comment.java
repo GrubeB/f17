@@ -18,16 +18,16 @@ import java.util.stream.Stream;
 @Getter
 public class Comment {
     @Id
-    private ObjectId id;
+    private final ObjectId id;
     private String content;
     private String userId;
     private CommentStatus status;
     @DocumentReference
-    private Set<Comment> comments;
+    private final Set<Comment> comments;
 
     @DocumentReference
     @JsonIgnore
-    private CommentContainer commentContainer;
+    private final CommentContainer commentContainer;
     @DocumentReference
     @JsonIgnore
     private Comment parentComment;
@@ -48,11 +48,13 @@ public class Comment {
     public void addComment(Comment newComment) {
         this.comments.add(newComment);
     }
+
     public Comment addComment(String content, String userId) {
         Comment comment = new Comment(this.commentContainer, this, content, userId);
         this.comments.add(comment);
         return comment;
     }
+
     public void setContent(String content) {
         this.content = content;
     }
@@ -63,6 +65,7 @@ public class Comment {
 
     public void setDeleteStatus() {
         this.status = CommentStatus.DELETED;
+        this.content = "-";
     }
 
     public Optional<Comment> getCommentById(ObjectId id) {
@@ -73,6 +76,7 @@ public class Comment {
                 .filter(c -> c.getId().equals(id))
                 .findAny();
     }
+
     @JsonIgnore
     public Set<Comment> getAllComments() {
         return Stream.concat(
