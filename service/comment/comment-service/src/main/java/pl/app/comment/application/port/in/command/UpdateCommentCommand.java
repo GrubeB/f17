@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor

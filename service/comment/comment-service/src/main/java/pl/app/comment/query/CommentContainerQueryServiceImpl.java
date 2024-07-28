@@ -8,9 +8,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import pl.app.comment.application.domain.Comment;
 import pl.app.comment.application.domain.CommentContainer;
 import pl.app.comment.application.domain.CommentException;
 import pl.app.comment.application.port.out.CommentContainerRepository;
+import pl.app.comment.application.port.out.CommentRepository;
 
 import java.util.List;
 
@@ -19,6 +21,7 @@ import java.util.List;
 class CommentContainerQueryServiceImpl implements CommentContainerQueryService {
     private final MongoTemplate template;
     private final CommentContainerRepository repository;
+    private final CommentRepository commentRepository;
 
     @Override
     public List<CommentContainer> fetchAll() {
@@ -44,6 +47,13 @@ class CommentContainerQueryServiceImpl implements CommentContainerQueryService {
         );
         return template.query(CommentContainer.class).matching(query).one()
                 .orElseThrow(() -> CommentException.NotFoundCommentContainerException.fromDomainObject(domainObjectId, domainObjectType));
+    }
+
+    @Override
+    public CommentContainer fetchByCommentId(ObjectId commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> CommentException.NotFoundCommentException.fromId(commentId.toString()));
+        return comment.getCommentContainer();
     }
 
     @Override

@@ -10,7 +10,10 @@ import java.util.List;
 
 public interface CommentQueryService {
     List<Comment> fetchAll();
+
     Page<Comment> fetchByPageable(Pageable pageable);
+
     Comment fetchById(@NonNull ObjectId id);
+
     List<Comment> fetchByIds(@NonNull List<ObjectId> ids);
 }

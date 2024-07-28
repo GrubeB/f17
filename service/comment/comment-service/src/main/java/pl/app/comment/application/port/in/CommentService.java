@@ -7,8 +7,12 @@ import pl.app.comment.application.port.in.command.*;
 
 public interface CommentService {
     CommentContainer createCommentContainer(@Valid CreateCommentContainerCommand command);
+
     Comment addComment(@Valid AddCommentCommand command);
+
     Comment addReply(@Valid AddReplyCommand command);
+
     void updateComment(@Valid UpdateCommentCommand command);
+
     void deleteComment(@Valid DeleteCommentCommand command);
 }
