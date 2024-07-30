@@ -6,11 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.comment.application.domain.UserVote;
 import pl.app.comment.application.domain.Voting;
 import pl.app.comment.application.domain.VotingEvent;
+import pl.app.comment.application.domain.VotingException;
 import pl.app.comment.application.port.in.AddUserVoteUseCase;
 import pl.app.comment.application.port.in.CreateVotingUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteUseCase;
@@ -42,6 +45,7 @@ class VotingService implements
 
     @Override
     public Voting createVoting(CreateVotingCommand command) {
+        verifyThereIsNoDuplicates(command.getDomainObjectId(), command.getDomainObjectType());
         Voting voting = new Voting(command.getDomainObjectId(), command.getDomainObjectType(), command.getIdForNewVoting());
         mongoTemplate.save(voting);
         var event = new VotingEvent.VotingCreatedEvent(
@@ -54,6 +58,16 @@ class VotingService implements
         logger.debug("created voting with id: {}, for domain object: {} of type: {}", voting.getId(),
                 voting.getDomainObjectId(), voting.getDomainObjectType());
         return voting;
+    }
+
+    private void verifyThereIsNoDuplicates(String domainObjectId, String domainObjectType) {
+        Query query = Query.query(Criteria
+                .where("domainObjectId").is(domainObjectId)
+                .and("domainObjectType").is(domainObjectType)
+        );
+        if (mongoTemplate.query(Voting.class).matching(query).one().isPresent()) {
+            throw VotingException.DuplicatedDomainObjectException.fromDomainObject(domainObjectId, domainObjectType);
+        }
     }
 
     @Override

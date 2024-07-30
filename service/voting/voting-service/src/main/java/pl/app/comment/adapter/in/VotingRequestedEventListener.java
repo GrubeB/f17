@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import pl.app.comment.application.domain.VotingEvent;
+import pl.app.comment.application.domain.VotingException;
 import pl.app.comment.application.port.in.AddUserVoteUseCase;
 import pl.app.comment.application.port.in.CreateVotingUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteUseCase;
@@ -28,11 +29,15 @@ class VotingRequestedEventListener {
             groupId = "${app.kafka.consumer.group-id}",
             topics = "${app.kafka.topic.create-voting-requested.name}"
     )
-    public void createVoting(ConsumerRecord<ObjectId, Object> record) {
-        logger.debug("received " + record.partition() + ":" + record.offset() + " - " + record.key() + " with value: " + record.value());
-        if (record.value() instanceof VotingEvent.CreateVotingRequestedEvent event) {
+    public void createVoting(ConsumerRecord<ObjectId, VotingEvent.CreateVotingRequestedEvent> record) {
+        logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
+        final var event = record.value();
+        try {
             var command = new CreateVotingCommand(event.getVotingId(), event.getDomainObjectId(), event.getDomainObjectType());
             createVotingUseCase.createVoting(command);
+        } catch (VotingException.DuplicatedDomainObjectException exception) {
+            logger.debug("exception occurred while processing event {} {}-{} key: {},value: {}, exception: {}", record.value().getClass().getSimpleName(),
+                    record.partition(), record.offset(), record.key(), record.value(), exception.getMessage());
         }
     }
 
@@ -41,18 +46,17 @@ class VotingRequestedEventListener {
             groupId = "${app.kafka.consumer.group-id}",
             topics = "${app.kafka.topic.add-vote-requested.name}"
     )
-    public void addUserVote(ConsumerRecord<ObjectId, Object> record) {
-        logger.debug("received " + record.partition() + ":" + record.offset() + " - " + record.key() + " with value: " + record.value());
-        if (record.value() instanceof VotingEvent.AddVoteRequestedEvent event) {
-            var command = new AddUserVoteCommand(
-                    event.getVotingId(),
-                    event.getDomainObjectId(),
-                    event.getDomainObjectType(),
-                    event.getUserId(),
-                    event.getType()
-            );
-            addUserVoteUseCase.addUserVote(command);
-        }
+    public void addUserVote(ConsumerRecord<ObjectId, VotingEvent.AddVoteRequestedEvent> record) {
+        logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
+        final var event = record.value();
+        var command = new AddUserVoteCommand(
+                event.getVotingId(),
+                event.getDomainObjectId(),
+                event.getDomainObjectType(),
+                event.getUserId(),
+                event.getType()
+        );
+        addUserVoteUseCase.addUserVote(command);
     }
 
     @KafkaListener(
@@ -60,16 +64,15 @@ class VotingRequestedEventListener {
             groupId = "${app.kafka.consumer.group-id}",
             topics = "${app.kafka.topic.remove-vote-requested.name}"
     )
-    public void removeUserVote(ConsumerRecord<ObjectId, Object> record) {
-        logger.debug("received " + record.partition() + ":" + record.offset() + " - " + record.key() + " with value: " + record.value());
-        if (record.value() instanceof VotingEvent.RemoveVoteRequestedEvent event) {
-            var command = new RemoveUserVoteCommand(
-                    event.getVotingId(),
-                    event.getDomainObjectId(),
-                    event.getDomainObjectType(),
-                    event.getUserId()
-            );
-            removeUserVoteUseCase.removeUserVote(command);
-        }
+    public void removeUserVote(ConsumerRecord<ObjectId, VotingEvent.RemoveVoteRequestedEvent> record) {
+        logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
+        final var event = record.value();
+        var command = new RemoveUserVoteCommand(
+                event.getVotingId(),
+                event.getDomainObjectId(),
+                event.getDomainObjectType(),
+                event.getUserId()
+        );
+        removeUserVoteUseCase.removeUserVote(command);
     }
 }
