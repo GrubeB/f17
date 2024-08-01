@@ -66,6 +66,7 @@ public class KafkaConfig {
                     TopicBuilder.name(addCommentRequestedTopicName + ".DTL").partitions(1).compact().build()
             );
         }
+
         @Bean
         KafkaAdmin.NewTopics updateCommentRequested(@Value("${app.kafka.topic.update-comment-requested.name}") String updateCommentRequestedTopicName) {
             return new KafkaAdmin.NewTopics(

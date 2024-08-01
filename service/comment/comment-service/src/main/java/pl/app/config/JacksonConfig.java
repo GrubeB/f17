@@ -12,9 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.io.IOException;
+
 /*
-* Changing the serialization and deserialization of the  org.bson.types.ObjectId object to look more or less like this: {"id":"669ba617e3f38965343a34ec",...}
-* */
+ * Changing the serialization and deserialization of the  org.bson.types.ObjectId object to look more or less like this: {"id":"669ba617e3f38965343a34ec",...}
+ * */
 @Configuration
 public class JacksonConfig {
     @Bean
@@ -23,6 +24,7 @@ public class JacksonConfig {
                 .serializers(new ObjectIdSerializer())
                 .deserializers(new ObjectIdDeserializer());
     }
+
     public static class ObjectIdSerializer extends StdSerializer<ObjectId> {
 
         public ObjectIdSerializer() {
@@ -34,6 +36,7 @@ public class JacksonConfig {
             jsonGenerator.writeString(objectId.toHexString());
         }
     }
+
     public static class ObjectIdDeserializer extends StdDeserializer<ObjectId> {
 
         public ObjectIdDeserializer() {

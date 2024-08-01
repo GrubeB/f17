@@ -7,9 +7,8 @@ import org.springframework.data.domain.Pageable;
 import pl.app.comment.application.domain.Comment;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 public interface CommentQueryService {
     Mono<Comment> fetchById(@NonNull ObjectId id);
+
     Mono<Page<Comment>> fetchByPageable(Pageable pageable);
 }

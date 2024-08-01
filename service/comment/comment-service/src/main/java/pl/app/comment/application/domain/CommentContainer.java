@@ -18,11 +18,11 @@ import java.util.stream.Stream;
 @Getter
 public class CommentContainer {
     @Id
-    private  ObjectId id;
-    private  String domainObjectType;
-    private  String domainObjectId;
+    private ObjectId id;
+    private String domainObjectType;
+    private String domainObjectId;
     @DocumentReference
-    private  Set<Comment> comments;
+    private Set<Comment> comments;
 
     @SuppressWarnings("unused")
     public CommentContainer() {
@@ -36,7 +36,7 @@ public class CommentContainer {
     }
 
     public Comment addComment(ObjectId id, String content, String userId) {
-        Comment comment = new Comment(id,this, null, content, userId);
+        Comment comment = new Comment(id, this, null, content, userId);
         this.comments.add(comment);
         return comment;
     }

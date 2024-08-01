@@ -18,12 +18,12 @@ import java.util.stream.Stream;
 @Getter
 public class Comment {
     @Id
-    private  ObjectId id;
+    private final ObjectId id;
     private String content;
     private String userId;
     private CommentStatus status;
     @DocumentReference
-    private  Set<Comment> comments;
+    private final Set<Comment> comments;
 
     @DocumentReference
     @JsonIgnore
