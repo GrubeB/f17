@@ -19,7 +19,7 @@ services:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=root
       - ME_CONFIG_MONGODB_ADMINPASSWORD=password
     ports:
-      - 8081:8081
+      - 9001:8081
   kafka:
     image: docker.io/bitnami/kafka:3.7
     container_name: 'kafka'
@@ -44,7 +44,7 @@ services:
     container_name: 'kafdrop'
     hostname: kafdrop
     ports:
-      - 9000:9000
+      - 9002:9000
     environment:
       - KAFKA_BROKERCONNECT=kafka:9092
       - SERVER_SERVLET_CONTEXTPATH=/
