@@ -15,20 +15,21 @@ import pl.app.comment.application.domain.Comment;
 import pl.app.comment.application.domain.CommentContainer;
 import pl.app.comment.application.domain.CommentEvent;
 import pl.app.comment.application.domain.CommentException;
+import pl.app.comment.application.port.in.CommentCommand;
 import pl.app.comment.application.port.in.CommentService;
-import pl.app.comment.application.port.in.command.*;
-import pl.app.comment.query.CommentContainerQueryService;
-import pl.app.comment.query.CommentQueryService;
+import pl.app.comment.application.port.out.CommentContainerDomainRepository;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 class CommentServiceImpl implements CommentService {
-    private final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
 
     private final MongoTemplate template;
-    private final CommentContainerQueryService commentContainerQueryService;
-    private final CommentQueryService commentQueryService;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
+    private final CommentContainerDomainRepository domainRepository;
+
     @Value("${app.kafka.topic.comment-container-created.name}")
     private String commentContainerCreatedTopicName;
     @Value("${app.kafka.topic.comment-added.name}")
@@ -39,15 +40,16 @@ class CommentServiceImpl implements CommentService {
     private String commentDeletedTopicName;
 
     @Override
-    public CommentContainer createCommentContainer(@Valid CreateCommentContainerCommand command) {
+    public CommentContainer createCommentContainer(@Valid CommentCommand.CreateCommentContainerCommand command) {
         verifyThereIsNoDuplicates(command.getDomainObjectId(), command.getDomainObjectType());
-        CommentContainer commentContainer = new CommentContainer(command.getDomainObjectId(), command.getDomainObjectType());
+        CommentContainer commentContainer = new CommentContainer(command.getIdForCommentContainerId(), command.getDomainObjectId(), command.getDomainObjectType());
         template.insert(commentContainer);
-        kafkaTemplate.send(commentContainerCreatedTopicName, commentContainer.getId(), new CommentEvent.CommentContainerCreatedEvent(
+        var event = new CommentEvent.CommentContainerCreatedEvent(
                 commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
-                commentContainer.getDomainObjectId())
-        );
+                commentContainer.getDomainObjectId(),
+                commentContainer.getDomainObjectType());
+        kafkaTemplate.send(commentContainerCreatedTopicName, commentContainer.getId(), event);
+        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
         logger.debug("created comment container with id: " + commentContainer.getId() + ", for domain object: " + commentContainer.getDomainObjectId() + " of type:" + commentContainer.getDomainObjectType());
         return commentContainer;
     }
@@ -63,71 +65,63 @@ class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment addComment(@Valid AddCommentCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByDomainObject(command.getDomainObjectId(), command.getDomainObjectType());
-        Comment comment = commentContainer.addComment(command.getContent(), command.getUserId());
+    public Comment addComment(@Valid CommentCommand.AddCommentCommand command) {
+        CommentContainer commentContainer;
+        Comment comment;
+        if (Objects.nonNull(command.getParentCommentId())) {
+            commentContainer = domainRepository.fetchByCommentId(command.getParentCommentId());
+            Comment parentComment = commentContainer.getCommentById(command.getParentCommentId()).get();
+            comment = parentComment.addComment(command.getIdForCommentContainerId(), command.getContent(), command.getUserId());
+            template.save(parentComment);
+        } else {
+            commentContainer = domainRepository.fetchByIdOrDomainObject(command.getCommentContainerId(), command.getDomainObjectId(), command.getDomainObjectType());
+            comment = commentContainer.addComment(command.getIdForCommentContainerId(), command.getContent(), command.getUserId());
+        }
         template.insert(comment);
         template.save(commentContainer);
-        kafkaTemplate.send(commentAddedTopicName, commentContainer.getId(), new CommentEvent.CommentAddedEvent(
+        var event = new CommentEvent.CommentAddedEvent(
                 commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
                 commentContainer.getDomainObjectId(),
-                null,
+                commentContainer.getDomainObjectType(),
+                Objects.nonNull(comment.getParentComment()) ? comment.getParentComment().getId() : null,
                 comment.getId(),
-                comment.getContent())
-        );
+                comment.getContent());
+        kafkaTemplate.send(commentAddedTopicName, commentContainer.getId(), event);
+        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
         logger.debug("created comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
         return comment;
     }
 
     @Override
-    public Comment addReply(@Valid AddReplyCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByCommentId(command.getParentCommentId());
-        Comment parentComment = commentContainer.getCommentById(command.getParentCommentId()).get();
-        Comment comment = parentComment.addComment(command.getContent(), command.getUserId());
-        template.insert(comment);
-        template.save(parentComment);
-        kafkaTemplate.send(commentAddedTopicName, commentContainer.getId(), new CommentEvent.CommentAddedEvent(
-                commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
-                commentContainer.getDomainObjectId(),
-                parentComment.getId(),
-                comment.getId(),
-                comment.getContent())
-        );
-        logger.debug("created comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
-        return comment;
-    }
-
-    @Override
-    public void updateComment(@Valid UpdateCommentCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByCommentId(command.getCommentId());
+    public void updateComment(@Valid CommentCommand.UpdateCommentCommand command) {
+        CommentContainer commentContainer = domainRepository.fetchByCommentId(command.getCommentId());
         Comment comment = commentContainer.getCommentById(command.getCommentId()).get();
         comment.setContent(command.getContent());
-        comment.setUserId(command.getUserId());
         template.save(comment);
-        kafkaTemplate.send(commentUpdatedTopicName, commentContainer.getId(), new CommentEvent.CommentUpdatedEvent(
+        var event = new CommentEvent.CommentUpdatedEvent(
                 commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
                 commentContainer.getDomainObjectId(),
+                commentContainer.getDomainObjectType(),
                 comment.getId(),
-                comment.getContent())
-        );
+                comment.getContent());
+        kafkaTemplate.send(commentUpdatedTopicName, commentContainer.getId(), event);
+        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
         logger.debug("updated comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
     }
 
     @Override
-    public void deleteComment(@Valid DeleteCommentCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByCommentId(command.getCommentId());
+    public void deleteComment(@Valid CommentCommand.DeleteCommentCommand command) {
+        CommentContainer commentContainer = domainRepository.fetchByCommentId(command.getCommentId());
         Comment comment = commentContainer.getCommentById(command.getCommentId()).get();
         comment.setDeleteStatus();
         template.save(comment);
-        kafkaTemplate.send(commentDeletedTopicName, commentContainer.getId(), new CommentEvent.CommentDeletedEvent(
+        var event = new CommentEvent.CommentDeletedEvent(
                 commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
                 commentContainer.getDomainObjectId(),
-                comment.getId())
-        );
+                commentContainer.getDomainObjectType(),
+                comment.getId());
+        kafkaTemplate.send(commentDeletedTopicName, commentContainer.getId(), event);
+        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
         logger.debug("deleted comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
     }
 }
