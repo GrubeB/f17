@@ -18,21 +18,25 @@ import java.util.stream.Stream;
 @Getter
 public class CommentContainer {
     @Id
-    private final ObjectId id;
-    private final String domainObjectType;
-    private final String domainObjectId;
+    private  ObjectId id;
+    private  String domainObjectType;
+    private  String domainObjectId;
     @DocumentReference
-    private final Set<Comment> comments;
+    private  Set<Comment> comments;
 
-    public CommentContainer(String domainObjectId, String domainObjectType) {
-        this.id = new ObjectId();
+    @SuppressWarnings("unused")
+    public CommentContainer() {
+    }
+
+    public CommentContainer(ObjectId id, String domainObjectId, String domainObjectType) {
+        this.id = Objects.nonNull(id) ? id : new ObjectId();
         this.domainObjectType = domainObjectType;
         this.domainObjectId = domainObjectId;
         this.comments = new LinkedHashSet<>();
     }
 
-    public Comment addComment(String content, String userId) {
-        Comment comment = new Comment(this, null, content, userId);
+    public Comment addComment(ObjectId id, String content, String userId) {
+        Comment comment = new Comment(id,this, null, content, userId);
         this.comments.add(comment);
         return comment;
     }
