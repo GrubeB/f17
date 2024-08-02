@@ -35,8 +35,8 @@ class VotingRequestService implements
         final ObjectId idForNewVoting = ObjectId.get();
         final VotingEvent.CreateVotingRequestedEvent event = new VotingEvent.CreateVotingRequestedEvent(
                 idForNewVoting,
-                command.getDomainObjectType(),
-                command.getDomainObjectId()
+                command.getDomainObjectId(),
+                command.getDomainObjectType()
         );
         kafkaTemplate.send(createVotingRequestedTopicName, idForNewVoting, event);
         logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -47,8 +47,8 @@ class VotingRequestService implements
     public void addUserVoteRequest(AddUserVoteRequestCommand command) {
         var event = new VotingEvent.AddVoteRequestedEvent(
                 command.getVotingId(),
-                command.getDomainObjectType(),
                 command.getDomainObjectId(),
+                command.getDomainObjectType(),
                 command.getUserId(),
                 command.getType()
         );
@@ -61,8 +61,8 @@ class VotingRequestService implements
     public void removeUserVote(RemoveUserVoteRequestCommand command) {
         var event = new VotingEvent.RemoveVoteRequestedEvent(
                 command.getVotingId(),
-                command.getDomainObjectType(),
                 command.getDomainObjectId(),
+                command.getDomainObjectType(),
                 command.getUserId()
         );
         kafkaTemplate.send(removeVoteRequestedTopicName, command.getVotingId(), event);

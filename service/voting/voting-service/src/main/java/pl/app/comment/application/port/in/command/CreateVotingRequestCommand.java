@@ -11,6 +11,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CreateVotingRequestCommand implements
         Serializable {
-    private String domainObjectType;
     private String domainObjectId;
+    private String domainObjectType;
 }

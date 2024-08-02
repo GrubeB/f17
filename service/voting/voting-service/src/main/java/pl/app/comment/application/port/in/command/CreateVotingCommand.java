@@ -13,6 +13,6 @@ import java.io.Serializable;
 public class CreateVotingCommand implements
         Serializable {
     private ObjectId idForNewVoting;
-    private String domainObjectType;
     private String domainObjectId;
+    private String domainObjectType;
 }

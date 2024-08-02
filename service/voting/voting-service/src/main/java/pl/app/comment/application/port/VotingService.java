@@ -50,8 +50,8 @@ class VotingService implements
         mongoTemplate.save(voting);
         var event = new VotingEvent.VotingCreatedEvent(
                 voting.getId(),
-                voting.getDomainObjectType(),
-                voting.getDomainObjectId()
+                voting.getDomainObjectId(),
+                voting.getDomainObjectType()
         );
         kafkaTemplate.send(votingCreatedTopicName, voting.getId(), event);
         logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -77,8 +77,8 @@ class VotingService implements
         mongoTemplate.save(voting);
         var event = new VotingEvent.VoteAddedEvent(
                 voting.getId(),
-                voting.getDomainObjectType(),
                 voting.getDomainObjectId(),
+                voting.getDomainObjectType(),
                 command.getUserId(),
                 command.getType()
         );
@@ -95,8 +95,8 @@ class VotingService implements
         mongoTemplate.save(voting);
         var event = new VotingEvent.VoteRemovedEvent(
                 voting.getId(),
-                voting.getDomainObjectType(),
                 voting.getDomainObjectId(),
+                voting.getDomainObjectType(),
                 command.getUserId(),
                 userVote.map(UserVote::getType).orElse(null)
         );

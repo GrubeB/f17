@@ -13,8 +13,8 @@ import java.io.Serializable;
 public class RemoveUserVoteRequestCommand implements
         Serializable {
     private ObjectId votingId;
-    private String domainObjectType;
     private String domainObjectId;
+    private String domainObjectType;
 
     private String userId;
 }
