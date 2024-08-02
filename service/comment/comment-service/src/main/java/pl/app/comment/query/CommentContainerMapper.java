@@ -6,13 +6,15 @@ import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import pl.app.comment.VotingQueryControllerHttpInterface;
+import pl.app.common.shared.DomainObjectTyp;
+import pl.app.voting.http.VotingQueryControllerHttpInterface;
 import pl.app.comment.application.domain.CommentContainer;
-import pl.app.comment.application.domain.VoteCounter;
-import pl.app.comment.application.domain.Voting;
+import pl.app.voting.application.domain.VoteCounter;
+import pl.app.voting.application.domain.Voting;
 import pl.app.comment.query.dto.CommentContainerDto;
 import pl.app.comment.query.dto.CommentDto;
 import pl.app.common.mapper.BaseMapper;
+import pl.app.voting.query.dto.VotingDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +38,14 @@ class CommentContainerMapper extends BaseMapper {
                 .map(ObjectId::toString)
                 .toList();
         if (!commentIds.isEmpty()) {
-            List<Voting> votings = this.votingQueryControllerHttpInterface
-                    .fetchByDomainObject("COMMENT", commentIds)
+            List<VotingDto> votings = this.votingQueryControllerHttpInterface
+                    .fetchByDomainObject(DomainObjectTyp.COMMENT.toString(), commentIds)
                     .map(ResponseEntity::getBody)
                     .defaultIfEmpty(new ArrayList<>())
                     .block();
             votings.forEach(v -> {
-                final Long likes = v.getVotes().stream().filter(vc -> vc.getType().equals("LIKE")).findAny().map(VoteCounter::getNumber).orElse(0L);
-                final Long dislikes = v.getVotes().stream().filter(vc -> vc.getType().equals("DISLIKE")).findAny().map(VoteCounter::getNumber).orElse(0L);
+                final Long likes = v.getVotes().stream().filter(vc -> vc.getType().equals("LIKE")).findAny().map(VotingDto.VoteCounterDto::getNumber).orElse(0L);
+                final Long dislikes = v.getVotes().stream().filter(vc -> vc.getType().equals("DISLIKE")).findAny().map(VotingDto.VoteCounterDto::getNumber).orElse(0L);
                 dto.getCommentById(new ObjectId(v.getDomainObjectId()))
                         .ifPresent(c -> {
                             c.setNumberOfLikes(likes);

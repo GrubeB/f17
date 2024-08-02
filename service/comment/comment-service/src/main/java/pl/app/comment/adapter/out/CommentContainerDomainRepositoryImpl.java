@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class CommentContainerDomainRepositoryImpl implements CommentContainerDomainRepository {
+class CommentContainerDomainRepositoryImpl implements CommentContainerDomainRepository {
     private final MongoTemplate mongoTemplate;
 
     @Override

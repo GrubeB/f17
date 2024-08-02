@@ -10,7 +10,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import pl.app.comment.application.domain.CommentEvent;
-import pl.app.comment.application.domain.VotingEvent;
+import pl.app.common.shared.DomainObjectTyp;
+import pl.app.voting.application.domain.VotingEvent;
 
 
 @Component
@@ -32,8 +33,8 @@ class VotingCreator {
         final var event = record.value();
         final var createVotingRequestedEvent = new VotingEvent.CreateVotingRequestedEvent(
                 ObjectId.get(),
-                "COMMENT",
-                event.getCommentId().toString()
+                event.getCommentId().toString(),
+                DomainObjectTyp.COMMENT.toString()
         );
         kafkaTemplate.send(createVotingRequestedTopicName, createVotingRequestedEvent.getVotingId(), createVotingRequestedEvent);
         logger.debug("send {} - {}", createVotingRequestedEvent.getClass().getSimpleName(), createVotingRequestedEvent);
