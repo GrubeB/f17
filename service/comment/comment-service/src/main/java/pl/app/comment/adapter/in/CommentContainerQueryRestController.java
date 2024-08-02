@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.app.comment.application.domain.CommentContainer;
 import pl.app.comment.query.CommentContainerQueryService;
+import pl.app.comment.query.dto.CommentContainerDto;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -23,20 +24,20 @@ class CommentContainerQueryRestController {
     private final CommentContainerQueryService queryService;
 
     @GetMapping
-    Mono<ResponseEntity<Page<CommentContainer>>> fetchAllByPageable(Pageable pageable) {
+    Mono<ResponseEntity<Page<CommentContainerDto>>> fetchAllByPageable(Pageable pageable) {
         return queryService.fetchByPageable(pageable)
                 .map(ResponseEntity::ok);
     }
 
     @GetMapping("/{id}")
-    Mono<ResponseEntity<CommentContainer>> fetchById(@PathVariable ObjectId id) {
+    Mono<ResponseEntity<CommentContainerDto>> fetchById(@PathVariable ObjectId id) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{domainObjectType}/domain-objects/{domainObjectId}")
-    Mono<ResponseEntity<CommentContainer>> fetchByDomainObject(@PathVariable String domainObjectType, @PathVariable String domainObjectId) {
+    Mono<ResponseEntity<CommentContainerDto>> fetchByDomainObject(@PathVariable String domainObjectType, @PathVariable String domainObjectId) {
         return queryService.fetchByDomainObject(domainObjectId, domainObjectType)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());

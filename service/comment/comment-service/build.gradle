@@ -34,6 +34,9 @@ dependencyManagement {
 
 dependencies {
 	implementation project(':common:shared')
+	implementation project(':common:mapper')
+	implementation project(':service:voting:voting-domain')
+	implementation project(':service:voting:voting-http-interface')
 
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -51,6 +54,10 @@ dependencies {
 
 	implementation ('com.github.javafaker:javafaker:1.0.2') { exclude module: 'org.yaml' }
 	implementation 'org.yaml:snakeyaml:1.26'
+
+	// MAPPER
+	implementation 'org.modelmapper:modelmapper:3.1.1'
+	implementation 'org.modelmapper.extensions:modelmapper-spring:3.1.1'
 
     compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

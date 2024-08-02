@@ -5,12 +5,13 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.app.comment.application.domain.CommentContainer;
+import pl.app.comment.query.dto.CommentContainerDto;
 import reactor.core.publisher.Mono;
 
 public interface CommentContainerQueryService {
-    Mono<CommentContainer> fetchById(@NonNull ObjectId id);
+    Mono<CommentContainerDto> fetchById(@NonNull ObjectId id);
 
-    Mono<Page<CommentContainer>> fetchByPageable(Pageable pageable);
+    Mono<Page<CommentContainerDto>> fetchByPageable(Pageable pageable);
 
-    Mono<CommentContainer> fetchByDomainObject(String domainObjectId, String domainObjectType);
+    Mono<CommentContainerDto> fetchByDomainObject(String domainObjectId, String domainObjectType);
 }

@@ -18,20 +18,22 @@ import java.util.stream.Stream;
 @Getter
 public class Comment {
     @Id
-    private final ObjectId id;
+    private  ObjectId id;
     private String content;
     private String userId;
     private CommentStatus status;
     @DocumentReference
-    private final Set<Comment> comments;
+    private  Set<Comment> comments;
 
     @DocumentReference
     @JsonIgnore
-    private final CommentContainer commentContainer;
+    private  CommentContainer commentContainer;
     @DocumentReference
     @JsonIgnore
     private Comment parentComment;
-
+    @SuppressWarnings("unused")
+    public Comment() {
+    }
     public Comment(ObjectId id, CommentContainer commentContainer, Comment parentComment, String content, String userId) {
         this.id = Objects.nonNull(id) ? id : new ObjectId();
         this.content = content;
