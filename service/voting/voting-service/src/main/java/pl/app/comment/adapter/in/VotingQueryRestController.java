@@ -6,10 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.comment.application.domain.Voting;
 import pl.app.comment.query.VotingQueryService;
-import pl.app.comment.query.dto.VotingDto;
-import reactor.core.publisher.Flux;
+import pl.app.voting.query.dto.VotingDto;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

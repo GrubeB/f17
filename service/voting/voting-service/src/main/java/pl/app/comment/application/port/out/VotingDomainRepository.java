@@ -1,7 +1,7 @@
 package pl.app.comment.application.port.out;
 
 import org.bson.types.ObjectId;
-import pl.app.comment.application.domain.Voting;
+import pl.app.voting.application.domain.Voting;
 
 public interface VotingDomainRepository {
     Voting fetchById(ObjectId id);

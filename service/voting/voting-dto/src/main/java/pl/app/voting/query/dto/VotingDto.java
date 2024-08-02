@@ -1,4 +1,4 @@
-package pl.app.comment.query.dto;
+package pl.app.voting.query.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

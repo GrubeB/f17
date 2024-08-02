@@ -33,17 +33,21 @@ dependencyManagement {
 
 
 dependencies {
+	// SUBPROJECTS
 	implementation project(':common:shared')
 	implementation project(':common:mapper')
 	implementation project(':service:voting:voting-domain')
 	implementation project(':service:voting:voting-dto')
 
+	// WEB
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// DATABASE
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 
+	// KAFKA
 	implementation 'org.apache.kafka:kafka-streams'
 	implementation 'org.springframework.cloud:spring-cloud-stream'
 	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
@@ -53,6 +57,7 @@ dependencies {
     testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
+	// FAKER
 	implementation ('com.github.javafaker:javafaker:1.0.2') { exclude module: 'org.yaml' }
 	implementation 'org.yaml:snakeyaml:1.26'
 
@@ -60,8 +65,11 @@ dependencies {
 	implementation 'org.modelmapper:modelmapper:3.1.1'
 	implementation 'org.modelmapper.extensions:modelmapper-spring:3.1.1'
 
+	// LOMBOK
     compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// TESTS
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

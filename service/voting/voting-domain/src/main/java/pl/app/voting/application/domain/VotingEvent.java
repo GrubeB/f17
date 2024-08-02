@@ -1,4 +1,4 @@
-package pl.app.comment.application.domain;
+package pl.app.voting.application.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

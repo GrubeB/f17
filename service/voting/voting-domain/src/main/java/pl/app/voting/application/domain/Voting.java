@@ -1,4 +1,4 @@
-package pl.app.comment.application.domain;
+package pl.app.voting.application.domain;
 
 import lombok.Getter;
 import org.bson.types.ObjectId;

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.comment.application.domain.VotingEvent;
+import pl.app.voting.application.domain.VotingEvent;
 import pl.app.comment.application.port.in.AddUserVoteRequestUseCase;
 import pl.app.comment.application.port.in.CreateVotingRequestUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteRequestUseCase;

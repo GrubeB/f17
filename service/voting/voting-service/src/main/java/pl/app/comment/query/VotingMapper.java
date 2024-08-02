@@ -4,8 +4,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import pl.app.comment.application.domain.Voting;
-import pl.app.comment.query.dto.VotingDto;
+import pl.app.voting.application.domain.Voting;
+import pl.app.voting.query.dto.VotingDto;
 import pl.app.common.mapper.BaseMapper;
 
 @Component

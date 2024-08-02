@@ -1,4 +1,4 @@
-package pl.app.comment;
+package pl.app.voting.http;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

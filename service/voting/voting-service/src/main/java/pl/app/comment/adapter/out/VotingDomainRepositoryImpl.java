@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import pl.app.comment.application.domain.Voting;
-import pl.app.comment.application.domain.VotingException;
+import pl.app.voting.application.domain.Voting;
+import pl.app.voting.application.domain.VotingException;
 import pl.app.comment.application.port.out.VotingDomainRepository;
 
 import java.util.Objects;

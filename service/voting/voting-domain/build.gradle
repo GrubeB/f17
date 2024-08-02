@@ -24,9 +24,14 @@ repositories {
 }
 
 dependencies {
+	// SUBPROJECTS
 	implementation project(':common:shared')
+
+	// DATABASE
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    compileOnly 'org.projectlombok:lombok'
+
+	// LOMBOK
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 }
 

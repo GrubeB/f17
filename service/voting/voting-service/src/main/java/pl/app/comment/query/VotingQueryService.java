@@ -4,8 +4,7 @@ import com.mongodb.lang.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.app.comment.application.domain.Voting;
-import pl.app.comment.query.dto.VotingDto;
+import pl.app.voting.query.dto.VotingDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
