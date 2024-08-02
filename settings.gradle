@@ -1,8 +1,11 @@
 // COMMON
 include "common:shared"
+include "common:mapper"
 // SERVICES
 include "service:comment:comment-service"
 
 include "service:voting:voting-domain"
+include "service:voting:voting-dto"
 include "service:voting:voting-service"
+include "service:voting:voting-http-interface"
 
