@@ -15,8 +15,8 @@ public interface VotingEvent {
     @ToString
     class CreateVotingRequestedEvent implements Serializable {
         private ObjectId votingId;
-        private String domainObjectType;
         private String domainObjectId;
+        private String domainObjectType;
     }
 
     @Getter
@@ -25,8 +25,8 @@ public interface VotingEvent {
     @ToString
     class VotingCreatedEvent implements Serializable {
         private ObjectId votingId;
-        private String domainObjectType;
         private String domainObjectId;
+        private String domainObjectType;
     }
 
     @Getter
@@ -35,8 +35,8 @@ public interface VotingEvent {
     @ToString
     class AddVoteRequestedEvent implements Serializable {
         private ObjectId votingId;
-        private String domainObjectType;
         private String domainObjectId;
+        private String domainObjectType;
         private String userId;
         private String type;
     }
@@ -47,8 +47,8 @@ public interface VotingEvent {
     @ToString
     class VoteAddedEvent implements Serializable {
         private ObjectId votingId;
-        private String domainObjectType;
         private String domainObjectId;
+        private String domainObjectType;
         private String userId;
         private String type;
     }
@@ -59,8 +59,8 @@ public interface VotingEvent {
     @ToString
     class RemoveVoteRequestedEvent implements Serializable {
         private ObjectId votingId;
-        private String domainObjectType;
         private String domainObjectId;
+        private String domainObjectType;
         private String userId;
     }
 
@@ -70,8 +70,8 @@ public interface VotingEvent {
     @ToString
     class VoteRemovedEvent implements Serializable {
         private ObjectId votingId;
-        private String domainObjectType;
         private String domainObjectId;
+        private String domainObjectType;
         private String userId;
         private String type;
     }

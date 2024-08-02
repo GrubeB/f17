@@ -4,9 +4,12 @@ import lombok.Getter;
 
 @Getter
 public class UserVote {
-    private final String userId;
+    private String userId;
     private String type;
 
+    @SuppressWarnings("unused")
+    public UserVote() {
+    }
     public UserVote(String userId, String type) {
         this.userId = userId;
         this.type = type;
