@@ -17,6 +17,7 @@ import pl.app.comment.application.port.in.command.AddUserVoteCommand;
 import pl.app.comment.application.port.in.command.CreateVotingCommand;
 import pl.app.comment.application.port.in.command.RemoveUserVoteCommand;
 import pl.app.comment.application.port.out.VotingDomainRepository;
+import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.voting.application.domain.UserVote;
 import pl.app.voting.application.domain.Voting;
 import pl.app.voting.application.domain.VotingEvent;
@@ -37,13 +38,7 @@ class VotingService implements
     private final VotingDomainRepository votingDomainRepository;
     private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
-    @Value("${app.kafka.topic.voting-created.name}")
-    private String votingCreatedTopicName;
-    @Value("${app.kafka.topic.vote-added.name}")
-    private String voteAddedTopicName;
-    @Value("${app.kafka.topic.vote-removed.name}")
-    private String voteRemovedTopicName;
-
+    private final KafkaTopicConfigurationProperties topicNames;
     @Override
     public Mono<Voting> createVoting(CreateVotingCommand command) {
         logger.debug("creating voting: {}, for domain object: {} of type: {}", command.getIdForNewVoting(), command.getDomainObjectId(), command.getDomainObjectType());
@@ -57,7 +52,7 @@ class VotingService implements
                             voting.getDomainObjectType()
                     );
                     return mongoTemplate.save(voting)
-                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(votingCreatedTopicName, savedVoting.getId(), event)).thenReturn(savedVoting))
+                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVotingCreated().getName(), savedVoting.getId(), event)).thenReturn(savedVoting))
                             .doOnSuccess(savedVoting -> {
                                 logger.debug("created voting: {}, for domain object: {} of type: {}", voting.getId(), voting.getDomainObjectId(), voting.getDomainObjectType());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -90,7 +85,7 @@ class VotingService implements
                             command.getType()
                     );
                     return mongoTemplate.save(voting)
-                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(voteAddedTopicName, voting.getId(), event)).then())
+                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVoteAdded().getName(), voting.getId(), event)).then())
                             .doOnSuccess(unused -> {
                                 logger.debug("added vote for voting: {}", voting.getId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -114,7 +109,7 @@ class VotingService implements
                             userVote.map(UserVote::getType).orElse(null)
                     );
                     return mongoTemplate.save(voting)
-                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(voteRemovedTopicName, voting.getId(), event)))
+                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVoteRemoved().getName(), voting.getId(), event)))
                             .doOnSuccess(unused -> {
                                 logger.debug("removed vote for voting: {}", voting.getVotes());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
