@@ -5,15 +5,11 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.voting.application.domain.UserVote;
-import pl.app.voting.application.domain.Voting;
-import pl.app.voting.application.domain.VotingEvent;
-import pl.app.voting.application.domain.VotingException;
 import pl.app.comment.application.port.in.AddUserVoteUseCase;
 import pl.app.comment.application.port.in.CreateVotingUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteUseCase;
@@ -21,6 +17,11 @@ import pl.app.comment.application.port.in.command.AddUserVoteCommand;
 import pl.app.comment.application.port.in.command.CreateVotingCommand;
 import pl.app.comment.application.port.in.command.RemoveUserVoteCommand;
 import pl.app.comment.application.port.out.VotingDomainRepository;
+import pl.app.voting.application.domain.UserVote;
+import pl.app.voting.application.domain.Voting;
+import pl.app.voting.application.domain.VotingEvent;
+import pl.app.voting.application.domain.VotingException;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
@@ -31,10 +32,10 @@ class VotingService implements
         CreateVotingUseCase,
         AddUserVoteUseCase,
         RemoveUserVoteUseCase {
-    private final Logger logger = LoggerFactory.getLogger(VotingService.class);
+    private static final Logger logger = LoggerFactory.getLogger(VotingService.class);
 
     private final VotingDomainRepository votingDomainRepository;
-    private final MongoTemplate mongoTemplate;
+    private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     @Value("${app.kafka.topic.voting-created.name}")
     private String votingCreatedTopicName;
@@ -44,64 +45,80 @@ class VotingService implements
     private String voteRemovedTopicName;
 
     @Override
-    public Voting createVoting(CreateVotingCommand command) {
-        verifyThereIsNoDuplicates(command.getDomainObjectId(), command.getDomainObjectType());
-        Voting voting = new Voting(command.getDomainObjectId(), command.getDomainObjectType(), command.getIdForNewVoting());
-        mongoTemplate.save(voting);
-        var event = new VotingEvent.VotingCreatedEvent(
-                voting.getId(),
-                voting.getDomainObjectId(),
-                voting.getDomainObjectType()
-        );
-        kafkaTemplate.send(votingCreatedTopicName, voting.getId(), event);
-        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
-        logger.debug("created voting with id: {}, for domain object: {} of type: {}", voting.getId(),
-                voting.getDomainObjectId(), voting.getDomainObjectType());
-        return voting;
+    public Mono<Voting> createVoting(CreateVotingCommand command) {
+        logger.debug("creating voting: {}, for domain object: {} of type: {}", command.getIdForNewVoting(), command.getDomainObjectId(), command.getDomainObjectType());
+        return Mono.when(verifyThereIsNoDuplicates(command.getDomainObjectId(), command.getDomainObjectType()))
+                .doOnError(e -> logger.error("exception occurred while creating voting: {}, exception: {}", command.getIdForNewVoting(), e.getMessage()))
+                .then(Mono.defer(() -> {
+                    Voting voting = new Voting(command.getDomainObjectId(), command.getDomainObjectType(), command.getIdForNewVoting());
+                    var event = new VotingEvent.VotingCreatedEvent(
+                            voting.getId(),
+                            voting.getDomainObjectId(),
+                            voting.getDomainObjectType()
+                    );
+                    return mongoTemplate.save(voting)
+                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(votingCreatedTopicName, savedVoting.getId(), event)).thenReturn(savedVoting))
+                            .doOnSuccess(savedVoting -> {
+                                logger.debug("created voting: {}, for domain object: {} of type: {}", voting.getId(), voting.getDomainObjectId(), voting.getDomainObjectType());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            });
+                }));
     }
 
-    private void verifyThereIsNoDuplicates(String domainObjectId, String domainObjectType) {
+
+    private Mono<Void> verifyThereIsNoDuplicates(String domainObjectId, String domainObjectType) {
         Query query = Query.query(Criteria
                 .where("domainObjectId").is(domainObjectId)
                 .and("domainObjectType").is(domainObjectType)
         );
-        if (mongoTemplate.query(Voting.class).matching(query).one().isPresent()) {
-            throw VotingException.DuplicatedDomainObjectException.fromDomainObject(domainObjectId, domainObjectType);
-        }
+        return mongoTemplate.exists(query, Voting.class)
+                .flatMap(exist -> exist ? Mono.error(VotingException.DuplicatedDomainObjectException.fromDomainObject(domainObjectId, domainObjectType)) : Mono.empty());
     }
 
     @Override
-    public void addUserVote(AddUserVoteCommand command) {
-        Voting voting = votingDomainRepository.fetchByIdOrDomainObject(command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType());
-        voting.addUserVote(command.getUserId(), command.getType());
-        mongoTemplate.save(voting);
-        var event = new VotingEvent.VoteAddedEvent(
-                voting.getId(),
-                voting.getDomainObjectId(),
-                voting.getDomainObjectType(),
-                command.getUserId(),
-                command.getType()
-        );
-        kafkaTemplate.send(voteAddedTopicName, voting.getId(), event);
-        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
-        logger.debug("added user vote for voting with id: {}", voting.getVotes());
+    public Mono<Voting> addUserVote(AddUserVoteCommand command) {
+        logger.debug("adding vote to voting: {}, for domain object: {} of type: {}", command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType());
+        return votingDomainRepository.fetchByIdOrDomainObject(command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType())
+                .doOnError(e -> logger.error("exception occurred while adding vote to voting: {}, for domain object: {} of type: {}, exception: {}", command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType(), e.getMessage()))
+                .flatMap(voting -> {
+                    voting.addUserVote(command.getUserId(), command.getType());
+                    var event = new VotingEvent.VoteAddedEvent(
+                            voting.getId(),
+                            voting.getDomainObjectId(),
+                            voting.getDomainObjectType(),
+                            command.getUserId(),
+                            command.getType()
+                    );
+                    return mongoTemplate.save(voting)
+                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(voteAddedTopicName, voting.getId(), event)).then())
+                            .doOnSuccess(unused -> {
+                                logger.debug("added vote for voting: {}", voting.getId());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            });
+                });
     }
 
 
     @Override
-    public void removeUserVote(RemoveUserVoteCommand command) {
-        Voting voting = votingDomainRepository.fetchByIdOrDomainObject(command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType());
-        Optional<UserVote> userVote = voting.removeUserVote(command.getUserId());
-        mongoTemplate.save(voting);
-        var event = new VotingEvent.VoteRemovedEvent(
-                voting.getId(),
-                voting.getDomainObjectId(),
-                voting.getDomainObjectType(),
-                command.getUserId(),
-                userVote.map(UserVote::getType).orElse(null)
-        );
-        kafkaTemplate.send(voteRemovedTopicName, voting.getId(), event);
-        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
-        logger.debug("removed user vote for voting with id: {}", voting.getVotes());
+    public Mono<Voting> removeUserVote(RemoveUserVoteCommand command) {
+        logger.debug("removing vote from voting: {}, for domain object: {} of type: {}", command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType());
+        return votingDomainRepository.fetchByIdOrDomainObject(command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType())
+                .doOnError(e -> logger.error("exception occurred while removing vote from voting: {}, for domain object: {} of type: {}, exception: {}", command.getVotingId(), command.getDomainObjectId(), command.getDomainObjectType(), e.getMessage()))
+                .flatMap(voting -> {
+                    Optional<UserVote> userVote = voting.removeUserVote(command.getUserId());
+                    var event = new VotingEvent.VoteRemovedEvent(
+                            voting.getId(),
+                            voting.getDomainObjectId(),
+                            voting.getDomainObjectType(),
+                            command.getUserId(),
+                            userVote.map(UserVote::getType).orElse(null)
+                    );
+                    return mongoTemplate.save(voting)
+                            .doOnNext(savedVoting -> Mono.fromFuture(kafkaTemplate.send(voteRemovedTopicName, voting.getId(), event)))
+                            .doOnSuccess(unused -> {
+                                logger.debug("removed vote for voting: {}", voting.getVotes());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            });
+                });
     }
 }

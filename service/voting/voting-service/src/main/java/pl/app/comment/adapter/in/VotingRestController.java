@@ -11,6 +11,7 @@ import pl.app.comment.application.port.in.AddUserVoteRequestUseCase;
 import pl.app.comment.application.port.in.CreateVotingRequestUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteRequestUseCase;
 import pl.app.comment.application.port.in.command.CreateVotingRequestCommand;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(VotingRestController.resourcePath)
@@ -20,14 +21,10 @@ class VotingRestController {
     public static final String resourcePath = "/api/v1/" + resourceName;
 
     private final CreateVotingRequestUseCase createVotingRequestUseCase;
-    private final AddUserVoteRequestUseCase addUserVoteRequestUseCase;
-    private final RemoveUserVoteRequestUseCase removeUserVoteRequestUseCase;
 
     @PostMapping
-    public ResponseEntity<ObjectId> createVotingRequest(@RequestBody CreateVotingRequestCommand command) {
-        ObjectId votingId = createVotingRequestUseCase.createVotingRequest(command);
-        return ResponseEntity
-                .accepted()
-                .body(votingId);
+    public Mono<ResponseEntity<ObjectId>> createVotingRequest(@RequestBody CreateVotingRequestCommand command) {
+        return createVotingRequestUseCase.createVotingRequest(command)
+                .map(ResponseEntity::ok);
     }
 }

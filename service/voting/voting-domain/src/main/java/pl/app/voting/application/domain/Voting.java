@@ -58,7 +58,7 @@ public class Voting {
         if (userVoteOptional.isPresent()) {
             final UserVote userVote = userVoteOptional.get();
             decrementType(userVote.getType());
-            removeUserVoteByUserId(userId);
+            this.userVotes.removeIf(v -> v.getUserId().equals(userId));
             return Optional.of(userVote);
         }
         return Optional.empty();
@@ -87,17 +87,13 @@ public class Voting {
         }
     }
 
-    private Optional<VoteCounter> getVoteCounterByType(String type) {
+    public Optional<VoteCounter> getVoteCounterByType(String type) {
         return this.votes.stream()
                 .filter(v -> v.getType().equals(type))
                 .findAny();
     }
 
-    private void removeUserVoteByUserId(String userId) {
-        this.userVotes.removeIf(v -> v.getUserId().equals(userId));
-    }
-
-    private Optional<UserVote> getUserVoteByUserId(String userId) {
+    public Optional<UserVote> getUserVoteByUserId(String userId) {
         return this.userVotes.stream()
                 .filter(v -> v.getUserId().equals(userId))
                 .findAny();

@@ -7,6 +7,7 @@ import pl.app.comment.application.port.in.AddUserVoteRequestUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteRequestUseCase;
 import pl.app.comment.application.port.in.command.AddUserVoteRequestCommand;
 import pl.app.comment.application.port.in.command.RemoveUserVoteRequestCommand;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(VoteRestController.resourcePath)
@@ -19,18 +20,14 @@ class VoteRestController {
     private final RemoveUserVoteRequestUseCase removeUserVoteRequestUseCase;
 
     @PostMapping
-    public ResponseEntity<Void> addUserVoteRequest(@RequestBody AddUserVoteRequestCommand command) {
-        addUserVoteRequestUseCase.addUserVoteRequest(command);
-        return ResponseEntity
-                .accepted()
-                .build();
+    public Mono<ResponseEntity<Void>> addUserVoteRequest(@RequestBody AddUserVoteRequestCommand command) {
+        return addUserVoteRequestUseCase.addUserVoteRequest(command)
+                .then(Mono.just(ResponseEntity.accepted().build()));
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> removeUserVote(@RequestBody RemoveUserVoteRequestCommand command) {
-        removeUserVoteRequestUseCase.removeUserVote(command);
-        return ResponseEntity
-                .accepted()
-                .build();
+    public Mono<ResponseEntity<Void>> removeUserVote(@RequestBody RemoveUserVoteRequestCommand command) {
+        return removeUserVoteRequestUseCase.removeUserVote(command)
+                .then(Mono.just(ResponseEntity.accepted().build()));
     }
 }
