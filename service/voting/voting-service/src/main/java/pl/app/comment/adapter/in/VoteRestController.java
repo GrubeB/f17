@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.app.comment.application.port.in.AddUserVoteRequestUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteRequestUseCase;
-import pl.app.comment.application.port.in.command.AddUserVoteRequestCommand;
-import pl.app.comment.application.port.in.command.RemoveUserVoteRequestCommand;
+import pl.app.comment.application.port.in.VotingCommand.AddUserVoteRequestCommand;
+import pl.app.comment.application.port.in.VotingCommand.RemoveUserVoteRequestCommand;
 import reactor.core.publisher.Mono;
 
 @RestController

@@ -16,5 +16,6 @@ public interface VotingQueryService {
     Mono<Page<VotingDto>> fetchByPageable(Pageable pageable);
 
     Mono<VotingDto> fetchByDomainObject(String domainObjectId, String domainObjectType);
+
     Flux<VotingDto> fetchByDomainObject(List<String> domainObjectId, String domainObjectType);
 }

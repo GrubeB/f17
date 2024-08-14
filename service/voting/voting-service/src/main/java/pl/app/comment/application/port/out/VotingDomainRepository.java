@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 public interface VotingDomainRepository {
     Mono<Voting> fetchById(ObjectId id);
 
-    Mono<Voting>  fetchByDomainObject(String domainObjectId, String domainObjectType);
+    Mono<Voting> fetchByDomainObject(String domainObjectId, String domainObjectType);
 
-    Mono<Voting>  fetchByIdOrDomainObject(ObjectId id, String domainObjectId, String domainObjectType);
+    Mono<Voting> fetchByIdOrDomainObject(ObjectId id, String domainObjectId, String domainObjectType);
 }

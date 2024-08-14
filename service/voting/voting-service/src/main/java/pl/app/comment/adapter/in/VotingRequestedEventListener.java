@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import pl.app.comment.application.port.in.AddUserVoteUseCase;
 import pl.app.comment.application.port.in.CreateVotingUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteUseCase;
-import pl.app.comment.application.port.in.command.AddUserVoteCommand;
-import pl.app.comment.application.port.in.command.CreateVotingCommand;
-import pl.app.comment.application.port.in.command.RemoveUserVoteCommand;
+import pl.app.comment.application.port.in.VotingCommand.AddUserVoteCommand;
+import pl.app.comment.application.port.in.VotingCommand.CreateVotingCommand;
+import pl.app.comment.application.port.in.VotingCommand.RemoveUserVoteCommand;
 import pl.app.voting.application.domain.VotingEvent;
 import pl.app.voting.application.domain.VotingException;
 

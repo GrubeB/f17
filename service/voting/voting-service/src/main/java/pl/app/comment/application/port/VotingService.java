@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,9 +12,9 @@ import org.springframework.stereotype.Service;
 import pl.app.comment.application.port.in.AddUserVoteUseCase;
 import pl.app.comment.application.port.in.CreateVotingUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteUseCase;
-import pl.app.comment.application.port.in.command.AddUserVoteCommand;
-import pl.app.comment.application.port.in.command.CreateVotingCommand;
-import pl.app.comment.application.port.in.command.RemoveUserVoteCommand;
+import pl.app.comment.application.port.in.VotingCommand.AddUserVoteCommand;
+import pl.app.comment.application.port.in.VotingCommand.CreateVotingCommand;
+import pl.app.comment.application.port.in.VotingCommand.RemoveUserVoteCommand;
 import pl.app.comment.application.port.out.VotingDomainRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.voting.application.domain.UserVote;
@@ -39,6 +38,7 @@ class VotingService implements
     private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
+
     @Override
     public Mono<Voting> createVoting(CreateVotingCommand command) {
         logger.debug("creating voting: {}, for domain object: {} of type: {}", command.getIdForNewVoting(), command.getDomainObjectId(), command.getDomainObjectType());
