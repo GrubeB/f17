@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import pl.app.AbstractIntegrationTest;
 import pl.app.comment.application.port.in.VotingCommand.AddUserVoteCommand;
 import pl.app.comment.application.port.in.VotingCommand.CreateVotingCommand;
 import pl.app.comment.application.port.in.VotingCommand.RemoveUserVoteCommand;
@@ -25,9 +26,9 @@ import reactor.test.StepVerifier;
 
 import java.util.UUID;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
-class VotingServiceTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class VotingServiceTest extends AbstractIntegrationTest {
     @Autowired
     private VotingService votingService;
     @SpyBean
@@ -126,6 +127,7 @@ class VotingServiceTest {
         Mockito.verify(mongoTemplate, Mockito.times(3)).save(ArgumentMatchers.any(Voting.class));
         Mockito.verify(kafkaTemplate, Mockito.times(1)).send(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class), ArgumentMatchers.any(VotingEvent.VoteRemovedEvent.class));
     }
+
     @Test
     void removeUserVote_shouldThrowExceptionWhenVotingDoesNotExist() {
         final var votingId = ObjectId.get();
