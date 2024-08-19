@@ -13,7 +13,7 @@ public interface CommentCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     class CreateCommentContainerCommand implements Serializable {
-        private ObjectId idForCommentContainerId;
+        private ObjectId idForNewObject;
         @NotBlank
         private String domainObjectId;
         @NotBlank
@@ -28,7 +28,7 @@ public interface CommentCommand {
         private String domainObjectId;
         private String domainObjectType;
 
-        private ObjectId idForCommentContainerId;
+        private ObjectId idForNewObject;
         private ObjectId parentCommentId;
         private String userId;
         private String content;

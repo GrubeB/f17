@@ -22,7 +22,7 @@ public class CommentContainer {
     private String domainObjectType;
     private String domainObjectId;
     @DocumentReference
-    private Set<Comment> comments;
+    private Set<Comment> comments = new LinkedHashSet<>();
 
     @SuppressWarnings("unused")
     public CommentContainer() {

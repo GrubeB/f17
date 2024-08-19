@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.app.comment.application.port.in.CommentCommand;
 import pl.app.comment.application.port.in.CommentRequestedService;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(CommentContainerRestController.resourcePath)
@@ -20,8 +21,8 @@ class CommentContainerRestController {
     private final CommentRequestedService commentRequestedService;
 
     @PostMapping
-    public ResponseEntity<ObjectId> create(@RequestBody CommentCommand.CreateCommentContainerRequestCommand command) {
-        ObjectId id = commentRequestedService.createCommentContainerRequest(command);
-        return ResponseEntity.ok(id);
+    Mono<ResponseEntity<ObjectId>> create(@RequestBody CommentCommand.CreateCommentContainerRequestCommand command) {
+        return commentRequestedService.createCommentContainerRequest(command)
+                .map(ResponseEntity::ok);
     }
 }

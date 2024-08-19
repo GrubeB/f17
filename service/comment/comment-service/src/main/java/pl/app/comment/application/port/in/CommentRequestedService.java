@@ -2,13 +2,14 @@ package pl.app.comment.application.port.in;
 
 import jakarta.validation.Valid;
 import org.bson.types.ObjectId;
+import reactor.core.publisher.Mono;
 
 public interface CommentRequestedService {
-    ObjectId createCommentContainerRequest(@Valid CommentCommand.CreateCommentContainerRequestCommand command);
+    Mono<ObjectId> createCommentContainerRequest(@Valid CommentCommand.CreateCommentContainerRequestCommand command);
 
-    ObjectId addCommentRequest(@Valid CommentCommand.AddCommentRequestCommand command);
+    Mono<ObjectId> addCommentRequest(@Valid CommentCommand.AddCommentRequestCommand command);
 
-    void updateCommentRequest(@Valid CommentCommand.UpdateCommentRequestCommand command);
+    Mono<Void> updateCommentRequest(@Valid CommentCommand.UpdateCommentRequestCommand command);
 
-    void deleteCommentRequest(@Valid CommentCommand.DeleteCommentRequestCommand command);
+    Mono<Void> deleteCommentRequest(@Valid CommentCommand.DeleteCommentRequestCommand command);
 }

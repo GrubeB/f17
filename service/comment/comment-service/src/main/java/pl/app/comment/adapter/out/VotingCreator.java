@@ -10,7 +10,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import pl.app.comment.application.domain.CommentEvent;
+import pl.app.comment.application.port.in.CommentCommand;
 import pl.app.common.shared.DomainObjectTyp;
+import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.voting.application.domain.VotingEvent;
 
 
@@ -20,8 +22,7 @@ class VotingCreator {
     private static final Logger logger = LoggerFactory.getLogger(VotingCreator.class);
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
 
-    @Value("${app.kafka.topic.create-voting-requested.name}")
-    private String createVotingRequestedTopicName;
+    private final KafkaTopicConfigurationProperties topicNames;
 
     @KafkaListener(
             id = "comment-added-event-listener",
@@ -36,7 +37,7 @@ class VotingCreator {
                 event.getCommentId().toString(),
                 DomainObjectTyp.COMMENT.toString()
         );
-        kafkaTemplate.send(createVotingRequestedTopicName, createVotingRequestedEvent.getVotingId(), createVotingRequestedEvent);
+        kafkaTemplate.send(topicNames.getCreateVotingRequested().getName(), createVotingRequestedEvent.getVotingId(), createVotingRequestedEvent);
         logger.debug("send {} - {}", createVotingRequestedEvent.getClass().getSimpleName(), createVotingRequestedEvent);
     }
 }

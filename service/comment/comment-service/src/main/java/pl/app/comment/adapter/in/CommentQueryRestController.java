@@ -23,13 +23,13 @@ class CommentQueryRestController {
     private final CommentQueryService queryService;
 
     @GetMapping
-    public Mono<ResponseEntity<Page<Comment>>> fetchAllByPageable(Pageable pageable) {
+    Mono<ResponseEntity<Page<Comment>>> fetchAllByPageable(Pageable pageable) {
         return queryService.fetchByPageable(pageable)
                 .map(ResponseEntity::ok);
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<Comment>> fetchById(@PathVariable ObjectId id) {
+    Mono<ResponseEntity<Comment>> fetchById(@PathVariable ObjectId id) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());

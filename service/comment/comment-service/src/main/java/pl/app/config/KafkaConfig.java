@@ -2,6 +2,7 @@ package pl.app.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -28,11 +29,9 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableKafka
@@ -52,66 +51,28 @@ public class KafkaConfig {
         }
 
         @Bean
-        KafkaAdmin.NewTopics createCommentContainerRequested(@Value("${app.kafka.topic.create-comment-container-requested.name}") String createCommentContainerRequestedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(createCommentContainerRequestedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(createCommentContainerRequestedTopicName + ".DTL").partitions(1).compact().build()
-            );
+        KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
+            NewTopic[] array = Stream.of(
+                    createTopicFromConfig(topicNames.getCommentContainerCreated()).stream(),
+                    createTopicFromConfig(topicNames.getCommentAdded()).stream(),
+                    createTopicFromConfig(topicNames.getCommentUpdated()).stream(),
+                    createTopicFromConfig(topicNames.getCommentDeleted()).stream(),
+                    createTopicFromConfig(topicNames.getCreateCommentContainerRequested()).stream(),
+                    createTopicFromConfig(topicNames.getAddCommentRequested()).stream(),
+                    createTopicFromConfig(topicNames.getUpdateCommentRequested()).stream(),
+                    createTopicFromConfig(topicNames.getDeleteCommentRequested()).stream()
+            ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
+            return new KafkaAdmin.NewTopics(array);
         }
 
-        @Bean
-        KafkaAdmin.NewTopics addCommentRequested(@Value("${app.kafka.topic.add-comment-requested.name}") String addCommentRequestedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(addCommentRequestedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(addCommentRequestedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics updateCommentRequested(@Value("${app.kafka.topic.update-comment-requested.name}") String updateCommentRequestedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(updateCommentRequestedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(updateCommentRequestedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics deleteCommentRequested(@Value("${app.kafka.topic.delete-comment-requested.name}") String deleteCommentRequestedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(deleteCommentRequestedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(deleteCommentRequestedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics voteAdded(@Value("${app.kafka.topic.comment-container-created.name}") String commentContainerCreatedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(commentContainerCreatedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(commentContainerCreatedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics voteRemoved(@Value("${app.kafka.topic.comment-added.name}") String commentAddedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(commentAddedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(commentAddedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics createVotingRequested(@Value("${app.kafka.topic.comment-updated.name}") String commentUpdatedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(commentUpdatedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(commentUpdatedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics addVoteRequested(@Value("${app.kafka.topic.comment-deleted.name}") String commentDeletedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(commentDeletedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(commentDeletedTopicName + ".DTL").partitions(1).compact().build()
+        private List<NewTopic> createTopicFromConfig(KafkaTopicConfigurationProperties.Topic topic) {
+            NewTopic mainTopic = TopicBuilder.name(topic.getName()).partitions(topic.getPartitions()).compact().build();
+            if (!topic.getDtlTopic()) {
+                return Collections.singletonList(mainTopic);
+            }
+            return List.of(
+                    mainTopic,
+                    TopicBuilder.name(topic.getName() + ".DTL").partitions(topic.getPartitions()).compact().build()
             );
         }
     }
@@ -184,6 +145,7 @@ public class KafkaConfig {
             props.put(ConsumerConfig.CLIENT_ID_CONFIG, consumerClientId);
             return props;
         }
+
     }
 
     @Configuration
