@@ -4,18 +4,18 @@ import com.mongodb.lang.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.app.comment.application.domain.Voting;
+import pl.app.voting.query.dto.VotingDto;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 public interface VotingQueryService {
-    List<Voting> fetchAll();
+    Mono<VotingDto> fetchById(@NonNull ObjectId id);
 
-    Page<Voting> fetchByPageable(Pageable pageable);
+    Mono<Page<VotingDto>> fetchByPageable(Pageable pageable);
 
-    Voting fetchById(@NonNull ObjectId id);
+    Mono<VotingDto> fetchByDomainObject(String domainObjectId, String domainObjectType);
 
-    Voting fetchByDomainObject(String domainObjectId, String domainObjectType);
-
-    List<Voting> fetchByIds(@NonNull List<ObjectId> ids);
+    Flux<VotingDto> fetchByDomainObject(List<String> domainObjectId, String domainObjectType);
 }

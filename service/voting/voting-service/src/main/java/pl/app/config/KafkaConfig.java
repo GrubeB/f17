@@ -1,7 +1,9 @@
 package pl.app.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -28,15 +30,14 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableKafka
 @PropertySource("classpath:kafka.properties")
+@RequiredArgsConstructor
 public class KafkaConfig {
     private final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
     @Value("${app.kafka.bootstrap-servers}")
@@ -52,50 +53,26 @@ public class KafkaConfig {
         }
 
         @Bean
-        KafkaAdmin.NewTopics votingCreated(@Value("${app.kafka.topic.voting-created.name}") String votingCreatedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(votingCreatedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(votingCreatedTopicName + ".DTL").partitions(1).compact().build()
-            );
+        KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
+            NewTopic[] array = Stream.of(
+                    createTopicFromConfig(topicNames.getVotingCreated()).stream(),
+                    createTopicFromConfig(topicNames.getVoteAdded()).stream(),
+                    createTopicFromConfig(topicNames.getVoteRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getCreateVotingRequested()).stream(),
+                    createTopicFromConfig(topicNames.getAddVoteRequested()).stream(),
+                    createTopicFromConfig(topicNames.getRemoveVoteRequested()).stream()
+            ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
+            return new KafkaAdmin.NewTopics(array);
         }
 
-        @Bean
-        KafkaAdmin.NewTopics voteAdded(@Value("${app.kafka.topic.vote-added.name}") String voteAddedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(voteAddedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(voteAddedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics voteRemoved(@Value("${app.kafka.topic.vote-removed.name}") String voteRemovedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(voteRemovedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(voteRemovedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics createVotingRequested(@Value("${app.kafka.topic.create-voting-requested.name}") String createVotingRequestedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(createVotingRequestedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(createVotingRequestedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics addVoteRequested(@Value("${app.kafka.topic.add-vote-requested.name}") String addVoteRequestedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(addVoteRequestedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(addVoteRequestedTopicName + ".DTL").partitions(1).compact().build()
-            );
-        }
-
-        @Bean
-        KafkaAdmin.NewTopics removeVoteRequested(@Value("${app.kafka.topic.remove-vote-requested.name}") String removeVoteRequestedTopicName) {
-            return new KafkaAdmin.NewTopics(
-                    TopicBuilder.name(removeVoteRequestedTopicName).partitions(1).compact().build(),
-                    TopicBuilder.name(removeVoteRequestedTopicName + ".DTL").partitions(1).compact().build()
+        private List<NewTopic> createTopicFromConfig(KafkaTopicConfigurationProperties.Topic topic) {
+            NewTopic mainTopic = TopicBuilder.name(topic.getName()).partitions(topic.getPartitions()).compact().build();
+            if (!topic.getDtlTopic()) {
+                return Collections.singletonList(mainTopic);
+            }
+            return List.of(
+                    mainTopic,
+                    TopicBuilder.name(topic.getName() + ".DTL").partitions(topic.getPartitions()).compact().build()
             );
         }
     }
@@ -168,6 +145,7 @@ public class KafkaConfig {
             props.put(ConsumerConfig.CLIENT_ID_CONFIG, consumerClientId);
             return props;
         }
+
     }
 
     @Configuration

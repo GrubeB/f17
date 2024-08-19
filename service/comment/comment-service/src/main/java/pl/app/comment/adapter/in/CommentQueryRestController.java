@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.app.comment.application.domain.Comment;
 import pl.app.comment.query.CommentQueryService;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(CommentQueryRestController.resourcePath)
@@ -23,16 +23,15 @@ class CommentQueryRestController {
     private final CommentQueryService queryService;
 
     @GetMapping
-    ResponseEntity<Page<Comment>> fetchAllByPageable(Pageable pageable) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(queryService.fetchByPageable(pageable));
+    Mono<ResponseEntity<Page<Comment>>> fetchAllByPageable(Pageable pageable) {
+        return queryService.fetchByPageable(pageable)
+                .map(ResponseEntity::ok);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Comment> fetchById(@PathVariable ObjectId id) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(queryService.fetchById(id));
+    Mono<ResponseEntity<Comment>> fetchById(@PathVariable ObjectId id) {
+        return queryService.fetchById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }

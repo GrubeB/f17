@@ -4,16 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.comment.application.domain.VotingEvent;
 import pl.app.comment.application.port.in.AddUserVoteRequestUseCase;
 import pl.app.comment.application.port.in.CreateVotingRequestUseCase;
 import pl.app.comment.application.port.in.RemoveUserVoteRequestUseCase;
-import pl.app.comment.application.port.in.command.AddUserVoteRequestCommand;
-import pl.app.comment.application.port.in.command.CreateVotingRequestCommand;
-import pl.app.comment.application.port.in.command.RemoveUserVoteRequestCommand;
+import pl.app.comment.application.port.in.VotingCommand.AddUserVoteRequestCommand;
+import pl.app.comment.application.port.in.VotingCommand.CreateVotingRequestCommand;
+import pl.app.comment.application.port.in.VotingCommand.RemoveUserVoteRequestCommand;
+import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.voting.application.domain.VotingEvent;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -23,49 +24,46 @@ class VotingRequestService implements
         RemoveUserVoteRequestUseCase {
     private final Logger logger = LoggerFactory.getLogger(VotingService.class);
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
-    @Value("${app.kafka.topic.create-voting-requested.name}")
-    private String createVotingRequestedTopicName;
-    @Value("${app.kafka.topic.add-vote-requested.name}")
-    private String addVoteRequestedTopicName;
-    @Value("${app.kafka.topic.remove-vote-requested.name}")
-    private String removeVoteRequestedTopicName;
+    private final KafkaTopicConfigurationProperties topicNames;
 
     @Override
-    public ObjectId createVotingRequest(CreateVotingRequestCommand command) {
+    public Mono<ObjectId> createVotingRequest(CreateVotingRequestCommand command) {
         final ObjectId idForNewVoting = ObjectId.get();
         final VotingEvent.CreateVotingRequestedEvent event = new VotingEvent.CreateVotingRequestedEvent(
                 idForNewVoting,
-                command.getDomainObjectType(),
-                command.getDomainObjectId()
+                command.getDomainObjectId(),
+                command.getDomainObjectType()
         );
-        kafkaTemplate.send(createVotingRequestedTopicName, idForNewVoting, event);
-        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
-        return idForNewVoting;
+        return Mono.fromFuture(kafkaTemplate.send(topicNames.getCreateVotingRequested().getName(), idForNewVoting, event))
+                .doOnSuccess(result -> logger.debug("send {} - {}", event.getClass().getSimpleName(), event))
+                .thenReturn(idForNewVoting);
     }
 
     @Override
-    public void addUserVoteRequest(AddUserVoteRequestCommand command) {
+    public Mono<Void> addUserVoteRequest(AddUserVoteRequestCommand command) {
         var event = new VotingEvent.AddVoteRequestedEvent(
                 command.getVotingId(),
-                command.getDomainObjectType(),
                 command.getDomainObjectId(),
+                command.getDomainObjectType(),
                 command.getUserId(),
                 command.getType()
         );
-        kafkaTemplate.send(addVoteRequestedTopicName, command.getVotingId(), event);
-        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+        return Mono.fromFuture(kafkaTemplate.send(topicNames.getAddVoteRequested().getName(), command.getVotingId(), event))
+                .doOnSuccess(unused -> logger.debug("send {} - {}", event.getClass().getSimpleName(), event))
+                .then();
     }
 
 
     @Override
-    public void removeUserVote(RemoveUserVoteRequestCommand command) {
+    public Mono<Void> removeUserVote(RemoveUserVoteRequestCommand command) {
         var event = new VotingEvent.RemoveVoteRequestedEvent(
                 command.getVotingId(),
-                command.getDomainObjectType(),
                 command.getDomainObjectId(),
+                command.getDomainObjectType(),
                 command.getUserId()
         );
-        kafkaTemplate.send(removeVoteRequestedTopicName, command.getVotingId(), event);
-        logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+        return Mono.fromFuture(kafkaTemplate.send(topicNames.getRemoveVoteRequested().getName(), command.getVotingId(), event))
+                .doOnSuccess(unused -> logger.debug("send {} - {}", event.getClass().getSimpleName(), event))
+                .then();
     }
 }

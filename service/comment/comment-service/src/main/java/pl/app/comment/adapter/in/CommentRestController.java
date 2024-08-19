@@ -4,13 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.comment.application.domain.Comment;
-import pl.app.comment.application.port.in.CommentService;
-import pl.app.comment.application.port.in.command.AddCommentCommand;
-import pl.app.comment.application.port.in.command.AddReplyCommand;
-import pl.app.comment.application.port.in.command.DeleteCommentCommand;
-import pl.app.comment.application.port.in.command.UpdateCommentCommand;
+import pl.app.comment.application.port.in.CommentCommand;
+import pl.app.comment.application.port.in.CommentRequestedService;
 import pl.app.comment.query.CommentContainerQueryService;
+import reactor.core.publisher.Mono;
 
 
 @RestController
@@ -20,37 +17,32 @@ class CommentRestController {
     public static final String resourceName = "comments";
     public static final String resourcePath = "/api/v1/" + resourceName;
 
-    private final CommentService service;
+    private final CommentRequestedService commentRequestedService;
     private final CommentContainerQueryService queryService;
 
     @PostMapping
-    public ResponseEntity<Comment> addComment(@RequestBody AddCommentCommand command) {
-        Comment comment = service.addComment(command);
-        return ResponseEntity.ok(comment);
+    Mono<ResponseEntity<ObjectId>> addComment(@RequestBody CommentCommand.AddCommentRequestCommand command) {
+        return commentRequestedService.addCommentRequest(command)
+                .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<Void> updateComment(@PathVariable ObjectId commentId, @RequestBody UpdateCommentCommand command) {
+    Mono<ResponseEntity<Void>> updateComment(@PathVariable ObjectId commentId, @RequestBody CommentCommand.UpdateCommentRequestCommand command) {
         command.setCommentId(commentId);
-        service.updateComment(command);
-        return ResponseEntity
-                .accepted()
-                .build();
+        return commentRequestedService.updateCommentRequest(command)
+                .then(Mono.just(ResponseEntity.accepted().build()));
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable ObjectId commentId) {
-        service.deleteComment(new DeleteCommentCommand(commentId));
-        return ResponseEntity
-                .accepted()
-                .build();
+    Mono<ResponseEntity<Void>> deleteComment(@PathVariable ObjectId commentId) {
+        return commentRequestedService.deleteCommentRequest(new CommentCommand.DeleteCommentRequestCommand(commentId))
+                .then(Mono.just(ResponseEntity.accepted().build()));
     }
 
     @PostMapping("/{parentCommentId}/comments")
-    public ResponseEntity<Comment> addReply(@PathVariable ObjectId parentCommentId, @RequestBody AddReplyCommand command) {
+    Mono<ResponseEntity<ObjectId>> addReply(@PathVariable ObjectId parentCommentId, @RequestBody CommentCommand.AddCommentRequestCommand command) {
         command.setParentCommentId(parentCommentId);
-        Comment comment = service.addReply(command);
-        return ResponseEntity
-                .ok(comment);
+        return commentRequestedService.addCommentRequest(command)
+                .map(ResponseEntity::ok);
     }
 }

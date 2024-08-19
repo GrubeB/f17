@@ -18,22 +18,26 @@ import java.util.stream.Stream;
 @Getter
 public class Comment {
     @Id
-    private final ObjectId id;
+    private ObjectId id;
     private String content;
     private String userId;
     private CommentStatus status;
     @DocumentReference
-    private final Set<Comment> comments;
+    private Set<Comment> comments = new LinkedHashSet<>();
 
     @DocumentReference
     @JsonIgnore
-    private final CommentContainer commentContainer;
+    private CommentContainer commentContainer;
     @DocumentReference
     @JsonIgnore
     private Comment parentComment;
 
-    public Comment(CommentContainer commentContainer, Comment parentComment, String content, String userId) {
-        this.id = new ObjectId();
+    @SuppressWarnings("unused")
+    public Comment() {
+    }
+
+    public Comment(ObjectId id, CommentContainer commentContainer, Comment parentComment, String content, String userId) {
+        this.id = Objects.nonNull(id) ? id : new ObjectId();
         this.content = content;
         this.userId = userId;
         this.status = CommentStatus.ACTIVE;
@@ -49,8 +53,8 @@ public class Comment {
         this.comments.add(newComment);
     }
 
-    public Comment addComment(String content, String userId) {
-        Comment comment = new Comment(this.commentContainer, this, content, userId);
+    public Comment addComment(ObjectId id, String content, String userId) {
+        Comment comment = new Comment(id, this.commentContainer, this, content, userId);
         this.comments.add(comment);
         return comment;
     }

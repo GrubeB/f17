@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import pl.app.comment.application.domain.Voting;
+import org.springframework.web.bind.annotation.*;
 import pl.app.comment.query.VotingQueryService;
+import pl.app.voting.query.dto.VotingDto;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(VotingQueryRestController.resourcePath)
@@ -23,23 +22,29 @@ class VotingQueryRestController {
     private final VotingQueryService queryService;
 
     @GetMapping
-    ResponseEntity<Page<Voting>> fetchAllByPageable(Pageable pageable) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(queryService.fetchByPageable(pageable));
+    Mono<ResponseEntity<Page<VotingDto>>> fetchAllByPageable(Pageable pageable) {
+        return queryService.fetchByPageable(pageable)
+                .map(ResponseEntity::ok);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Voting> fetchById(@PathVariable ObjectId id) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(queryService.fetchById(id));
+    Mono<ResponseEntity<VotingDto>> fetchById(@PathVariable ObjectId id) {
+        return queryService.fetchById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{domainObjectType}/domain-objects/{domainObjectId}")
-    ResponseEntity<Voting> fetchByDomainObject(@PathVariable String domainObjectType, @PathVariable String domainObjectId) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(queryService.fetchByDomainObject(domainObjectId, domainObjectType));
+    Mono<ResponseEntity<VotingDto>> fetchByDomainObject(@PathVariable String domainObjectType, @PathVariable String domainObjectId) {
+        return queryService.fetchByDomainObject(domainObjectId, domainObjectType)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{domainObjectType}/domain-objects")
+    Mono<ResponseEntity<List<VotingDto>>> fetchByDomainObject(@PathVariable String domainObjectType, @RequestParam List<String> domainObjectIds) {
+        return queryService.fetchByDomainObject(domainObjectIds, domainObjectType)
+                .collectList()
+                .map(ResponseEntity::ok);
     }
 }

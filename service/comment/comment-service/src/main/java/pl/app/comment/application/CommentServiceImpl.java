@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,119 +14,156 @@ import pl.app.comment.application.domain.Comment;
 import pl.app.comment.application.domain.CommentContainer;
 import pl.app.comment.application.domain.CommentEvent;
 import pl.app.comment.application.domain.CommentException;
+import pl.app.comment.application.port.in.CommentCommand;
 import pl.app.comment.application.port.in.CommentService;
-import pl.app.comment.application.port.in.command.*;
-import pl.app.comment.query.CommentContainerQueryService;
-import pl.app.comment.query.CommentQueryService;
+import pl.app.comment.application.port.out.CommentContainerDomainRepository;
+import pl.app.config.KafkaTopicConfigurationProperties;
+import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 class CommentServiceImpl implements CommentService {
-    private final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
 
-    private final MongoTemplate template;
-    private final CommentContainerQueryService commentContainerQueryService;
-    private final CommentQueryService commentQueryService;
+    private final CommentContainerDomainRepository domainRepository;
+    private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
-    @Value("${app.kafka.topic.comment-container-created.name}")
-    private String commentContainerCreatedTopicName;
-    @Value("${app.kafka.topic.comment-added.name}")
-    private String commentAddedTopicName;
-    @Value("${app.kafka.topic.comment-updated.name}")
-    private String commentUpdatedTopicName;
-    @Value("${app.kafka.topic.comment-deleted.name}")
-    private String commentDeletedTopicName;
+    private final KafkaTopicConfigurationProperties topicNames;
 
     @Override
-    public CommentContainer createCommentContainer(@Valid CreateCommentContainerCommand command) {
-        verifyThereIsNoDuplicates(command.getDomainObjectId(), command.getDomainObjectType());
-        CommentContainer commentContainer = new CommentContainer(command.getDomainObjectId(), command.getDomainObjectType());
-        template.insert(commentContainer);
-        kafkaTemplate.send(commentContainerCreatedTopicName, commentContainer.getId(), new CommentEvent.CommentContainerCreatedEvent(
-                commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
-                commentContainer.getDomainObjectId())
-        );
-        logger.debug("created comment container with id: " + commentContainer.getId() + ", for domain object: " + commentContainer.getDomainObjectId() + " of type:" + commentContainer.getDomainObjectType());
-        return commentContainer;
+    public Mono<CommentContainer> createCommentContainer(@Valid CommentCommand.CreateCommentContainerCommand command) {
+        logger.debug("creating comment container: {}, for domain object: {} of type: {}", command.getIdForNewObject(), command.getDomainObjectId(), command.getDomainObjectType());
+        return Mono.when(verifyThereIsNoDuplicates(command.getDomainObjectId(), command.getDomainObjectType()))
+                .doOnError(e -> logger.error("exception occurred while creating comment container: {}, exception: {}", command.getIdForNewObject(), e.getMessage()))
+                .then(Mono.defer(() -> {
+                    CommentContainer commentContainer = new CommentContainer(command.getIdForNewObject(), command.getDomainObjectId(), command.getDomainObjectType());
+                    var event = new CommentEvent.CommentContainerCreatedEvent(
+                            commentContainer.getId(),
+                            commentContainer.getDomainObjectId(),
+                            commentContainer.getDomainObjectType());
+                    return mongoTemplate.insert(commentContainer)
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCommentContainerCreated().getName(), saved.getId(), event)).thenReturn(saved))
+                            .doOnSuccess(saved -> {
+                                logger.debug("created comment container: {}, for domain object: {} of type: {}", saved.getId(), saved.getDomainObjectId(), saved.getDomainObjectType());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            });
+                }));
     }
 
-    private void verifyThereIsNoDuplicates(String domainObjectId, String domainObjectType) {
+    private Mono<Void> verifyThereIsNoDuplicates(String domainObjectId, String domainObjectType) {
         Query query = Query.query(Criteria
                 .where("domainObjectId").is(domainObjectId)
                 .and("domainObjectType").is(domainObjectType)
         );
-        if (template.query(CommentContainer.class).matching(query).one().isPresent()) {
-            throw CommentException.DuplicatedDomainObjectException.fromDomainObject(domainObjectId, domainObjectType);
+        return mongoTemplate.exists(query, CommentContainer.class)
+                .flatMap(exist -> exist ? Mono.error(CommentException.DuplicatedDomainObjectException.fromDomainObject(domainObjectId, domainObjectType)) : Mono.empty());
+    }
+
+    @Override
+    public Mono<CommentContainer> addComment(@Valid CommentCommand.AddCommentCommand command) {
+        if (Objects.nonNull(command.getParentCommentId())) {
+            return addReplay(command);
+        } else {
+            return addCommentInternal(command);
         }
     }
 
-    @Override
-    public Comment addComment(@Valid AddCommentCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByDomainObject(command.getDomainObjectId(), command.getDomainObjectType());
-        Comment comment = commentContainer.addComment(command.getContent(), command.getUserId());
-        template.insert(comment);
-        template.save(commentContainer);
-        kafkaTemplate.send(commentAddedTopicName, commentContainer.getId(), new CommentEvent.CommentAddedEvent(
-                commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
-                commentContainer.getDomainObjectId(),
-                null,
-                comment.getId(),
-                comment.getContent())
-        );
-        logger.debug("created comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
-        return comment;
+    private Mono<CommentContainer> addCommentInternal(@Valid CommentCommand.AddCommentCommand command) {
+        logger.debug("adding comment to container: {}, for domain object: {} of type: {}", command.getCommentContainerId(), command.getDomainObjectId(), command.getDomainObjectType());
+        return domainRepository.fetchByIdOrDomainObject(command.getCommentContainerId(), command.getDomainObjectId(), command.getDomainObjectType())
+                .doOnError(e -> logger.error("exception occurred while adding comment to container: {}, for domain object: {} of type: {}, exception: {}", command.getCommentContainerId(), command.getDomainObjectId(), command.getDomainObjectType(), e.getMessage()))
+                .flatMap(commentContainer -> {
+                    Comment comment = commentContainer.addComment(command.getIdForNewObject(), command.getContent(), command.getUserId());
+                    var event = new CommentEvent.CommentAddedEvent(
+                            commentContainer.getId(),
+                            commentContainer.getDomainObjectId(),
+                            commentContainer.getDomainObjectType(),
+                            Objects.nonNull(comment.getParentComment()) ? comment.getParentComment().getId() : null,
+                            comment.getId(),
+                            comment.getContent());
+
+                    return mongoTemplate.insert(comment)
+                            .flatMap(unused -> mongoTemplate.save(commentContainer))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCommentAdded().getName(), commentContainer.getId(), event)).then())
+                            .doOnSuccess(unused -> {
+                                logger.debug("added comment:{}, to container: {}, for domain object: {} of type: {}", comment.getId(), commentContainer.getId(), commentContainer.getDomainObjectId(), commentContainer.getDomainObjectType());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            }).thenReturn(commentContainer);
+                });
+    }
+
+    private Mono<CommentContainer> addReplay(@Valid CommentCommand.AddCommentCommand command) {
+        logger.debug("adding comment to comment: {}", command.getParentCommentId());
+        return domainRepository.fetchByCommentId(command.getParentCommentId())
+                .doOnError(e -> logger.error("exception occurred while adding comment to comment: {}, exception: {}", command.getParentCommentId(), e.getMessage()))
+                .flatMap(commentContainer -> {
+                    Comment parentComment = commentContainer.getCommentById(command.getParentCommentId()).get();
+                    Comment comment = parentComment.addComment(command.getIdForNewObject(), command.getContent(), command.getUserId());
+                    var event = new CommentEvent.CommentAddedEvent(
+                            commentContainer.getId(),
+                            commentContainer.getDomainObjectId(),
+                            commentContainer.getDomainObjectType(),
+                            Objects.nonNull(comment.getParentComment()) ? comment.getParentComment().getId() : null,
+                            comment.getId(),
+                            comment.getContent());
+
+                    return mongoTemplate.insert(comment)
+                            .flatMap(unused -> mongoTemplate.save(parentComment))
+                            .flatMap(unused -> mongoTemplate.save(commentContainer))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCommentAdded().getName(), commentContainer.getId(), event)).then())
+                            .doOnSuccess(unused -> {
+                                logger.debug("added comment: {}, to container: {}, for domain object: {} of type: {}", comment.getId(), commentContainer.getId(), commentContainer.getDomainObjectId(), commentContainer.getDomainObjectType());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            }).thenReturn(commentContainer);
+                });
     }
 
     @Override
-    public Comment addReply(@Valid AddReplyCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByCommentId(command.getParentCommentId());
-        Comment parentComment = commentContainer.getCommentById(command.getParentCommentId()).get();
-        Comment comment = parentComment.addComment(command.getContent(), command.getUserId());
-        template.insert(comment);
-        template.save(parentComment);
-        kafkaTemplate.send(commentAddedTopicName, commentContainer.getId(), new CommentEvent.CommentAddedEvent(
-                commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
-                commentContainer.getDomainObjectId(),
-                parentComment.getId(),
-                comment.getId(),
-                comment.getContent())
-        );
-        logger.debug("created comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
-        return comment;
+    public Mono<CommentContainer> updateComment(@Valid CommentCommand.UpdateCommentCommand command) {
+        logger.debug("updating comment: {}", command.getCommentId());
+        return domainRepository.fetchByCommentId(command.getCommentId())
+                .doOnError(e -> logger.error("exception occurred while updating comment: {}, exception: {}", command.getCommentId(), e.getMessage()))
+                .flatMap(commentContainer -> {
+                    Comment comment = commentContainer.getCommentById(command.getCommentId()).get();
+                    comment.setContent(command.getContent());
+                    var event = new CommentEvent.CommentUpdatedEvent(
+                            commentContainer.getId(),
+                            commentContainer.getDomainObjectId(),
+                            commentContainer.getDomainObjectType(),
+                            comment.getId(),
+                            comment.getContent());
+
+                    return mongoTemplate.save(comment)
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCommentUpdated().getName(), commentContainer.getId(), event)).then())
+                            .doOnSuccess(unused -> {
+                                logger.debug("updated comment:{}, from container: {}, for domain object: {} of type: {}", comment.getId(), commentContainer.getId(), commentContainer.getDomainObjectId(), commentContainer.getDomainObjectType());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            }).thenReturn(commentContainer);
+                });
     }
 
     @Override
-    public void updateComment(@Valid UpdateCommentCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByCommentId(command.getCommentId());
-        Comment comment = commentContainer.getCommentById(command.getCommentId()).get();
-        comment.setContent(command.getContent());
-        comment.setUserId(command.getUserId());
-        template.save(comment);
-        kafkaTemplate.send(commentUpdatedTopicName, commentContainer.getId(), new CommentEvent.CommentUpdatedEvent(
-                commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
-                commentContainer.getDomainObjectId(),
-                comment.getId(),
-                comment.getContent())
-        );
-        logger.debug("updated comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
-    }
+    public Mono<CommentContainer> deleteComment(@Valid CommentCommand.DeleteCommentCommand command) {
+        logger.debug("deleting comment: {}", command.getCommentId());
+        return domainRepository.fetchByCommentId(command.getCommentId())
+                .doOnError(e -> logger.error("exception occurred while deleting comment: {}, exception: {}", command.getCommentId(), e.getMessage()))
+                .flatMap(commentContainer -> {
+                    Comment comment = commentContainer.getCommentById(command.getCommentId()).get();
+                    comment.setDeleteStatus();
+                    var event = new CommentEvent.CommentDeletedEvent(
+                            commentContainer.getId(),
+                            commentContainer.getDomainObjectId(),
+                            commentContainer.getDomainObjectType(),
+                            comment.getId());
 
-    @Override
-    public void deleteComment(@Valid DeleteCommentCommand command) {
-        CommentContainer commentContainer = commentContainerQueryService.fetchByCommentId(command.getCommentId());
-        Comment comment = commentContainer.getCommentById(command.getCommentId()).get();
-        comment.setDeleteStatus();
-        template.save(comment);
-        kafkaTemplate.send(commentDeletedTopicName, commentContainer.getId(), new CommentEvent.CommentDeletedEvent(
-                commentContainer.getId(),
-                commentContainer.getDomainObjectType(),
-                commentContainer.getDomainObjectId(),
-                comment.getId())
-        );
-        logger.debug("deleted comment " + comment.getId() + " for comment container with id: " + commentContainer.getId());
+                    return mongoTemplate.save(comment)
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCommentDeleted().getName(), commentContainer.getId(), event)).then())
+                            .doOnSuccess(unused -> {
+                                logger.debug("deleted comment:{}, from container: {}, for domain object: {} of type: {}", comment.getId(), commentContainer.getId(), commentContainer.getDomainObjectId(), commentContainer.getDomainObjectType());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            }).thenReturn(commentContainer);
+                });
     }
 }

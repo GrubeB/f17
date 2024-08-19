@@ -4,20 +4,13 @@ import com.mongodb.lang.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.app.comment.application.domain.CommentContainer;
-
-import java.util.List;
+import pl.app.comment.query.dto.CommentContainerDto;
+import reactor.core.publisher.Mono;
 
 public interface CommentContainerQueryService {
-    List<CommentContainer> fetchAll();
+    Mono<CommentContainerDto> fetchById(@NonNull ObjectId id);
 
-    Page<CommentContainer> fetchByPageable(Pageable pageable);
+    Mono<Page<CommentContainerDto>> fetchByPageable(Pageable pageable);
 
-    CommentContainer fetchById(@NonNull ObjectId id);
-
-    CommentContainer fetchByDomainObject(String domainObjectId, String domainObjectType);
-
-    CommentContainer fetchByCommentId(@NonNull ObjectId commentId);
-
-    List<CommentContainer> fetchByIds(@NonNull List<ObjectId> ids);
+    Mono<CommentContainerDto> fetchByDomainObject(String domainObjectId, String domainObjectType);
 }

@@ -2,8 +2,9 @@ package pl.app.comment.application.port.in;
 
 
 import jakarta.validation.Valid;
-import pl.app.comment.application.port.in.command.RemoveUserVoteRequestCommand;
+import pl.app.comment.application.port.in.VotingCommand.RemoveUserVoteRequestCommand;
+import reactor.core.publisher.Mono;
 
 public interface RemoveUserVoteRequestUseCase {
-    void removeUserVote(@Valid RemoveUserVoteRequestCommand command);
+    Mono<Void> removeUserVote(@Valid RemoveUserVoteRequestCommand command);
 }

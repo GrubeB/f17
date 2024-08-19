@@ -3,61 +3,48 @@ package pl.app.comment.query;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import pl.app.comment.application.domain.Comment;
 import pl.app.comment.application.domain.CommentContainer;
-import pl.app.comment.application.domain.CommentException;
-import pl.app.comment.application.port.out.CommentContainerRepository;
-import pl.app.comment.application.port.out.CommentRepository;
-
-import java.util.List;
+import pl.app.comment.query.dto.CommentContainerDto;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
 class CommentContainerQueryServiceImpl implements CommentContainerQueryService {
-    private final MongoTemplate template;
+    private final ReactiveMongoTemplate reactiveMongoTemplate;
     private final CommentContainerRepository repository;
-    private final CommentRepository commentRepository;
+    private final CommentContainerMapper mapper;
 
     @Override
-    public List<CommentContainer> fetchAll() {
-        return repository.findAll();
+    public Mono<Page<CommentContainerDto>> fetchByPageable(Pageable pageable) {
+        return repository.findAllBy(pageable)
+                .map(mapper::mapCommentContainer)
+                .collectList()
+                .zipWith(repository.count())
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
     }
 
     @Override
-    public Page<CommentContainer> fetchByPageable(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    @Override
-    public CommentContainer fetchById(ObjectId id) {
+    public Mono<CommentContainerDto> fetchById(ObjectId id) {
         return repository.findById(id)
-                .orElseThrow(() -> CommentException.NotFoundCommentContainerException.fromId(id.toString()));
+                .map(mapper::mapCommentContainer);
     }
 
     @Override
-    public CommentContainer fetchByDomainObject(String domainObjectId, String domainObjectType) {
+    public Mono<CommentContainerDto> fetchByDomainObject(String domainObjectId, String domainObjectType) {
         Query query = Query.query(Criteria
                 .where("domainObjectId").is(domainObjectId)
                 .and("domainObjectType").is(domainObjectType)
         );
-        return template.query(CommentContainer.class).matching(query).one()
-                .orElseThrow(() -> CommentException.NotFoundCommentContainerException.fromDomainObject(domainObjectId, domainObjectType));
-    }
-
-    @Override
-    public CommentContainer fetchByCommentId(ObjectId commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> CommentException.NotFoundCommentException.fromId(commentId.toString()));
-        return comment.getCommentContainer();
-    }
-
-    @Override
-    public List<CommentContainer> fetchByIds(List<ObjectId> ids) {
-        return repository.findAllById(ids);
+        return reactiveMongoTemplate
+                .query(CommentContainer.class)
+                .matching(query)
+                .one()
+                .map(mapper::mapCommentContainer);
     }
 }
