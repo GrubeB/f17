@@ -1,40 +1,40 @@
 plugins {
-	id 'java-library'
-	id 'org.springframework.boot' version '3.3.1'
-	id 'io.spring.dependency-management' version '1.1.5'
+    id 'java-library'
+    id 'org.springframework.boot' version '3.3.1'
+    id 'io.spring.dependency-management' version '1.1.5'
 }
 
 group = 'pl.app.voting.aplication.domain'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	// SUBPROJECTS
-	implementation project(':common:shared')
+    // SUBPROJECTS
+    implementation project(':common:shared')
 
-	// DATABASE
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    // DATABASE
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
-	// LOMBOK
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // LOMBOK
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 }
 
 jar {
-	enabled = true
+    enabled = true
 }

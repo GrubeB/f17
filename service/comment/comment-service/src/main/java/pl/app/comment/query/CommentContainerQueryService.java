@@ -4,7 +4,6 @@ import com.mongodb.lang.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.app.comment.application.domain.CommentContainer;
 import pl.app.comment.query.dto.CommentContainerDto;
 import reactor.core.publisher.Mono;
 

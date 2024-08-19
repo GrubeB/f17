@@ -10,6 +10,7 @@ public class UserVote {
     @SuppressWarnings("unused")
     public UserVote() {
     }
+
     public UserVote(String userId, String type) {
         this.userId = userId;
         this.type = type;

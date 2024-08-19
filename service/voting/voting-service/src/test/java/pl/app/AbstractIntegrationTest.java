@@ -27,6 +27,7 @@ public abstract class AbstractIntegrationTest {
         Startables.deepStart(environment).join();
         logger.info("Started docker environment");
     }
+
     @DynamicPropertySource
     static void redisProperties(DynamicPropertyRegistry registry) {
         logger.info("Setting dynamic properties to registry");

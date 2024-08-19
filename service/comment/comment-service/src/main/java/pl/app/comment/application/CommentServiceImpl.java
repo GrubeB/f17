@@ -21,7 +21,6 @@ import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor

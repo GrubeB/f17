@@ -28,11 +28,13 @@ class CommentContainerQueryServiceImpl implements CommentContainerQueryService {
                 .zipWith(repository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
     }
+
     @Override
     public Mono<CommentContainerDto> fetchById(ObjectId id) {
         return repository.findById(id)
                 .map(mapper::mapCommentContainer);
     }
+
     @Override
     public Mono<CommentContainerDto> fetchByDomainObject(String domainObjectId, String domainObjectType) {
         Query query = Query.query(Criteria

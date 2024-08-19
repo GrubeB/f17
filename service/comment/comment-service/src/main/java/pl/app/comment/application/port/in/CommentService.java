@@ -1,7 +1,6 @@
 package pl.app.comment.application.port.in;
 
 import jakarta.validation.Valid;
-import pl.app.comment.application.domain.Comment;
 import pl.app.comment.application.domain.CommentContainer;
 import reactor.core.publisher.Mono;
 

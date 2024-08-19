@@ -6,14 +6,12 @@ import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import pl.app.common.shared.DomainObjectTyp;
-import pl.app.voting.http.VotingQueryControllerHttpInterface;
 import pl.app.comment.application.domain.CommentContainer;
-import pl.app.voting.application.domain.VoteCounter;
-import pl.app.voting.application.domain.Voting;
 import pl.app.comment.query.dto.CommentContainerDto;
 import pl.app.comment.query.dto.CommentDto;
 import pl.app.common.mapper.BaseMapper;
+import pl.app.common.shared.DomainObjectTyp;
+import pl.app.voting.http.VotingQueryControllerHttpInterface;
 import pl.app.voting.query.dto.VotingDto;
 
 import java.util.ArrayList;
