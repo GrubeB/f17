@@ -1,6 +1,7 @@
 package pl.app.character.application.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -24,5 +25,19 @@ public interface CharacterEvent {
         private ObjectId characterId;
         private String statisticName;
         private Long statisticQuantity;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class MoneyAddedEvent implements Serializable {
+        private ObjectId characterId;
+        private Long amount;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class MoneySubtractedEvent implements Serializable {
+        private ObjectId characterId;
+        private Long amount;
     }
 }

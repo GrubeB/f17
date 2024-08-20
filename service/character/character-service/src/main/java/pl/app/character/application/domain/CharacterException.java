@@ -1,6 +1,7 @@
 package pl.app.character.application.domain;
 
 import pl.app.common.shared.exception.IllegalArgumentException;
+import pl.app.common.shared.exception.InvalidStateException;
 import pl.app.common.shared.exception.NotFoundException;
 import pl.app.common.shared.exception.ValidationException;
 
@@ -60,6 +61,24 @@ public interface CharacterException {
 
         public static UnmodifiableStatisticException fromName(String name) {
             return new UnmodifiableStatisticException(MessageFormat.format("statistic of name: {0} is unmodifiable", name));
+        }
+    }
+    class InsufficientMoneyException extends InvalidStateException {
+        public InsufficientMoneyException() {
+            super("insufficient money");
+        }
+
+        public InsufficientMoneyException(String message) {
+            super(message);
+        }
+    }
+    class InvalidAmountException extends IllegalArgumentException {
+        public InvalidAmountException() {
+            super("invalid amount");
+        }
+
+        public InvalidAmountException(String message) {
+            super(message);
         }
     }
 
