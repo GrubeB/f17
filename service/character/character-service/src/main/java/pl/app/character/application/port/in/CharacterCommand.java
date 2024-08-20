@@ -39,4 +39,11 @@ public interface CharacterCommand {
         private ObjectId characterId;
         private Long amount;
     }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class AddExpCommand implements Serializable {
+        private ObjectId characterId;
+        private Long amount;
+    }
 }

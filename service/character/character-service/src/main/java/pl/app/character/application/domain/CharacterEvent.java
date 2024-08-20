@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 public interface CharacterEvent {
     @Getter
@@ -18,6 +17,7 @@ public interface CharacterEvent {
         private String name;
         private String profession;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -26,6 +26,7 @@ public interface CharacterEvent {
         private String statisticName;
         private Long statisticQuantity;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -33,11 +34,28 @@ public interface CharacterEvent {
         private ObjectId characterId;
         private Long amount;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class MoneySubtractedEvent implements Serializable {
         private ObjectId characterId;
         private Long amount;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class ExpAddedEvent implements Serializable {
+        private ObjectId characterId;
+        private Long amount;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class CharacterLevelIncreasedEvent implements Serializable {
+        private ObjectId characterId;
+        private Integer currentLevel;
     }
 }

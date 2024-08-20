@@ -14,6 +14,7 @@ public class Character {
     private CharacterProfession profession;
     private CharacterStatistics statistics;
     private CharacterMoney money;
+    private CharacterLevel level;
 
     @SuppressWarnings("unused")
     public Character() {
@@ -25,5 +26,16 @@ public class Character {
         this.profession = profession;
         this.statistics = new CharacterStatistics();
         this.money = new CharacterMoney(10_000L);
+        this.level = new CharacterLevel();
+    }
+    public Integer addExp(Long exp) {
+        Integer numberOfLevelIncreased = level.addExp(exp);
+        if(numberOfLevelIncreased == 0){
+            return 0;
+        }
+        for (int i = 0; i < numberOfLevelIncreased; i++) {
+            statistics.addStatisticForLevel();
+        }
+        return numberOfLevelIncreased;
     }
 }

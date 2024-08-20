@@ -4,7 +4,7 @@ services:
   mongo:
     container_name: 'mongo'
     restart: unless-stopped
-    image: mongo
+    image: amd64/mongo:8.0-rc
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=password

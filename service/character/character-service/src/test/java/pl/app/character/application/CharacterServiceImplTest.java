@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import pl.app.AbstractIntegrationTest;
 import pl.app.character.application.domain.*;
 import pl.app.character.application.domain.Character;
 import pl.app.character.application.port.in.CharacterCommand;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class CharacterServiceImplTest {
+class CharacterServiceImplTest extends AbstractIntegrationTest {
     @Autowired
     private CharacterServiceImpl service;
     @SpyBean

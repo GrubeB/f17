@@ -64,7 +64,7 @@ class CharacterServiceImpl implements CharacterService {
         return domainRepository.fetchById(command.getCharacterId())
                 .doOnError(e -> logger.error("exception occurred while adding statistic to character: {}, exception: {}", command.getCharacterId(), e.getMessage()))
                 .flatMap(character -> {
-                    character.getStatistics().addStatistic(command.getStatisticName(), command.getStatisticQuantity());
+                    character.getStatistics().addStatistic(command.getStatisticQuantity(), command.getStatisticName());
                     var event = new CharacterEvent.StatisticAddedEvent(
                             character.getId(),
                             command.getStatisticName(),

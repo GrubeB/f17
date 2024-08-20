@@ -53,6 +53,8 @@ public class KafkaConfig {
         @Bean
         KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
             NewTopic[] array = Stream.of(
+                    createTopicFromConfig(topicNames.getCharacterLevelIncreased()).stream(),
+                    createTopicFromConfig(topicNames.getExpAdded()).stream(),
                     createTopicFromConfig(topicNames.getMoneySubtracted()).stream(),
                     createTopicFromConfig(topicNames.getMoneyAdded()).stream(),
                     createTopicFromConfig(topicNames.getCharacterCreated()).stream(),

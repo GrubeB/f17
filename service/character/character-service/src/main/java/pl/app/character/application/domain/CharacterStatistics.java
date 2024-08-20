@@ -35,7 +35,7 @@ public class CharacterStatistics {
         this.resistance = resistance;
     }
 
-    public void addStatistic(String statisticName, Long statisticQuantity) {
+    public void addStatistic(Long statisticQuantity, String statisticName) {
         StatisticType statisticTypeFromName = getStatisticTypeFromName(statisticName);
         switch (statisticTypeFromName) {
             case PERSISTENCE -> this.persistence = this.persistence + statisticQuantity;
@@ -53,5 +53,11 @@ public class CharacterStatistics {
         } catch (IllegalArgumentException e) {
             throw CharacterException.NoSuchStatisticException.fromName(statisticName);
         }
+    }
+
+    public void addStatisticForLevel() {
+        this.persistence = this.persistence + 1;
+        this.durability = this.durability + 1;
+        this.strength = this.strength + 1;
     }
 }

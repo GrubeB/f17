@@ -16,6 +16,8 @@ public class KafkaTopicConfigurationProperties {
     private Topic statisticAdded;
     private Topic moneyAdded;
     private Topic moneySubtracted;
+    private Topic expAdded;
+    private Topic characterLevelIncreased;
 
     @Setter
     @Getter
