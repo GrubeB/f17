@@ -9,3 +9,5 @@ include "service:voting:voting-dto"
 include "service:voting:voting-service"
 include "service:voting:voting-http-interface"
 
+
+include "service:character:character-service"
