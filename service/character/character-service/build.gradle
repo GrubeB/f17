@@ -36,8 +36,8 @@ dependencies {
     // SUBPROJECTS
     implementation project(':common:shared')
     implementation project(':common:mapper')
-    implementation project(':service:voting:voting-domain')
-    implementation project(':service:voting:voting-http-interface')
+    implementation project(':service:character:character-domain')
+    implementation project(':service:character:character-dto')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

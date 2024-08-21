@@ -1,5 +1,8 @@
 package pl.app.character.application.domain;
 
+import lombok.Getter;
+
+@Getter
 public class CharacterMoney {
     private Long amount;
 

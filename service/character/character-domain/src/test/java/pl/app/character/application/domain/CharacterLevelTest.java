@@ -1,9 +1,10 @@
 package pl.app.character.application.domain;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.app.character.application.domain.CharacterLevel;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CharacterLevelTest {
 
