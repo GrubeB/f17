@@ -9,15 +9,7 @@ import java.io.Serializable;
 
 
 public interface ItemTemplateCommand {
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class CreateItemTemplateCommand implements Serializable {
-        private String type;
-        private String name;
-        private String description;
-        private String imageId;
-    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -28,13 +20,21 @@ public interface ItemTemplateCommand {
         private String imageId;
 
         private Long persistence;
+        private Long persistencePercentage;
         private Long durability;
+        private Long durabilityPercentage;
         private Long strength;
+        private Long strengthPercentage;
         private Long speed;
+        private Long speedPercentage;
         private Long criticalRate;
+        private Long criticalRatePercentage;
         private Long criticalDamage;
+        private Long criticalDamagePercentage;
         private Long accuracy;
+        private Long accuracyPercentage;
         private Long resistance;
+        private Long resistancePercentage;
     }
 
     @Data
@@ -47,15 +47,25 @@ public interface ItemTemplateCommand {
         private String imageId;
 
         private Long persistence;
+        private Long persistencePercentage;
         private Long durability;
+        private Long durabilityPercentage;
         private Long strength;
+        private Long strengthPercentage;
         private Long speed;
+        private Long speedPercentage;
         private Long criticalRate;
+        private Long criticalRatePercentage;
         private Long criticalDamage;
+        private Long criticalDamagePercentage;
         private Long accuracy;
+        private Long accuracyPercentage;
         private Long resistance;
+        private Long resistancePercentage;
 
-        private Integer minDmg;
-        private Integer maxDmg;
+        private Long minDmg;
+        private Long minDmgPercentage;
+        private Long maxDmg;
+        private Long maxDmgPercentage;
     }
 }

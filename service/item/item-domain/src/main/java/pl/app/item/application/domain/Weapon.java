@@ -21,12 +21,12 @@ public class Weapon extends Outfit {
         return (WeaponTemplate) super.getTemplate();
     }
 
-    public Integer getMinDmg() {
-        return getTemplate().getMinDmg();
+    public Long getMinDmg() {
+        return getTemplate().getMinDmg() + generatedForLevel * getTemplate().getMinDmg() * getTemplate().getMinDmgPercentage()/100_000;
     }
 
-    public Integer getMaxDmg() {
-        return getTemplate().getMaxDmg();
+    public Long getMaxDmg() {
+        return getTemplate().getMaxDmg() + generatedForLevel * getTemplate().getMaxDmg() * getTemplate().getMaxDmgPercentage()/100_000;
     }
 }
 

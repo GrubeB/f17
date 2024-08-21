@@ -8,7 +8,6 @@ import pl.app.item_template.query.dto.WeaponTemplateDto;
 import reactor.core.publisher.Mono;
 
 public interface ItemTemplateService {
-    Mono<ItemTemplate> createItemTemplate(ItemTemplateCommand.CreateItemTemplateCommand command);
     Mono<OutfitTemplate> createOutfitTemplate(ItemTemplateCommand.CreateOutfitTemplateCommand command);
     Mono<WeaponTemplate> createWeaponTemplate(ItemTemplateCommand.CreateWeaponTemplateCommand command);
 }

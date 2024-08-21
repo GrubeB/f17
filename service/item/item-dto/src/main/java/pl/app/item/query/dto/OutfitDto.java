@@ -1,13 +1,13 @@
 package pl.app.item.query.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
 
-@Data
+
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class OutfitDto extends ItemDto implements Serializable {
