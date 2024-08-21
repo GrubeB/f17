@@ -18,10 +18,10 @@ public class CharacterStatistics {
         this.durability = 1L;
         this.strength = 1L;
         this.speed = 100L;
-        this.criticalRate = 1500L;
-        this.criticalDamage = 5000L;
-        this.accuracy = 1500L;
-        this.resistance = 3000L;
+        this.criticalRate = 15000L;
+        this.criticalDamage = 50000L;
+        this.accuracy = 15000L;
+        this.resistance = 30000L;
     }
 
     public CharacterStatistics(Long persistence, Long durability, Long strength, Long speed, Long criticalRate, Long criticalDamage, Long accuracy, Long resistance) {
