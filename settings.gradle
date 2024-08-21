@@ -1,8 +1,21 @@
 // COMMON
 include "common:shared"
 include "common:mapper"
+
 // SERVICES
+include "service:battle:battle-service"
+
+include "service:character:character-domain"
+include "service:character:character-dto"
+include "service:character:character-http-interface"
+include "service:character:character-service"
+
 include "service:comment:comment-service"
+
+include "service:item:item-domain"
+include "service:item:item-dto"
+include "service:item:item-http-interface"
+include "service:item:item-service"
 
 include "service:voting:voting-domain"
 include "service:voting:voting-dto"
@@ -10,9 +23,4 @@ include "service:voting:voting-service"
 include "service:voting:voting-http-interface"
 
 
-include "service:character:character-domain"
-include "service:character:character-dto"
-include "service:character:character-http-interface"
-include "service:character:character-service"
 
-include "service:battle:battle-service"
