@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class KafkaTopicConfigurationProperties {
     private Topic godCreated;
+    private Topic moneyAdded;
+    private Topic moneySubtracted;
     private Topic accountCreated;
 
     @Setter

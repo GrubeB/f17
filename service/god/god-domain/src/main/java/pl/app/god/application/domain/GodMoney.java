@@ -1,17 +1,17 @@
-package pl.app.character.application.domain;
+package pl.app.god.application.domain;
 
 import lombok.Getter;
 
 @Getter
-public class CharacterMoney {
+public class GodMoney {
     private Long amount;
 
     @SuppressWarnings("unused")
-    public CharacterMoney() {
+    public GodMoney() {
         this.amount = 0L;
     }
 
-    public CharacterMoney(Long amount) {
+    public GodMoney(Long amount) {
         this.amount = amount;
     }
 
@@ -26,10 +26,10 @@ public class CharacterMoney {
 
     public void subtractMoney(Long amount) {
         if (amount < 0) {
-            throw new CharacterException.InvalidAmountException();
+            throw new GodException.InvalidAmountException();
         }
         if (this.amount - amount < 0) {
-            throw new CharacterException.InsufficientMoneyException();
+            throw new GodException.InsufficientMoneyException();
         }
         this.amount = this.amount - amount;
     }

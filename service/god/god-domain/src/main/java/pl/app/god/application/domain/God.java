@@ -12,6 +12,7 @@ public class God {
     private ObjectId id;
     private ObjectId accountId;
     private String name;
+    private GodMoney money;
 
     @SuppressWarnings("unused")
     public God() {
@@ -21,5 +22,6 @@ public class God {
         this.id = ObjectId.get();
         this.accountId = accountId;
         this.name = name;
+        this.money = new GodMoney(10_000L);
     }
 }

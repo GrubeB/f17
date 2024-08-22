@@ -16,4 +16,18 @@ public interface GodCommand {
         private ObjectId accountId;
         private String name;
     }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class AddMoneyCommand implements Serializable {
+        private ObjectId godId;
+        private Long amount;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class SubtractMoneyCommand implements Serializable {
+        private ObjectId godId;
+        private Long amount;
+    }
 }
