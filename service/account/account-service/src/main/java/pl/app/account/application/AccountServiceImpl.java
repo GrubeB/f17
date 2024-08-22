@@ -18,7 +18,6 @@ import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.core.publisher.Mono;
 
 
-
 @Service
 @RequiredArgsConstructor
 class AccountServiceImpl implements AccountService {
@@ -37,7 +36,8 @@ class AccountServiceImpl implements AccountService {
                 .then(Mono.defer(() -> {
                     Account account = new Account(command.getNickname());
                     var event = new AccountEvent.AccountCreatedEvent(
-                            account.getId()
+                            account.getId(),
+                            account.getNickname()
                     );
                     return mongoTemplate.insert(account)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getAccountCreated().getName(), saved.getId(), event)).thenReturn(saved))

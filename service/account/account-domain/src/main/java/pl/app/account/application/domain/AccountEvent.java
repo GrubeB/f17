@@ -12,6 +12,7 @@ public interface AccountEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     class AccountCreatedEvent implements Serializable {
-        private ObjectId itemId;
+        private ObjectId accountId;
+        private String nickName;
     }
 }
