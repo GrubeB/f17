@@ -25,20 +25,7 @@ public interface CharacterCommand {
         private String statisticName;
         private Long statisticQuantity;
     }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class AddMoneyCommand implements Serializable {
-        private ObjectId characterId;
-        private Long amount;
-    }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class SubtractMoneyCommand implements Serializable {
-        private ObjectId characterId;
-        private Long amount;
-    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

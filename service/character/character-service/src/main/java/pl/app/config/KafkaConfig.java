@@ -55,8 +55,6 @@ public class KafkaConfig {
             NewTopic[] array = Stream.of(
                     createTopicFromConfig(topicNames.getCharacterLevelIncreased()).stream(),
                     createTopicFromConfig(topicNames.getExpAdded()).stream(),
-                    createTopicFromConfig(topicNames.getMoneySubtracted()).stream(),
-                    createTopicFromConfig(topicNames.getMoneyAdded()).stream(),
                     createTopicFromConfig(topicNames.getCharacterCreated()).stream(),
                     createTopicFromConfig(topicNames.getStatisticAdded()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);

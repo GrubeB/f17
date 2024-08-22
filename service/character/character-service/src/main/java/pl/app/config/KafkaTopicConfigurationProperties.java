@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 public class KafkaTopicConfigurationProperties {
     private Topic characterCreated;
     private Topic statisticAdded;
-    private Topic moneyAdded;
-    private Topic moneySubtracted;
     private Topic expAdded;
     private Topic characterLevelIncreased;
 

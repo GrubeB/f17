@@ -13,7 +13,6 @@ public class Character {
     private String name;
     private CharacterProfession profession;
     private CharacterStatistics statistics;
-    private CharacterMoney money;
     private CharacterLevel level;
 
     @SuppressWarnings("unused")
@@ -25,7 +24,7 @@ public class Character {
         this.name = name;
         this.profession = profession;
         this.statistics = new CharacterStatistics();
-        this.money = new CharacterMoney(10_000L);
+
         this.level = new CharacterLevel();
     }
     public Integer addExp(Long exp) {

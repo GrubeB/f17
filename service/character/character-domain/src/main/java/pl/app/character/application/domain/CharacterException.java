@@ -63,23 +63,6 @@ public interface CharacterException {
             return new UnmodifiableStatisticException(MessageFormat.format("statistic of name: {0} is unmodifiable", name));
         }
     }
-    class InsufficientMoneyException extends InvalidStateException {
-        public InsufficientMoneyException() {
-            super("insufficient money");
-        }
 
-        public InsufficientMoneyException(String message) {
-            super(message);
-        }
-    }
-    class InvalidAmountException extends IllegalArgumentException {
-        public InvalidAmountException() {
-            super("invalid amount");
-        }
-
-        public InvalidAmountException(String message) {
-            super(message);
-        }
-    }
 
 }

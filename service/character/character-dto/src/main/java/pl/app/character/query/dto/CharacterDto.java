@@ -15,7 +15,6 @@ public class CharacterDto implements Serializable {
     private String name;
     private String profession;
     private LevelDto level;
-    private MoneyDto money;
     private StatisticsDto statistics;
 
     @Data
@@ -30,13 +29,6 @@ public class CharacterDto implements Serializable {
         private Long criticalDamage;
         private Long accuracy;
         private Long resistance;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MoneyDto implements Serializable {
-        private Long amount;
     }
 
     @Data

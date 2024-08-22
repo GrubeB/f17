@@ -27,21 +27,7 @@ public interface CharacterEvent {
         private Long statisticQuantity;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class MoneyAddedEvent implements Serializable {
-        private ObjectId characterId;
-        private Long amount;
-    }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class MoneySubtractedEvent implements Serializable {
-        private ObjectId characterId;
-        private Long amount;
-    }
 
     @Data
     @NoArgsConstructor
