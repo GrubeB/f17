@@ -17,6 +17,9 @@ public class KafkaTopicConfigurationProperties {
     private Topic expAdded;
     private Topic characterLevelIncreased;
 
+    private Topic godFamilyCreated;
+    private Topic characterAddedToGodFamily;
+    private Topic characterRemovedFromGodFamily;
     @Setter
     @Getter
     public static class Topic {
