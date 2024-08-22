@@ -8,13 +8,20 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 public class CharacterHttpInterfaceConfig {
     @Bean
-    CharacterQueryControllerHttpInterface votingQueryControllerHttpInterface(
-            @Value("${app.service.character-service.base-url}") String votingServiceBaseUrl
+    HttpServiceProxyFactory itemServiceHttpServiceProxyFactory(
+            @Value("${app.service.character-service.base-url}") String characterServiceBaseUrl
     ) {
-        WebClient webClient = WebClient.builder().baseUrl(votingServiceBaseUrl).build();
+        WebClient webClient = WebClient.builder().baseUrl(characterServiceBaseUrl).build();
         WebClientAdapter adapter = WebClientAdapter.create(webClient);
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return HttpServiceProxyFactory.builderFor(adapter).build();
+    }
 
+    @Bean
+    CharacterQueryControllerHttpInterface characterQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(CharacterQueryControllerHttpInterface.class);
+    }
+    @Bean
+    GodFamilyQueryControllerHttpInterface godFamilyQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
+        return factory.createClient(GodFamilyQueryControllerHttpInterface.class);
     }
 }
