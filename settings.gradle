@@ -17,6 +17,11 @@ include "service:character:character-service"
 
 include "service:comment:comment-service"
 
+include "service:god:god-domain"
+include "service:god:god-dto"
+include "service:god:god-http-interface"
+include "service:god:god-service"
+
 include "service:item:item-domain"
 include "service:item:item-dto"
 include "service:item:item-http-interface"
