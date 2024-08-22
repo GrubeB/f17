@@ -12,12 +12,16 @@ import org.springframework.stereotype.Component;
 @Getter
 @NoArgsConstructor
 public class KafkaTopicConfigurationProperties {
-    private Topic itemTemplateCreated;
-    private Topic itemCreated;
     private Topic outfitTemplateCreated;
     private Topic outfitCreated;
     private Topic weaponTemplateCreated;
     private Topic weaponCreated;
+
+    private Topic accountEquipmentCreated;
+    private Topic accountEquipmentItemAdded;
+    private Topic accountEquipmentItemRemoved;
+    private Topic characterItemSet;
+    private Topic characterItemRemoved;
 
     @Setter
     @Getter

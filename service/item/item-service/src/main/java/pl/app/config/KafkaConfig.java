@@ -53,12 +53,16 @@ public class KafkaConfig {
         @Bean
         KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
             NewTopic[] array = Stream.of(
-                    createTopicFromConfig(topicNames.getItemTemplateCreated()).stream(),
                     createTopicFromConfig(topicNames.getOutfitTemplateCreated()).stream(),
                     createTopicFromConfig(topicNames.getWeaponTemplateCreated()).stream(),
                     createTopicFromConfig(topicNames.getWeaponCreated()).stream(),
                     createTopicFromConfig(topicNames.getOutfitCreated()).stream(),
-                    createTopicFromConfig(topicNames.getItemCreated()).stream()
+
+                    createTopicFromConfig(topicNames.getAccountEquipmentCreated()).stream(),
+                    createTopicFromConfig(topicNames.getAccountEquipmentItemAdded()).stream(),
+                    createTopicFromConfig(topicNames.getAccountEquipmentItemRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterItemSet()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterItemRemoved()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

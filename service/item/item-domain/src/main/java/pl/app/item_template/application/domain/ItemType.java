@@ -10,7 +10,7 @@ public enum ItemType {
     BELT,
     RING,
     AMULET,
-    TALISMANS,
+    TALISMAN,
 
     POTION,
 }

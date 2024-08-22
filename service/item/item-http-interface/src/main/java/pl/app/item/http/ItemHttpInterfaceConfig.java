@@ -21,16 +21,24 @@ public class ItemHttpInterfaceConfig {
     OutfitQueryControllerHttpInterface outfitQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(OutfitQueryControllerHttpInterface.class);
     }
+
     @Bean
     OutfitTemplateQueryControllerHttpInterface outfitTemplateQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(OutfitTemplateQueryControllerHttpInterface.class);
     }
+
     @Bean
     WeaponQueryControllerHttpInterface weaponQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(WeaponQueryControllerHttpInterface.class);
     }
+
     @Bean
     WeaponTemplateQueryControllerHttpInterface weaponTemplateQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(WeaponTemplateQueryControllerHttpInterface.class);
+    }
+
+    @Bean
+    AccountEquipmentQueryControllerHttpInterface accountEquipmentQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
+        return factory.createClient(AccountEquipmentQueryControllerHttpInterface.class);
     }
 }
