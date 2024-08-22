@@ -3,6 +3,11 @@ include "common:shared"
 include "common:mapper"
 
 // SERVICES
+include "service:account:account-domain"
+include "service:account:account-dto"
+include "service:account:account-http-interface"
+include "service:account:account-service"
+
 include "service:battle:battle-service"
 
 include "service:character:character-domain"
