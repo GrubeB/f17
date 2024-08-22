@@ -38,7 +38,7 @@ public class ItemHttpInterfaceConfig {
     }
 
     @Bean
-    AccountEquipmentQueryControllerHttpInterface accountEquipmentQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(AccountEquipmentQueryControllerHttpInterface.class);
+    GodEquipmentQueryControllerHttpInterface godEquipmentQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
+        return factory.createClient(GodEquipmentQueryControllerHttpInterface.class);
     }
 }
