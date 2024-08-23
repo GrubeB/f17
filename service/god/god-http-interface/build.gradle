@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
 //    // SUBPROJECTS
+    api project(':common:shared')
     api project(':service:god:god-domain')
     api project(':service:god:god-dto')
 

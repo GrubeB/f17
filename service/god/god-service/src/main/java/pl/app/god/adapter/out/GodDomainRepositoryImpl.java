@@ -25,7 +25,7 @@ class GodDomainRepositoryImpl implements GodDomainRepository {
         Query query = Query.query(Criteria.where("_id").is(id));
         return mongoTemplate.query(God.class).matching(query).one()
                 .doOnNext(obj -> logger.debug("fetched god with id: {}", obj.getId()))
-                .switchIfEmpty(Mono.defer(() -> Mono.error(() -> GodException.NotFoundAccountException.fromId(id.toHexString()))))
+                .switchIfEmpty(Mono.defer(() -> Mono.error(() -> GodException.NotFoundGodException.fromId(id.toHexString()))))
                 .doOnError(e -> logger.error("error occurred while fetching god with id: {}: {}", id, e.toString()));
     }
 }

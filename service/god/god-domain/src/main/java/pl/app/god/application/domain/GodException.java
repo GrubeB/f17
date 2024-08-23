@@ -8,17 +8,17 @@ import pl.app.common.shared.exception.ValidationException;
 import java.text.MessageFormat;
 
 public interface GodException {
-    class NotFoundAccountException extends NotFoundException {
-        public NotFoundAccountException() {
+    class NotFoundGodException extends NotFoundException {
+        public NotFoundGodException() {
             super("not found god");
         }
 
-        public NotFoundAccountException(String message) {
+        public NotFoundGodException(String message) {
             super(message);
         }
 
-        public static NotFoundAccountException fromId(String id) {
-            return new NotFoundAccountException("not found god with id: " + id);
+        public static NotFoundGodException fromId(String id) {
+            return new NotFoundGodException("not found god with id: " + id);
         }
     }
 

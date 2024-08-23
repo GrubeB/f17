@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.app.god.application.domain.GodException;
 import pl.app.god.query.GodQueryService;
 import pl.app.god.query.dto.GodDto;
 import reactor.core.publisher.Mono;
@@ -22,17 +23,16 @@ class GodQueryRestController {
 
     private final GodQueryService queryService;
 
-    @GetMapping
-    Mono<ResponseEntity<Page<GodDto>>> fetchAllByPageable(Pageable pageable) {
-        return queryService.fetchByPageable(pageable)
-                .map(ResponseEntity::ok);
-    }
-
     @GetMapping("/{id}")
     Mono<ResponseEntity<GodDto>> fetchById(@PathVariable ObjectId id) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.error(GodException.NotFoundGodException.fromId(id.toHexString())));
+    }
+    @GetMapping
+    Mono<ResponseEntity<Page<GodDto>>> fetchAllByPageable(Pageable pageable) {
+        return queryService.fetchAllByPageable(pageable)
+                .map(ResponseEntity::ok);
     }
 
 }
