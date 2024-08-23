@@ -3,6 +3,7 @@ package pl.app.account.query;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,19 +21,24 @@ import reactor.core.publisher.Mono;
 
 @Service
 class AccountQueryServiceImpl implements AccountQueryService {
-    private final ReactiveMongoTemplate mongoTemplate;
     private final Mapper mapper;
     private final Repository repository;
 
 
     public AccountQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
-        this.mongoTemplate = mongoTemplate;
         this.mapper = mapper;
         this.repository = new ReactiveMongoRepositoryFactory(mongoTemplate).getRepository(Repository.class);
     }
 
     @Override
-    public Mono<Page<AccountDto>> fetchByPageable(Pageable pageable) {
+    public Mono<AccountDto> fetchById(@NotNull ObjectId id) {
+        return repository.findById(id)
+                .map(e -> mapper.map(e, AccountDto.class));
+    }
+
+
+    @Override
+    public Mono<Page<AccountDto>> fetchAllByPageable(Pageable pageable) {
         return repository.findAllBy(pageable)
                 .map(e -> mapper.map(e, AccountDto.class))
                 .collectList()
@@ -40,11 +46,6 @@ class AccountQueryServiceImpl implements AccountQueryService {
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
     }
 
-    @Override
-    public Mono<AccountDto> fetchById(ObjectId id) {
-        return repository.findById(id)
-                .map(e -> mapper.map(e, AccountDto.class));
-    }
 
     @Component
     @RequiredArgsConstructor
