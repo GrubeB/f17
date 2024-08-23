@@ -1,4 +1,4 @@
-package pl.app.character.application.domain;
+package pl.app.common.shared.model;
 
 public enum StatisticType {
     PERSISTENCE,

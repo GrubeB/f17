@@ -1,4 +1,4 @@
-package pl.app;
+package pl.app.common.shared.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
