@@ -1,11 +1,8 @@
 package pl.app.item.query;
 
-import com.mongodb.lang.NonNull;
 import org.bson.types.ObjectId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
 import pl.app.item.application.domain.Item;
-import pl.app.item.query.dto.OutfitDto;
 import pl.app.item_template.application.domain.ItemType;
 import reactor.core.publisher.Mono;
 

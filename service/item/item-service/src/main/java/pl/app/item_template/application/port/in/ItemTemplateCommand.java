@@ -3,7 +3,6 @@ package pl.app.item_template.application.port.in;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.app.item_template.application.domain.ItemType;
 
 import java.io.Serializable;
 

@@ -14,6 +14,7 @@ public interface ItemEvent {
     class OutfitCreatedEvent implements Serializable {
         private ObjectId itemId;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

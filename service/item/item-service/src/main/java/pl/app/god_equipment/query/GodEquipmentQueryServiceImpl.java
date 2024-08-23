@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
@@ -32,24 +33,22 @@ import java.util.stream.Collectors;
 
 @Service
 class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
-    private final ReactiveMongoTemplate mongoTemplate;
     private final Mapper mapper;
     private final Repository repository;
 
     public GodEquipmentQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
-        this.mongoTemplate = mongoTemplate;
         this.mapper = mapper;
         this.repository = new ReactiveMongoRepositoryFactory(mongoTemplate).getRepository(Repository.class);
     }
 
     @Override
-    public Mono<GodEquipmentDto> fetchById(ObjectId godId) {
+    public Mono<GodEquipmentDto> fetchByGodId(@NonNull ObjectId godId) {
         return repository.findByGodId(godId)
                 .map(e -> mapper.map(e, GodEquipmentDto.class));
     }
 
     @Override
-    public Mono<Page<GodEquipmentDto>> fetchByPageable(Pageable pageable) {
+    public Mono<Page<GodEquipmentDto>> fetchAllByPageable(Pageable pageable) {
         return repository.findAllBy(pageable)
                 .map(e -> mapper.map(e, GodEquipmentDto.class))
                 .collectList()
@@ -58,9 +57,9 @@ class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
     }
 
     @Override
-    public Mono<Page<GodEquipmentDto>> fetchAllByIds(List<ObjectId> godIds, Pageable pageable) {
+    public Mono<Page<GodEquipmentDto>> fetchAllByGodIds(List<ObjectId> godIds, Pageable pageable) {
         if (Objects.isNull(godIds)) {
-            return fetchByPageable(pageable);
+            return fetchAllByPageable(pageable);
         }
         return repository.findAllByGodId(godIds, pageable)
                 .map(e -> mapper.map(e, GodEquipmentDto.class))

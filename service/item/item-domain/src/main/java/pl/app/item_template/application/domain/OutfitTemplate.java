@@ -22,9 +22,11 @@ public class OutfitTemplate extends ItemTemplate {
     private Long accuracyPercentage;
     private Long resistance;
     private Long resistancePercentage;
+
     @SuppressWarnings("unused")
     public OutfitTemplate() {
     }
+
     public OutfitTemplate(String typeName, String name, String description, String imageId, Long persistence, Long durability, Long strength, Long speed, Long criticalRate, Long criticalDamage, Long accuracy, Long resistance) {
         super(typeName, name, description, imageId);
         this.persistence = persistence;

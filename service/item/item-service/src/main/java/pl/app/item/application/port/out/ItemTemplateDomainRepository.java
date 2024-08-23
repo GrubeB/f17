@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 
 public interface ItemTemplateDomainRepository {
     Mono<OutfitTemplate> fetchOutfitTemplateById(ObjectId id);
+
     Mono<WeaponTemplate> fetchWeaponTemplateById(ObjectId id);
 }

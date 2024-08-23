@@ -12,16 +12,16 @@ import java.util.Optional;
 import java.util.Set;
 
 @Getter
-    @Document(collection = "god_equipment")
-    public class GodEquipment {
-        @Id
-        private ObjectId id;
-        private ObjectId godId;
+@Document(collection = "god_equipment")
+public class GodEquipment {
+    @Id
+    private ObjectId id;
+    private ObjectId godId;
 
-        @DBRef
-        private Set<Item> items;
+    @DBRef
+    private Set<Item> items;
 
-        private Set<CharacterGear> characterGears;
+    private Set<CharacterGear> characterGears;
 
     @SuppressWarnings("unused")
     public GodEquipment() {
@@ -74,7 +74,7 @@ import java.util.Set;
     }
 
     private Item getItemByIdOrThrow(ObjectId itemId, String itemType) {
-        return getItemById(itemId, itemType).orElseThrow(() -> GodEquipmentException.NotFoundItemException.fromId(itemId.toHexString()));
+        return getItemById(itemId, itemType).orElseThrow(() -> GodEquipmentException.NotFoundGodEquipmentException.fromId(itemId.toHexString()));
     }
 
     private Optional<Item> getItemById(ObjectId itemId, String itemType) {

@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.app.item.application.domain.ItemException;
 import pl.app.item.query.OutfitQueryService;
 import pl.app.item.query.dto.OutfitDto;
-import pl.app.item_template.query.OutfitTemplateQueryService;
-import pl.app.item_template.query.dto.OutfitTemplateDto;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -24,17 +23,17 @@ class OutfitQueryRestController {
 
     private final OutfitQueryService queryService;
 
-    @GetMapping
-    Mono<ResponseEntity<Page<OutfitDto>>> fetchAllByPageable(Pageable pageable) {
-        return queryService.fetchByPageable(pageable)
-                .map(ResponseEntity::ok);
-    }
-
     @GetMapping("/{id}")
     Mono<ResponseEntity<OutfitDto>> fetchById(@PathVariable ObjectId id) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.error(ItemException.NotFoundItemException.fromId(id.toHexString())));
+    }
+
+    @GetMapping
+    Mono<ResponseEntity<Page<OutfitDto>>> fetchAllByPageable(Pageable pageable) {
+        return queryService.fetchAllByPageable(pageable)
+                .map(ResponseEntity::ok);
     }
 
 }

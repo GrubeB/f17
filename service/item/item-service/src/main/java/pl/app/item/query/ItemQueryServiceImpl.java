@@ -5,8 +5,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import pl.app.item.application.domain.Item;
 import pl.app.item.application.domain.ItemException;
 import pl.app.item.application.domain.Outfit;
@@ -20,7 +20,7 @@ class ItemQueryServiceImpl implements ItemQueryService {
     private final ReactiveMongoTemplate mongoTemplate;
 
     @Override
-    public Mono<? extends Item> fetchByIdAndType(ObjectId id, ItemType type) {
+    public Mono<? extends Item> fetchByIdAndType(@NonNull ObjectId id, ItemType type) {
         Query query = Query.query(Criteria.where("_id").is(id));
         return switch (type) {
             case WEAPON -> mongoTemplate.query(Weapon.class).matching(query).one()

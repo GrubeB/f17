@@ -8,7 +8,6 @@ import pl.app.item.query.dto.OutfitDto;
 import pl.app.item.query.dto.WeaponDto;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 @Data

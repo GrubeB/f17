@@ -16,6 +16,7 @@ public interface ItemCommand {
         private ObjectId templateId;
         private Integer level;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

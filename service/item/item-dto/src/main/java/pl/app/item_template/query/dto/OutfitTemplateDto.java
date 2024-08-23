@@ -1,9 +1,12 @@
 package pl.app.item_template.query.dto;
 
-import lombok.*;
-import org.bson.types.ObjectId;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
+
 @Getter
 @Setter
 @AllArgsConstructor

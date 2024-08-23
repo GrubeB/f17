@@ -21,7 +21,7 @@ class GodEquipmentDomainRepositoryImpl implements GodEquipmentDomainRepository {
     public Mono<GodEquipment> fetchByAccountId(ObjectId godId) {
         Query query = Query.query(Criteria.where("godId").is(godId));
         return mongoTemplate.query(GodEquipment.class).matching(query).one()
-                .switchIfEmpty(Mono.error(() -> GodEquipmentException.NotFoundItemException.fromAccountId(godId.toHexString())));
+                .switchIfEmpty(Mono.error(() -> GodEquipmentException.NotFoundGodEquipmentException.fromGodId(godId.toHexString())));
     }
 
 

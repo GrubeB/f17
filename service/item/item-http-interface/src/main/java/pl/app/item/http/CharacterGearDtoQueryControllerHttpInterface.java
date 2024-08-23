@@ -20,7 +20,8 @@ import java.util.List;
 )
 public interface CharacterGearDtoQueryControllerHttpInterface {
     @GetExchange("/{id}")
-    Mono<ResponseEntity<CharacterGearDto>> fetchById(@PathVariable ObjectId id);
+    Mono<ResponseEntity<CharacterGearDto>> fetchByCharacterId(@PathVariable ObjectId characterId);
+
     @GetExchange
-    Mono<ResponseEntity<ResponsePage<CharacterGearDto>>> fetchAllByIds(@RequestParam List<ObjectId> ids);
+    Mono<ResponseEntity<ResponsePage<CharacterGearDto>>> fetchAllByCharacterIds(@RequestParam List<ObjectId> ids);
 }

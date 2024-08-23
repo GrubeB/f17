@@ -5,8 +5,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.config.KafkaTopicConfigurationProperties;
@@ -18,7 +16,6 @@ import pl.app.item.application.port.in.ItemCommand;
 import pl.app.item.application.port.in.ItemService;
 import pl.app.item.application.port.out.ItemTemplateDomainRepository;
 import reactor.core.publisher.Mono;
-
 
 
 @Service
@@ -36,7 +33,7 @@ class ItemServiceImpl implements ItemService {
         logger.debug("creating outfit, based on template: {}", command.getTemplateId());
         return itemTemplateDomainRepository.fetchOutfitTemplateById(command.getTemplateId())
                 .doOnError(e -> logger.error("exception occurred while creating outfit, based on template: {}, exception: {}", command.getTemplateId(), e.getMessage()))
-                .flatMap(template ->{
+                .flatMap(template -> {
                     Outfit item = new Outfit(template, command.getLevel());
                     var event = new ItemEvent.OutfitCreatedEvent(
                             template.getId()
@@ -55,8 +52,8 @@ class ItemServiceImpl implements ItemService {
         logger.debug("creating weapon, based on template: {}", command.getTemplateId());
         return itemTemplateDomainRepository.fetchWeaponTemplateById(command.getTemplateId())
                 .doOnError(e -> logger.error("exception occurred while creating weapon, based on template: {}, exception: {}", command.getTemplateId(), e.getMessage()))
-                .flatMap(template ->{
-                    Weapon item = new Weapon( template, command.getLevel());
+                .flatMap(template -> {
+                    Weapon item = new Weapon(template, command.getLevel());
                     var event = new ItemEvent.WeaponCreatedEvent(
                             template.getId()
                     );

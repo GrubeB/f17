@@ -10,6 +10,7 @@ public class WeaponTemplate extends OutfitTemplate {
     private Long minDmgPercentage;
     private Long maxDmg;
     private Long maxDmgPercentage;
+
     @SuppressWarnings("unused")
     public WeaponTemplate() {
     }

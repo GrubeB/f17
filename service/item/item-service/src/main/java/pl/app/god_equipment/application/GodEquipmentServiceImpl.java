@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.god_equipment.application.domain.GodEquipment;
 import pl.app.god_equipment.application.domain.GodEquipmentEvent;
 import pl.app.god_equipment.application.domain.GodEquipmentException;
@@ -16,7 +17,6 @@ import pl.app.god_equipment.application.port.in.GodEquipmentCommand;
 import pl.app.god_equipment.application.port.in.GodEquipmentService;
 import pl.app.god_equipment.application.port.out.GodEquipmentDomainRepository;
 import pl.app.god_equipment.application.port.out.ItemDomainRepository;
-import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.item.application.domain.Item;
 import reactor.core.publisher.Mono;
 
@@ -106,7 +106,7 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
     public Mono<GodEquipment> setCharacterItem(GodEquipmentCommand.SetCharacterItemCommand command) {
         logger.debug("setting item to character: {}, for god: {}", command.getCharacterId(), command.getGodId());
         return domainRepository.fetchByAccountId(command.getGodId())
-                .doOnError(e -> logger.error("exception occurred while setting item to character: {}, for god: {}, exception: {}",  command.getCharacterId(), command.getGodId(), e.getMessage()))
+                .doOnError(e -> logger.error("exception occurred while setting item to character: {}, for god: {}, exception: {}", command.getCharacterId(), command.getGodId(), e.getMessage()))
                 .flatMap(godEquipment -> {
                     Item item = godEquipment.setItemToCharacterGear(command.getCharacterId(), command.getSlot(), command.getItemId(), command.getItemType());
                     var event = new GodEquipmentEvent.CharacterItemSetEvent(
@@ -129,7 +129,7 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
     public Mono<GodEquipment> removeCharacterItem(GodEquipmentCommand.RemoveCharacterItemCommand command) {
         logger.debug("removing item from character: {}, for god: {}", command.getCharacterId(), command.getGodId());
         return domainRepository.fetchByAccountId(command.getGodId())
-                .doOnError(e -> logger.error("exception occurred while removing item from character: {}, for god: {}, exception: {}",  command.getCharacterId(), command.getGodId(), e.getMessage()))
+                .doOnError(e -> logger.error("exception occurred while removing item from character: {}, for god: {}, exception: {}", command.getCharacterId(), command.getGodId(), e.getMessage()))
                 .flatMap(godEquipment -> {
                     Item item = godEquipment.removeItemFromCharacterGear(command.getCharacterId(), command.getSlot());
                     var event = new GodEquipmentEvent.CharacterItemRemovedEvent(

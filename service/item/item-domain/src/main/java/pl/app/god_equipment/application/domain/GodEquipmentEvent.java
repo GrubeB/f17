@@ -15,6 +15,7 @@ public interface GodEquipmentEvent {
         private ObjectId godEquipmentId;
         private ObjectId godId;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -24,6 +25,7 @@ public interface GodEquipmentEvent {
         private ObjectId itemId;
         private String itemType;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -33,6 +35,7 @@ public interface GodEquipmentEvent {
         private ObjectId itemId;
         private String itemType;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -43,6 +46,7 @@ public interface GodEquipmentEvent {
         private String itemType;
         private ObjectId characterId;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

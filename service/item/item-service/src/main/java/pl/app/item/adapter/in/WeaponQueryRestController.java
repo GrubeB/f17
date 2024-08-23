@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.app.item.application.domain.ItemException;
 import pl.app.item.query.WeaponQueryService;
 import pl.app.item.query.dto.WeaponDto;
 import reactor.core.publisher.Mono;
@@ -22,17 +23,17 @@ class WeaponQueryRestController {
 
     private final WeaponQueryService queryService;
 
-    @GetMapping
-    Mono<ResponseEntity<Page<WeaponDto>>> fetchAllByPageable(Pageable pageable) {
-        return queryService.fetchByPageable(pageable)
-                .map(ResponseEntity::ok);
-    }
-
     @GetMapping("/{id}")
     Mono<ResponseEntity<WeaponDto>> fetchById(@PathVariable ObjectId id) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.error(ItemException.NotFoundItemException.fromId(id.toHexString())));
+    }
+
+    @GetMapping
+    Mono<ResponseEntity<Page<WeaponDto>>> fetchAllByPageable(Pageable pageable) {
+        return queryService.fetchAllByPageable(pageable)
+                .map(ResponseEntity::ok);
     }
 
 }

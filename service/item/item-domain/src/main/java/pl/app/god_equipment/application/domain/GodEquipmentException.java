@@ -6,22 +6,24 @@ import pl.app.common.shared.exception.ValidationException;
 import java.text.MessageFormat;
 
 public interface GodEquipmentException {
-    class NotFoundItemException extends NotFoundException {
-        public NotFoundItemException() {
+    class NotFoundGodEquipmentException extends NotFoundException {
+        public NotFoundGodEquipmentException() {
             super("not found equipment");
         }
 
-        public NotFoundItemException(String message) {
+        public NotFoundGodEquipmentException(String message) {
             super(message);
         }
 
-        public static NotFoundItemException fromId(String id) {
-            return new NotFoundItemException("not found equipment with id: " + id);
+        public static NotFoundGodEquipmentException fromId(String id) {
+            return new NotFoundGodEquipmentException("not found equipment with id: " + id);
         }
-        public static NotFoundItemException fromAccountId(String id) {
-            return new NotFoundItemException("not found equipment for account: " + id);
+
+        public static NotFoundGodEquipmentException fromGodId(String id) {
+            return new NotFoundGodEquipmentException("not found equipment for god: " + id);
         }
     }
+
     class DuplicatedAccountException extends ValidationException {
         public DuplicatedAccountException() {
             super("there is a equipment for given account");

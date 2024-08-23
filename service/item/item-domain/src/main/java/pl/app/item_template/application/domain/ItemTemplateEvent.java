@@ -14,12 +14,14 @@ public interface ItemTemplateEvent {
     class ItemTemplateCreatedEvent implements Serializable {
         private ObjectId itemId;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     class OutfitTemplateCreatedEvent implements Serializable {
         private ObjectId itemId;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

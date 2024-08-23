@@ -19,9 +19,10 @@ import java.util.List;
         contentType = MediaType.APPLICATION_JSON_VALUE
 )
 public interface GodEquipmentQueryControllerHttpInterface {
-    @GetExchange
-    Mono<ResponseEntity<ResponsePage<GodEquipmentDto>>> fetchAllByIds(@RequestParam List<ObjectId> ids);
-
     @GetExchange("/{godId}")
-    Mono<ResponseEntity<GodEquipmentDto>> fetchById(@PathVariable ObjectId godId);
+    Mono<ResponseEntity<GodEquipmentDto>> fetchByGodId(@PathVariable ObjectId godId);
+
+    @GetExchange
+    Mono<ResponseEntity<ResponsePage<GodEquipmentDto>>> fetchAllByGodIds(@RequestParam List<ObjectId> ids);
+
 }

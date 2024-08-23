@@ -47,6 +47,7 @@ public class ItemHttpInterfaceConfig {
     GodEquipmentQueryControllerHttpInterface godEquipmentQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(GodEquipmentQueryControllerHttpInterface.class);
     }
+
     @Bean
     CharacterGearDtoQueryControllerHttpInterface characterGearDtoQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(CharacterGearDtoQueryControllerHttpInterface.class);

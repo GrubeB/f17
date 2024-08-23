@@ -1,7 +1,5 @@
 package pl.app.item_template.application.domain;
 
-import pl.app.common.shared.exception.IllegalArgumentException;
-import pl.app.common.shared.exception.InvalidStateException;
 import pl.app.common.shared.exception.NotFoundException;
 import pl.app.common.shared.exception.ValidationException;
 
