@@ -24,11 +24,9 @@ import java.util.List;
 public class JacksonConfig {
     @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
+        return new Jackson2ObjectMapperBuilder()
                 .serializers(new ObjectIdSerializer())
-                .deserializers(new ObjectIdDeserializer())
-                .deserializers(new PageDeserializer());
-        return builder;
+                .deserializers(new ObjectIdDeserializer());
     }
 
     public static class ObjectIdSerializer extends StdSerializer<ObjectId> {

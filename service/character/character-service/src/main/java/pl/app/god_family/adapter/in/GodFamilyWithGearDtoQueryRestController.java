@@ -1,5 +1,6 @@
 package pl.app.god_family.adapter.in;
 
+import god_family.application.domain.GodFamilyException;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -20,18 +21,16 @@ class GodFamilyWithGearDtoQueryRestController {
     public static final String resourcePath = "/api/v1/" + resourceName;
 
     private final GodFamilyWithGearDtoQueryService queryService;
-
-    @GetMapping
-    Mono<ResponseEntity<Page<GodFamilyWithGearDto>>> fetchAllByIds(Pageable pageable, @RequestParam(required = false) List<ObjectId> godIds) {
-        return queryService.fetchAllByGodIds(godIds, pageable)
-                .map(ResponseEntity::ok);
-    }
-
     @GetMapping("/{godId}")
-    Mono<ResponseEntity<GodFamilyWithGearDto>> fetchById(@PathVariable ObjectId godId) {
+    Mono<ResponseEntity<GodFamilyWithGearDto>> fetchByGodId(@PathVariable ObjectId godId) {
         return queryService.fetchByGodId(godId)
                 .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.error(GodFamilyException.NotFoundGodFamilyException.fromGodId(godId.toHexString())));
+    }
+    @GetMapping
+    Mono<ResponseEntity<Page<GodFamilyWithGearDto>>> fetchAllByGodIds(Pageable pageable, @RequestParam(required = false) List<ObjectId> godIds) {
+        return queryService.fetchAllByGodIds(godIds, pageable)
+                .map(ResponseEntity::ok);
     }
 
 }

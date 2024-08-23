@@ -1,68 +1,44 @@
 package pl.app.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.MethodParameter;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.web.reactive.BindingContext;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
-import org.springframework.web.server.ServerWebExchange;
+import pl.app.common.shared.config.CustomArgumentResolver;
+import pl.app.common.shared.config.ExceptionAdviceConfig;
 import pl.app.common.shared.config.JacksonConfig;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
+import pl.app.common.shared.config.ModelMapperConfig;
 
 @Configuration
-@Import(JacksonConfig.class)
+@EnableWebFlux
+@Import({
+        JacksonConfig.class,
+        ModelMapperConfig.class,
+        ExceptionAdviceConfig.class
+})
+@RequiredArgsConstructor
 public class WebConfig implements WebFluxConfigurer {
+
+
     @Override
     public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
         WebFluxConfigurer.super.configureArgumentResolvers(configurer);
-        configurer.addCustomResolver(new PageableHandlerMethodArgumentResolver());
+        configurer.addCustomResolver(new CustomArgumentResolver.PageableHandlerMethodArgumentResolver());
     }
 
-    public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
-
-        private static final String DEFAULT_PAGE = "0";
-        private static final String DEFAULT_SIZE = "10";
-        private static final Integer MAX_SIZE = 50;
-
-        @Override
-        public boolean supportsParameter(MethodParameter parameter) {
-            return Pageable.class.equals(parameter.getParameterType());
-        }
-
-        @Override
-        public Mono<Object> resolveArgument(MethodParameter methodParameter, BindingContext bindingContext, ServerWebExchange serverWebExchange) {
-            List<String> pageValues = serverWebExchange.getRequest().getQueryParams().getOrDefault("page", List.of(DEFAULT_PAGE));
-            List<String> sizeValues = serverWebExchange.getRequest().getQueryParams().getOrDefault("size", List.of(DEFAULT_SIZE));
-
-            String page = pageValues.get(0);
-
-            String sortParam = serverWebExchange.getRequest().getQueryParams().getFirst("sort");
-            Sort sort = Sort.unsorted();
-
-            if (sortParam != null) {
-                String[] parts = sortParam.split(",");
-                if (parts.length == 2) {
-                    String property = parts[0];
-                    Sort.Direction direction = Sort.Direction.fromString(parts[1]);
-                    sort = Sort.by(direction, property);
-                }
-            }
-
-            return Mono.just(
-                    PageRequest.of(
-                            Integer.parseInt(page),
-                            Math.min(Integer.parseInt(sizeValues.get(0)),
-                                    MAX_SIZE), sort
-                    )
-            );
-        }
+    private final Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
+    @Override
+    public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
+        ObjectMapper objectMapper = jackson2ObjectMapperBuilder.build();
+        configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper));
+        configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper));
     }
 }
 

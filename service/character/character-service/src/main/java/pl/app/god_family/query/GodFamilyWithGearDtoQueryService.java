@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface GodFamilyWithGearDtoQueryService {
     Mono<GodFamilyWithGearDto> fetchByGodId(@NonNull ObjectId godId);
-    Mono<Page<GodFamilyWithGearDto>> fetchByPageable(Pageable pageable);
+    Mono<Page<GodFamilyWithGearDto>> fetchAllByPageable(Pageable pageable);
     Mono<Page<GodFamilyWithGearDto>> fetchAllByGodIds(List<ObjectId> godIds, Pageable pageable);
 }

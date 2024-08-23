@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.app.character.application.domain.CharacterException;
 import pl.app.character.query.CharacterQueryService;
 import pl.app.character.query.dto.CharacterDto;
 import reactor.core.publisher.Mono;
@@ -22,17 +23,17 @@ class CharacterQueryRestController {
 
     private final CharacterQueryService queryService;
 
-    @GetMapping
-    Mono<ResponseEntity<Page<CharacterDto>>> fetchAllByPageable(Pageable pageable) {
-        return queryService.fetchByPageable(pageable)
-                .map(ResponseEntity::ok);
-    }
-
     @GetMapping("/{id}")
     Mono<ResponseEntity<CharacterDto>> fetchById(@PathVariable ObjectId id) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.error(CharacterException.NotFoundCharacterException.fromId(id.toHexString())));
+    }
+
+    @GetMapping
+    Mono<ResponseEntity<Page<CharacterDto>>> fetchAllByPageable(Pageable pageable) {
+        return queryService.fetchAllByPageable(pageable)
+                .map(ResponseEntity::ok);
     }
 
 }

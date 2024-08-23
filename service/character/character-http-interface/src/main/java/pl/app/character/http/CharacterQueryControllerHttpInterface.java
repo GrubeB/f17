@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import pl.app.character.query.dto.CharacterDto;
+import pl.app.common.shared.config.ResponsePage;
 import reactor.core.publisher.Mono;
 
 @HttpExchange(
@@ -17,9 +18,9 @@ import reactor.core.publisher.Mono;
         contentType = MediaType.APPLICATION_JSON_VALUE
 )
 public interface CharacterQueryControllerHttpInterface {
-    @GetExchange
-    Mono<ResponseEntity<Page<CharacterDto>>> fetchAllByPageable(Pageable pageable);
-
     @GetExchange("/{id}")
     Mono<ResponseEntity<CharacterDto>> fetchById(@PathVariable ObjectId id);
+    @GetExchange
+    Mono<ResponseEntity<ResponsePage<CharacterDto>>> fetchAllByPageable(Pageable pageable);
+
 }
