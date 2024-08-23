@@ -1,7 +1,12 @@
 package pl.app.item.query.dto;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.Statistics;
 
 import java.io.Serializable;
 
@@ -30,5 +35,19 @@ public class OutfitDto extends ItemDto implements Serializable {
         this.criticalDamage = criticalDamage;
         this.accuracy = accuracy;
         this.resistance = resistance;
+    }
+
+    @JsonIgnore
+    public Statistics getStatistic() {
+        return new Statistics(
+                this.persistence,
+                this.durability,
+                this.strength,
+                this.speed,
+                this.criticalRate,
+                this.criticalDamage,
+                this.accuracy,
+                this.resistance
+        );
     }
 }

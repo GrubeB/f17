@@ -9,6 +9,7 @@ import pl.app.item.query.dto.WeaponDto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,27 +17,7 @@ import java.util.List;
 public class GodEquipmentDto implements Serializable {
     private ObjectId id;
     private ObjectId godId;
-    private List<OutfitDto> outfits;
-    private List<WeaponDto> weapons;
-
-    private List<CharacterGearDto> characterGears;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class CharacterGearDto implements Serializable {
-        private ObjectId characterId;
-
-        private OutfitDto helmet;
-        private OutfitDto armor;
-        private OutfitDto gloves;
-        private OutfitDto boots;
-        private OutfitDto belt;
-        private OutfitDto ring;
-        private OutfitDto amulet;
-        private OutfitDto talisman;
-
-        private WeaponDto leftHand;
-        private WeaponDto rightHand;
-    }
+    private Set<OutfitDto> outfits;
+    private Set<WeaponDto> weapons;
+    private Set<CharacterGearDto> characterGears;
 }

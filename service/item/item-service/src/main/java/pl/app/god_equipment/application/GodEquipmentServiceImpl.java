@@ -37,7 +37,7 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
     @Override
     public Mono<GodEquipment> createEquipment(GodEquipmentCommand.CreateGodEquipmentCommand command) {
         logger.debug("creating god equipment, for god: {}", command.getGodId());
-        return mongoTemplate.exists(Query.query(Criteria.where("god").is(command.getGodId())), GodEquipment.class)
+        return mongoTemplate.exists(Query.query(Criteria.where("godId").is(command.getGodId())), GodEquipment.class)
                 .flatMap(exist -> exist ? Mono.error(GodEquipmentException.DuplicatedAccountException.fromId(command.getGodId().toHexString())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while creating god equipment, for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .then(Mono.defer(() -> {
@@ -49,7 +49,7 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
                     return mongoTemplate.insert(godEquipment)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getAccountEquipmentCreated().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
-                                logger.debug("creating god equipment: {}, for god: {}", saved.getId(), saved.getGodId());
+                                logger.debug("created god equipment: {}, for god: {}", saved.getId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                             });
                 }));

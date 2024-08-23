@@ -2,6 +2,8 @@ package pl.app.item.http;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
@@ -12,9 +14,13 @@ public class ItemHttpInterfaceConfig {
     HttpServiceProxyFactory itemServiceHttpServiceProxyFactory(
             @Value("${app.service.item-service.base-url}") String itemServiceBaseUrl
     ) {
-        WebClient webClient = WebClient.builder().baseUrl(itemServiceBaseUrl).build();
+        WebClient webClient = WebClient.builder()
+                .baseUrl(itemServiceBaseUrl)
+                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .build();
         WebClientAdapter adapter = WebClientAdapter.create(webClient);
-        return HttpServiceProxyFactory.builderFor(adapter).build();
+        return HttpServiceProxyFactory.builderFor(adapter)
+                .build();
     }
 
     @Bean
@@ -40,5 +46,9 @@ public class ItemHttpInterfaceConfig {
     @Bean
     GodEquipmentQueryControllerHttpInterface godEquipmentQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
         return factory.createClient(GodEquipmentQueryControllerHttpInterface.class);
+    }
+    @Bean
+    CharacterGearDtoQueryControllerHttpInterface characterGearDtoQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
+        return factory.createClient(CharacterGearDtoQueryControllerHttpInterface.class);
     }
 }

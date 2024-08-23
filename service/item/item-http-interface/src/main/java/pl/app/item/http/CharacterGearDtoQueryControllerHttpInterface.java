@@ -8,20 +8,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import pl.app.common.shared.config.ResponsePage;
-import pl.app.god_equipment.dto.GodEquipmentDto;
+import pl.app.god_equipment.dto.CharacterGearDto;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @HttpExchange(
-        url = "god-equipments",
+        url = "character-gears",
         accept = MediaType.APPLICATION_JSON_VALUE,
         contentType = MediaType.APPLICATION_JSON_VALUE
 )
-public interface GodEquipmentQueryControllerHttpInterface {
+public interface CharacterGearDtoQueryControllerHttpInterface {
+    @GetExchange("/{id}")
+    Mono<ResponseEntity<CharacterGearDto>> fetchById(@PathVariable ObjectId id);
     @GetExchange
-    Mono<ResponseEntity<ResponsePage<GodEquipmentDto>>> fetchAllByIds(@RequestParam List<ObjectId> ids);
-
-    @GetExchange("/{godId}")
-    Mono<ResponseEntity<GodEquipmentDto>> fetchById(@PathVariable ObjectId godId);
+    Mono<ResponseEntity<ResponsePage<CharacterGearDto>>> fetchAllByIds(@RequestParam List<ObjectId> ids);
 }

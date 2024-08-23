@@ -3,6 +3,7 @@ package pl.app.god_equipment.query;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,85 +19,55 @@ import pl.app.god_equipment.application.domain.CharacterGear;
 import pl.app.god_equipment.application.domain.GodEquipment;
 import pl.app.god_equipment.dto.CharacterGearDto;
 import pl.app.god_equipment.dto.GodEquipmentDto;
-import pl.app.item.application.domain.Outfit;
-import pl.app.item.application.domain.Weapon;
 import pl.app.item.query.dto.OutfitDto;
 import pl.app.item.query.dto.WeaponDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
+class CharacterGearDtoQueryServiceImpl implements CharacterGearDtoQueryService {
     private final ReactiveMongoTemplate mongoTemplate;
     private final Mapper mapper;
     private final Repository repository;
 
-    public GodEquipmentQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
+    public CharacterGearDtoQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
         this.mongoTemplate = mongoTemplate;
         this.mapper = mapper;
         this.repository = new ReactiveMongoRepositoryFactory(mongoTemplate).getRepository(Repository.class);
     }
 
     @Override
-    public Mono<GodEquipmentDto> fetchById(ObjectId godId) {
-        return repository.findByGodId(godId)
-                .map(e -> mapper.map(e, GodEquipmentDto.class));
+    public Mono<CharacterGearDto> fetchById(@NotNull ObjectId id) {
+        return repository.findByCharacterGears_CharacterId(id)
+                .map(ge -> ge.getCharacterGearById(id).get())
+                .map(e -> mapper.map(e, CharacterGearDto.class));
     }
 
     @Override
-    public Mono<Page<GodEquipmentDto>> fetchByPageable(Pageable pageable) {
-        return repository.findAllBy(pageable)
-                .map(e -> mapper.map(e, GodEquipmentDto.class))
+    public Mono<Page<CharacterGearDto>> fetchAllByIds(List<ObjectId> ids, Pageable pageable) {
+        return repository.findAllByCharacterGears_CharacterId(ids, pageable)
+                .map(ge -> ge.getCharacterGears()
+                        .stream()
+                        .filter(c -> ids.contains(c.getCharacterId()))
+                        .collect(Collectors.toSet())
+                ).flatMap(Flux::fromIterable)
+                .map(e -> mapper.map(e, CharacterGearDto.class))
                 .collectList()
                 .zipWith(repository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
     }
-
-    @Override
-    public Mono<Page<GodEquipmentDto>> fetchAllByIds(List<ObjectId> godIds, Pageable pageable) {
-        if (Objects.isNull(godIds)) {
-            return fetchByPageable(pageable);
-        }
-        return repository.findAllByGodId(godIds, pageable)
-                .map(e -> mapper.map(e, GodEquipmentDto.class))
-                .collectList()
-                .zipWith(repository.count())
-                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
-    }
-
     @Component
     @RequiredArgsConstructor
     static class Mapper extends BaseMapper {
         private final ModelMapper modelMapper;
 
-
         @PostConstruct
         void init() {
-            addMapper(GodEquipment.class, GodEquipmentDto.class, this::mapToGodEquipmentDto);
             addMapper(CharacterGear.class, CharacterGearDto.class, this::mapToCharacterGearDto);
-        }
-
-        GodEquipmentDto mapToGodEquipmentDto(GodEquipment domain) {
-            Set<OutfitDto> outfits = domain.getItems().stream()
-                    .filter(d -> d instanceof Outfit)
-                    .map(d -> modelMapper.map(d, OutfitDto.class))
-                    .collect(Collectors.toSet());
-            Set<WeaponDto> weapons = domain.getItems().stream()
-                    .filter(d -> d instanceof Weapon)
-                    .map(d -> modelMapper.map(d, WeaponDto.class))
-                    .collect(Collectors.toSet());
-            return new GodEquipmentDto(
-                    domain.getId(),
-                    domain.getGodId(),
-                    outfits,
-                    weapons,
-                    domain.getCharacterGears().stream().map(d -> map(d, CharacterGearDto.class)).collect(Collectors.toSet())
-            );
         }
 
         CharacterGearDto mapToCharacterGearDto(CharacterGear domain) {
@@ -115,16 +86,13 @@ class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
                     domain.getRightHand() != null ? modelMapper.map(domain.getRightHand(), WeaponDto.class) : null
             );
         }
-
     }
 
     interface Repository extends ReactiveMongoRepository<GodEquipment, ObjectId> {
-        @Query("{ 'godId': ?0 }")
-        Mono<GodEquipment> findByGodId(ObjectId id);
+        @Query("{ 'characterGears.characterId': ?0 }")
+        Mono<GodEquipment> findByCharacterGears_CharacterId(ObjectId characterId);
 
-        Flux<GodEquipment> findAllBy(Pageable pageable);
-
-        @Query("{ 'godId.': { $in: ?0 } }")
-        Flux<GodEquipment> findAllByGodId(List<ObjectId> ids, Pageable pageable);
+        @Query("{ 'characterGears.characterId': { $in: ?0 } }")
+        Flux<GodEquipment> findAllByCharacterGears_CharacterId(List<ObjectId> characterIds, Pageable pageable);
     }
 }

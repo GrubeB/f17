@@ -11,9 +11,9 @@ import pl.app.god_equipment.query.GodEquipmentQueryService;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping(AccountEquipmentRestController.resourcePath)
+@RequestMapping(GodEquipmentRestController.resourcePath)
 @RequiredArgsConstructor
-class AccountEquipmentRestController {
+class GodEquipmentRestController {
     public static final String resourceName = "god-equipments";
     public static final String resourcePath = "/api/v1/" + resourceName;
 
@@ -24,7 +24,7 @@ class AccountEquipmentRestController {
     @PostMapping
     public Mono<ResponseEntity<GodEquipmentDto>> createOutfit(@RequestBody GodEquipmentCommand.CreateGodEquipmentCommand command) {
         return service.createEquipment(command)
-                .flatMap(domain -> queryService.fetchById(domain.getId()))
+                .flatMap(domain -> queryService.fetchById(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
 

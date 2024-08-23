@@ -19,6 +19,11 @@ configurations {
 }
 
 dependencies {
+    // SUBPROJECTS
+    implementation project(':common:shared')
+
+    // WEB
+    implementation 'org.springframework.boot:spring-boot-starter-json'
     // DATABASE
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 

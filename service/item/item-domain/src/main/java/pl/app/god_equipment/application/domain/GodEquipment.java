@@ -12,16 +12,16 @@ import java.util.Optional;
 import java.util.Set;
 
 @Getter
-@Document(collection = "god_equipment")
-public class GodEquipment {
-    @Id
-    private ObjectId id;
-    private ObjectId godId;
+    @Document(collection = "god_equipment")
+    public class GodEquipment {
+        @Id
+        private ObjectId id;
+        private ObjectId godId;
 
-    @DBRef
-    private Set<Item> items;
+        @DBRef
+        private Set<Item> items;
 
-    private Set<CharacterGear> characterGears;
+        private Set<CharacterGear> characterGears;
 
     @SuppressWarnings("unused")
     public GodEquipment() {
@@ -69,7 +69,7 @@ public class GodEquipment {
         return newCharacterGear;
     }
 
-    private Optional<CharacterGear> getCharacterGearById(ObjectId characterId) {
+    public Optional<CharacterGear> getCharacterGearById(ObjectId characterId) {
         return this.characterGears.stream().filter(ch -> ch.getCharacterId().equals(characterId)).findAny();
     }
 
