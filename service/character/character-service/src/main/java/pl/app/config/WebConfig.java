@@ -1,6 +1,7 @@
 package pl.app.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,11 +11,13 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import org.springframework.web.server.ServerWebExchange;
+import pl.app.common.shared.config.JacksonConfig;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @Configuration
+@Import(JacksonConfig.class)
 public class WebConfig implements WebFluxConfigurer {
     @Override
     public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {

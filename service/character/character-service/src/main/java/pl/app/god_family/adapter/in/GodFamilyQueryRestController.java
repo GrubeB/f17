@@ -28,9 +28,9 @@ class GodFamilyQueryRestController {
                 .map(ResponseEntity::ok);
     }
 
-    @GetMapping("/{id}")
-    Mono<ResponseEntity<GodFamilyDto>> fetchById(@PathVariable ObjectId id) {
-        return queryService.fetchById(id)
+    @GetMapping("/{godId}")
+    Mono<ResponseEntity<GodFamilyDto>> fetchById(@PathVariable ObjectId godId) {
+        return queryService.fetchByGodId(godId)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

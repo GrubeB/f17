@@ -38,6 +38,7 @@ dependencies {
     implementation project(':common:mapper')
     implementation project(':service:character:character-domain')
     implementation project(':service:character:character-dto')
+    implementation project(':service:item:item-http-interface')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

@@ -8,7 +8,7 @@ import pl.app.god_family.query.dto.GodFamilyDto;
 import reactor.core.publisher.Mono;
 
 public interface GodFamilyQueryService {
-    Mono<GodFamilyDto> fetchById(@NonNull ObjectId id);
+    Mono<GodFamilyDto> fetchByGodId(@NonNull ObjectId id);
 
     Mono<Page<GodFamilyDto>> fetchByPageable(Pageable pageable);
 }

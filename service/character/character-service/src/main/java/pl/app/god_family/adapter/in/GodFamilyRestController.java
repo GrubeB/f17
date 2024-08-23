@@ -3,10 +3,6 @@ package pl.app.god_family.adapter.in;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.character.application.port.in.CharacterCommand;
-import pl.app.character.application.port.in.CharacterService;
-import pl.app.character.query.CharacterQueryService;
-import pl.app.character.query.dto.CharacterDto;
 import pl.app.god_family.application.port.in.GodFamilyCommand;
 import pl.app.god_family.application.port.in.GodFamilyService;
 import pl.app.god_family.query.GodFamilyQueryService;
@@ -27,19 +23,19 @@ class GodFamilyRestController {
     @PostMapping
     public Mono<ResponseEntity<GodFamilyDto>> create(@RequestBody GodFamilyCommand.CreateGodFamilyCommand command) {
         return service.create(command)
-                .flatMap(domain -> queryService.fetchById(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
                 .map(ResponseEntity::ok);
     }
     @PostMapping("/{godId}/characters")
     public Mono<ResponseEntity<GodFamilyDto>> add(@RequestBody GodFamilyCommand.AddCharacterToGodFamilyCommand command) {
         return service.add(command)
-                .flatMap(domain -> queryService.fetchById(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
                 .map(ResponseEntity::ok);
     }
     @DeleteMapping("/{godId}/characters")
     public Mono<ResponseEntity<GodFamilyDto>> remove(@RequestBody GodFamilyCommand.RemoveCharacterFromGodFamilyCommand command) {
         return service.remove(command)
-                .flatMap(domain -> queryService.fetchById(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
                 .map(ResponseEntity::ok);
     }
 }

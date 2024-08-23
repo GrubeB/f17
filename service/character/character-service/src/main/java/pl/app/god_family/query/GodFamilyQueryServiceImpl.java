@@ -4,11 +4,13 @@ import god_family.application.domain.GodFamily;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,8 @@ import pl.app.common.mapper.BaseMapper;
 import pl.app.god_family.query.dto.GodFamilyDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 class GodFamilyQueryServiceImpl implements GodFamilyQueryService {
@@ -41,8 +45,8 @@ class GodFamilyQueryServiceImpl implements GodFamilyQueryService {
     }
 
     @Override
-    public Mono<GodFamilyDto> fetchById(ObjectId id) {
-        return repository.findById(id)
+    public Mono<GodFamilyDto> fetchByGodId(@NotNull ObjectId godId) {
+        return repository.findByGodId(godId)
                 .map(e -> mapper.map(e, GodFamilyDto.class));
     }
 
@@ -59,5 +63,7 @@ class GodFamilyQueryServiceImpl implements GodFamilyQueryService {
 
     interface Repository extends ReactiveMongoRepository<GodFamily, ObjectId> {
         Flux<GodFamily> findAllBy(Pageable pageable);
+        @Query("{ 'godId': ?0 }")
+        Mono<GodFamily> findByGodId(ObjectId id);
     }
 }
