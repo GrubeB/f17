@@ -1,6 +1,6 @@
 package pl.app.god_family.adapter.in;
 
-import god_family.application.domain.GodFamilyException;
+import pl.app.god_family.application.domain.GodFamilyException;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.app.god_family.query.GodFamilyQueryService;
 import pl.app.god_family.query.dto.GodFamilyDto;
-import pl.app.god_family.query.dto.GodFamilyWithGearDto;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

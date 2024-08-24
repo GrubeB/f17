@@ -20,6 +20,12 @@ public class KafkaTopicConfigurationProperties {
     private Topic godFamilyCreated;
     private Topic characterAddedToGodFamily;
     private Topic characterRemovedFromGodFamily;
+
+    private Topic godApplicationCollectionCreated;
+    private Topic godApplicationCreated;
+    private Topic godApplicationRemoved;
+    private Topic godApplicationAccepted;
+    private Topic godApplicationRejected;
     @Setter
     @Getter
     public static class Topic {

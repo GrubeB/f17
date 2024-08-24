@@ -53,10 +53,20 @@ public class KafkaConfig {
         @Bean
         KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
             NewTopic[] array = Stream.of(
-                    createTopicFromConfig(topicNames.getCharacterLevelIncreased()).stream(),
-                    createTopicFromConfig(topicNames.getExpAdded()).stream(),
                     createTopicFromConfig(topicNames.getCharacterCreated()).stream(),
-                    createTopicFromConfig(topicNames.getStatisticAdded()).stream()
+                    createTopicFromConfig(topicNames.getStatisticAdded()).stream(),
+                    createTopicFromConfig(topicNames.getExpAdded()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterLevelIncreased()).stream(),
+
+                    createTopicFromConfig(topicNames.getGodFamilyCreated()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterAddedToGodFamily()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterRemovedFromGodFamily()).stream(),
+
+                    createTopicFromConfig(topicNames.getGodApplicationCollectionCreated()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicationCreated()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicationRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicationAccepted()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicationRejected()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

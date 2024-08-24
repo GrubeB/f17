@@ -13,14 +13,14 @@ public interface GodEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     class GodCreatedEvent implements Serializable {
-        private ObjectId itemId;
+        private ObjectId godId;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class MoneyAddedEvent implements Serializable {
-        private ObjectId characterId;
+        private ObjectId godId;
         private Long amount;
     }
 
@@ -28,7 +28,7 @@ public interface GodEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     class MoneySubtractedEvent implements Serializable {
-        private ObjectId characterId;
+        private ObjectId godId;
         private Long amount;
     }
 }

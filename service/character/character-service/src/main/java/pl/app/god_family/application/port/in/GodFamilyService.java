@@ -1,7 +1,6 @@
 package pl.app.god_family.application.port.in;
 
-import god_family.application.domain.GodFamily;
-import pl.app.character.application.domain.Character;
+import pl.app.god_family.application.domain.GodFamily;
 import reactor.core.publisher.Mono;
 
 public interface GodFamilyService {

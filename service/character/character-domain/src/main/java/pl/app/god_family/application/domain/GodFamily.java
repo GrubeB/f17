@@ -1,4 +1,4 @@
-package god_family.application.domain;
+package pl.app.god_family.application.domain;
 
 import lombok.Getter;
 import org.bson.types.ObjectId;

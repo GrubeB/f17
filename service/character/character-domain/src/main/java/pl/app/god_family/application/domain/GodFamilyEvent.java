@@ -1,4 +1,4 @@
-package god_family.application.domain;
+package pl.app.god_family.application.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

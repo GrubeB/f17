@@ -1,8 +1,8 @@
 package pl.app.god_family.application;
 
-import god_family.application.domain.GodFamily;
-import god_family.application.domain.GodFamilyEvent;
-import god_family.application.domain.GodFamilyException;
+import pl.app.god_family.application.domain.GodFamily;
+import pl.app.god_family.application.domain.GodFamilyEvent;
+import pl.app.god_family.application.domain.GodFamilyException;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;

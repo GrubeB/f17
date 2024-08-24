@@ -1,6 +1,6 @@
 package pl.app.god_family.adapter.in;
 
-import god_family.application.domain.GodFamilyException;
+import pl.app.god_family.application.domain.GodFamilyException;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;

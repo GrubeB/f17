@@ -1,6 +1,6 @@
 package pl.app.god_family.query;
 
-import god_family.application.domain.GodFamily;
+import pl.app.god_family.application.domain.GodFamily;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
