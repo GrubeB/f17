@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.item.application.domain.Item;
 
 import java.util.LinkedHashSet;
@@ -21,6 +22,7 @@ public class GodEquipment {
     @DBRef
     private Set<Item> items;
 
+    @DocumentReference
     private Set<CharacterGear> characterGears;
 
     @SuppressWarnings("unused")
@@ -46,27 +48,33 @@ public class GodEquipment {
 
     public Item removeItemFromCharacterGear(ObjectId characterId, String slotName) {
         GearSlot slot = GearSlot.valueOf(slotName);
-        CharacterGear characterGear = getCharacterGearByIdOrCreate(characterId);
+        CharacterGear characterGear = getCharacterGearByIdOrThrow(characterId);
         return characterGear.removeItem(slot);
     }
 
     public Item setItemToCharacterGear(ObjectId characterId, String slotName, ObjectId itemId, String itemType) {
         GearSlot slot = GearSlot.valueOf(slotName);
         Item item = getItemByIdOrThrow(itemId, itemType);
-        CharacterGear characterGear = getCharacterGearByIdOrCreate(characterId);
+        CharacterGear characterGear = getCharacterGearByIdOrThrow(characterId);
         characterGear.setItem(item, slot);
         return item;
     }
 
-    /* HELP METHODS*/
-    private CharacterGear getCharacterGearByIdOrCreate(ObjectId characterId) {
-        Optional<CharacterGear> characterGearOptional = getCharacterGearById(characterId);
-        if (characterGearOptional.isPresent()) {
-            return characterGearOptional.get();
-        }
-        CharacterGear newCharacterGear = new CharacterGear(characterId);
-        this.characterGears.add(newCharacterGear);
-        return newCharacterGear;
+    public CharacterGear removeCharacterGearByCharacterId(ObjectId characterId) {
+        CharacterGear characterGear = getCharacterGearByIdOrThrow(characterId);
+        this.characterGears.remove(characterGear);
+        return characterGear;
+    }
+
+    public CharacterGear addCharacterGear(CharacterGear characterGear) {
+        this.characterGears.add(characterGear);
+        return characterGear;
+    }
+
+
+    private CharacterGear getCharacterGearByIdOrThrow(ObjectId characterId) {
+        return getCharacterGearById(characterId)
+                .orElseThrow(() -> GodEquipmentException.NotFoundCharacterGearException.fromCharacterId(characterId.toHexString()));
     }
 
     public Optional<CharacterGear> getCharacterGearById(ObjectId characterId) {

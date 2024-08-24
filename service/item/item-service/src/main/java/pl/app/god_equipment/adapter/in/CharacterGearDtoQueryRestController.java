@@ -26,7 +26,6 @@ class CharacterGearDtoQueryRestController {
     Mono<ResponseEntity<CharacterGearDto>> fetchByCharacterId(@PathVariable ObjectId characterId) {
         return queryService.fetchByCharacterId(characterId)
                 .map(ResponseEntity::ok)
-                //TODO change error
                 .switchIfEmpty(Mono.error(GodEquipmentException.NotFoundGodEquipmentException.fromGodId(characterId.toHexString())));
     }
 

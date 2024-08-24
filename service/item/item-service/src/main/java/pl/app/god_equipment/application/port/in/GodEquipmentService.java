@@ -5,6 +5,8 @@ import reactor.core.publisher.Mono;
 
 public interface GodEquipmentService {
     Mono<GodEquipment> createEquipment(GodEquipmentCommand.CreateGodEquipmentCommand command);
+    Mono<GodEquipment> addCharacterGearToGodEquipment(GodEquipmentCommand.AddCharacterGearToGodEquipmentCommand command);
+    Mono<GodEquipment> removeCharacterGearFromGodEquipment(GodEquipmentCommand.RemoveCharacterGearFromGodEquipmentCommand command);
 
     Mono<GodEquipment> addItemToEquipment(GodEquipmentCommand.AddItemToGodEquipmentCommand command);
 

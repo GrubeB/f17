@@ -18,12 +18,14 @@ import pl.app.common.mapper.BaseMapper;
 import pl.app.god_equipment.application.domain.CharacterGear;
 import pl.app.god_equipment.application.domain.GodEquipment;
 import pl.app.god_equipment.dto.CharacterGearDto;
+import pl.app.god_equipment.dto.GodEquipmentDto;
 import pl.app.item.query.dto.OutfitDto;
 import pl.app.item.query.dto.WeaponDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,19 +40,25 @@ class CharacterGearDtoQueryServiceImpl implements CharacterGearDtoQueryService {
 
     @Override
     public Mono<CharacterGearDto> fetchByCharacterId(@NonNull ObjectId characterId) {
-        return repository.findByCharacterGears_CharacterId(characterId)
-                .map(ge -> ge.getCharacterGearById(characterId).get())
+        return repository.findByCharacterId(characterId)
                 .map(e -> mapper.map(e, CharacterGearDto.class));
     }
 
     @Override
+    public Mono<Page<CharacterGearDto>> fetchAllByPageable(Pageable pageable) {
+        return repository.findAllBy(pageable)
+                .map(e -> mapper.map(e, CharacterGearDto.class))
+                .collectList()
+                .zipWith(repository.count())
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+    }
+
+    @Override
     public Mono<Page<CharacterGearDto>> fetchAllByCharacterIds(List<ObjectId> characterIds, Pageable pageable) {
-        return repository.findAllByCharacterGears_CharacterId(characterIds, pageable)
-                .map(ge -> ge.getCharacterGears()
-                        .stream()
-                        .filter(c -> characterIds.contains(c.getCharacterId()))
-                        .collect(Collectors.toSet())
-                ).flatMap(Flux::fromIterable)
+        if (Objects.isNull(characterIds)) {
+            return fetchAllByPageable(pageable);
+        }
+        return repository.findAllByCharacterId(characterIds, pageable)
                 .map(e -> mapper.map(e, CharacterGearDto.class))
                 .collectList()
                 .zipWith(repository.count())
@@ -85,11 +93,14 @@ class CharacterGearDtoQueryServiceImpl implements CharacterGearDtoQueryService {
         }
     }
 
-    interface Repository extends ReactiveMongoRepository<GodEquipment, ObjectId> {
-        @Query("{ 'characterGears.characterId': ?0 }")
-        Mono<GodEquipment> findByCharacterGears_CharacterId(ObjectId characterId);
+    interface Repository extends ReactiveMongoRepository<CharacterGear, ObjectId> {
 
-        @Query("{ 'characterGears.characterId': { $in: ?0 } }")
-        Flux<GodEquipment> findAllByCharacterGears_CharacterId(List<ObjectId> characterIds, Pageable pageable);
+        @Query("{ 'characterId': ?0 }")
+        Mono<CharacterGear> findByCharacterId(ObjectId id);
+
+        Flux<CharacterGear> findAllBy(Pageable pageable);
+
+        @Query("{ 'godId.': { $in: ?0 } }")
+        Flux<CharacterGear> findAllByCharacterId(List<ObjectId> ids, Pageable pageable);
     }
 }

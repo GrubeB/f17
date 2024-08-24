@@ -58,9 +58,13 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getWeaponCreated()).stream(),
                     createTopicFromConfig(topicNames.getOutfitCreated()).stream(),
 
-                    createTopicFromConfig(topicNames.getAccountEquipmentCreated()).stream(),
-                    createTopicFromConfig(topicNames.getAccountEquipmentItemAdded()).stream(),
-                    createTopicFromConfig(topicNames.getAccountEquipmentItemRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getGodEquipmentCreated()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterGearCreated()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterGearRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterGearAddedToGodEquipment()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterGearRemovedFromGodEquipment()).stream(),
+                    createTopicFromConfig(topicNames.getGodEquipmentItemAdded()).stream(),
+                    createTopicFromConfig(topicNames.getGodEquipmentItemRemoved()).stream(),
                     createTopicFromConfig(topicNames.getCharacterItemSet()).stream(),
                     createTopicFromConfig(topicNames.getCharacterItemRemoved()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);

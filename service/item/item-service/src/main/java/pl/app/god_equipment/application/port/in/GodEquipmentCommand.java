@@ -15,6 +15,20 @@ public interface GodEquipmentCommand {
     class CreateGodEquipmentCommand implements Serializable {
         private ObjectId godId;
     }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class AddCharacterGearToGodEquipmentCommand implements Serializable {
+        private ObjectId godId;
+        private ObjectId characterId;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class RemoveCharacterGearFromGodEquipmentCommand implements Serializable {
+        private ObjectId godId;
+        private ObjectId characterId;
+    }
 
     @Data
     @NoArgsConstructor

@@ -2,11 +2,16 @@ package pl.app.god_equipment.application.domain;
 
 import lombok.Getter;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.item.application.domain.Item;
 
 @Getter
+@Document(collection = "gears")
 public class CharacterGear {
+    @Id
+    private ObjectId id;
     private ObjectId characterId;
 
     @DBRef
@@ -33,11 +38,14 @@ public class CharacterGear {
 
     @SuppressWarnings("unused")
     public CharacterGear() {
+        this.id = ObjectId.get();
     }
 
     public CharacterGear(ObjectId characterId) {
+        this.id = ObjectId.get();
         this.characterId = characterId;
     }
+
 
     public void setItem(Item item, GearSlot slot) {
         switch (slot) {

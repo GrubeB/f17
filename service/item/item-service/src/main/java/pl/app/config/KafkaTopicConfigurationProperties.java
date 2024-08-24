@@ -17,9 +17,13 @@ public class KafkaTopicConfigurationProperties {
     private Topic weaponTemplateCreated;
     private Topic weaponCreated;
 
-    private Topic accountEquipmentCreated;
-    private Topic accountEquipmentItemAdded;
-    private Topic accountEquipmentItemRemoved;
+    private Topic godEquipmentCreated;
+    private Topic characterGearCreated;
+    private Topic characterGearRemoved;
+    private Topic characterGearAddedToGodEquipment;
+    private Topic characterGearRemovedFromGodEquipment;
+    private Topic godEquipmentItemAdded;
+    private Topic godEquipmentItemRemoved;
     private Topic characterItemSet;
     private Topic characterItemRemoved;
 

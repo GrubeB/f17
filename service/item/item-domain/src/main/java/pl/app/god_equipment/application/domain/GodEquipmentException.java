@@ -23,18 +23,43 @@ public interface GodEquipmentException {
             return new NotFoundGodEquipmentException("not found equipment for god: " + id);
         }
     }
-
-    class DuplicatedAccountException extends ValidationException {
-        public DuplicatedAccountException() {
-            super("there is a equipment for given account");
+    class NotFoundCharacterGearException extends NotFoundException {
+        public NotFoundCharacterGearException() {
+            super("not found character gear");
         }
 
-        public DuplicatedAccountException(String message) {
+        public NotFoundCharacterGearException(String message) {
             super(message);
         }
 
-        public static DuplicatedAccountException fromId(String id) {
-            return new DuplicatedAccountException(MessageFormat.format("there is a equipment for given account: {0}", id));
+        public static NotFoundCharacterGearException fromCharacterId(String characterId) {
+            return new NotFoundCharacterGearException("not found character gear for character: " + characterId);
+        }
+    }
+    class DuplicatedGodEquipmentException extends ValidationException {
+        public DuplicatedGodEquipmentException() {
+            super("there is a equipment for given god");
+        }
+
+        public DuplicatedGodEquipmentException(String message) {
+            super(message);
+        }
+
+        public static DuplicatedGodEquipmentException fromId(String id) {
+            return new DuplicatedGodEquipmentException(MessageFormat.format("there is a equipment for given god: {0}", id));
+        }
+    }
+    class DuplicatedCharacterGearException extends ValidationException {
+        public DuplicatedCharacterGearException() {
+            super("there is a gear for given character");
+        }
+
+        public DuplicatedCharacterGearException(String message) {
+            super(message);
+        }
+
+        public static DuplicatedCharacterGearException fromId(String id) {
+            return new DuplicatedCharacterGearException(MessageFormat.format("there is a gear for given character: {0}", id));
         }
     }
 }
