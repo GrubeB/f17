@@ -40,6 +40,8 @@ dependencies {
     implementation project(':service:character:character-dto')
     implementation project(':service:item:item-http-interface')
 
+    implementation project(':service:god:god-domain')
+
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

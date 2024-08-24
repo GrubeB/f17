@@ -23,13 +23,13 @@ class GodFamilyRestController {
     @PostMapping
     public Mono<ResponseEntity<GodFamilyDto>> create(@RequestBody GodFamilyCommand.CreateGodFamilyCommand command) {
         return service.create(command)
-                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
     @PostMapping("/{godId}/characters")
     public Mono<ResponseEntity<GodFamilyDto>> add(@RequestBody GodFamilyCommand.AddCharacterToGodFamilyCommand command) {
         return service.add(command)
-                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
     @DeleteMapping("/{godId}/characters")
