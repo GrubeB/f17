@@ -37,7 +37,7 @@ class CharacterGearServiceImpl implements CharacterGearService {
                 .doOnError(e -> logger.error("exception occurred while creating  character gear for character: {}, exception: {}", command.getCharacterId(), e.getMessage()))
                 .then(Mono.defer(() -> {
                     CharacterGear domain = new CharacterGear(command.getCharacterId());
-                    var event = new GodEquipmentEvent.CharacterGearRemovedEvent(
+                    var event = new GodEquipmentEvent.CharacterGearCreatedEvent(
                             domain.getId(),
                             domain.getCharacterId()
                     );

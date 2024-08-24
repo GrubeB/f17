@@ -19,7 +19,7 @@ import java.util.List;
         contentType = MediaType.APPLICATION_JSON_VALUE
 )
 public interface CharacterGearDtoQueryControllerHttpInterface {
-    @GetExchange("/{id}")
+    @GetExchange("/{characterId}")
     Mono<ResponseEntity<CharacterGearDto>> fetchByCharacterId(@PathVariable ObjectId characterId);
 
     @GetExchange

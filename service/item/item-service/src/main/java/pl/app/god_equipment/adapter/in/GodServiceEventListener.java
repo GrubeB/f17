@@ -11,15 +11,15 @@ import pl.app.god.application.domain.GodEvent;
 import pl.app.god_equipment.application.port.in.GodEquipmentCommand;
 import pl.app.god_equipment.application.port.in.GodEquipmentService;
 
-@Component
+@Component("pl.app.god_equipment.adapter.in.GodServiceEventListener")
 @RequiredArgsConstructor
 class GodServiceEventListener {
     private final Logger logger = LoggerFactory.getLogger(GodServiceEventListener.class);
     private final GodEquipmentService godEquipmentService;
 
     @KafkaListener(
-            id = "god-created-event-listener",
-            groupId = "${app.kafka.consumer.group-id}",
+            id = "god-created-event-listener--god-equipment",
+            groupId = "${app.kafka.consumer.group-id}--god-equipment",
             topics = "${app.kafka.topic.god-created.name}"
     )
     public void createGod(ConsumerRecord<ObjectId, GodEvent.GodCreatedEvent> record) {
