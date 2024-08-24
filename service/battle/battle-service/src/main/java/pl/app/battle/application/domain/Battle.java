@@ -111,11 +111,11 @@ public class Battle {
 
     // TODO exp and money should be calculated based on members in team1 and team2
     private Map<ObjectId, Long> calculateExpForWinningTeam(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
-        return team1.stream().collect(Collectors.toMap(BattleCharacter::getId, ch -> 100L));
+        return team1.stream().collect(Collectors.toMap(ch->ch.getInfo().getId(), ch -> 100L));
     }
 
     private Map<ObjectId, Long> calculateMoneyForWinningTeam(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
-        return team1.stream().collect(Collectors.toMap(BattleCharacter::getId, ch -> 10_000L));
+        return team1.stream().collect(Collectors.toMap(ch->ch.getInfo().getId(), ch -> 10_000L));
     }
 
     /* ATTACK  */

@@ -6,6 +6,8 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.app.common.shared.model.Statistics;
+import pl.app.item.query.dto.WeaponDto;
 
 import java.util.Optional;
 import java.util.Random;
@@ -14,39 +16,72 @@ import java.util.Set;
 @Getter
 public class BattleCharacter {
     private static final Logger logger = LoggerFactory.getLogger(BattleCharacter.class);
-
-    private ObjectId id;
-    private BattleCharacterType type;
-    private String profession;
-    private String name;
     private Short innerId;
+    private Info info;
 
-    private BattleCharacterStatistics statistics;
-    private BattleCharacterTurnSpeed turnSpeed;
-    private BattleCharacterStatus status;
-    private BattleCharacterActions actions;
+    private Statistics baseStatistics;
+    private Statistics gearStatistics;
+    private Statistics statistics;
+
+    private TurnSpeed turnSpeed;
+    private CharacterStatus status;
+    private Actions actions;
 
     private Set<BattleCharacter> allies;
     private Set<BattleCharacter> enemies;
     private BattleLog log;
 
-    public BattleCharacter(ObjectId id, BattleCharacterType type, String profession,  String name, BattleCharacterStatistics statistics) {
-        this.id = id;
-        this.type = type;
-        this.name = name;
+    public BattleCharacter(ObjectId id,
+                           ObjectId godId,
+                           BattleCharacterType type,
+                           String profession,
+                           String name,
+                           Integer level,
+                           Long exp,
+                           Statistics base,
+                           Statistics gear,
+                           Statistics statistics,
+                           Long hp,
+                           Long def,
+                           Long attackPower,
+                           WeaponDto leftHand,
+                           WeaponDto rightHand) {
+        this.info = new Info(id, godId, type, profession, name, level, exp);
+        this.baseStatistics = base;
+        this.gearStatistics = gear;
         this.statistics = statistics;
-        this.status = new BattleCharacterStatus(profession, statistics);
-        this.actions = new BattleCharacterActions(profession, statistics);
-        this.turnSpeed = new BattleCharacterTurnSpeed(statistics.getSpeed());
+        this.turnSpeed = new TurnSpeed(statistics.getSpeed());
+        this.status = new CharacterStatus(hp, def);
+        this.actions = new Actions(attackPower, statistics, leftHand, rightHand);
     }
 
+    @Getter
+    public class Info {
+        private ObjectId id;
+        private ObjectId godId;
+        private BattleCharacterType type;
+        private String profession;
+        private String name;
+        private Integer level;
+        private Long exp;
 
-    public class BattleCharacterTurnSpeed {
+        public Info(ObjectId id, ObjectId godId, BattleCharacterType type, String profession, String name, Integer level, Long exp) {
+            this.id = id;
+            this.godId = godId;
+            this.type = type;
+            this.profession = profession;
+            this.name = name;
+            this.level = level;
+            this.exp = exp;
+        }
+    }
+
+    public class TurnSpeed {
         private Long attackSpeed;
         private Long startingTurnSpeed;
         private Long turnCounter;
 
-        public BattleCharacterTurnSpeed(Long attackSpeed) {
+        public TurnSpeed(Long attackSpeed) {
             this.attackSpeed = attackSpeed;
             this.startingTurnSpeed = null;
             this.turnCounter = null;
@@ -95,29 +130,16 @@ public class BattleCharacter {
     }
 
     @Getter
-    public class BattleCharacterStatus {
+    public class CharacterStatus {
         private Long maxHp;
         private Long currentHp;
         private Long maxDef;
         private Long currentDef;
         private Boolean isDead;
 
-        public BattleCharacterStatus(String profession, BattleCharacterStatistics statistics) {
-            switch (profession) {
-                case "MARKSMAN" -> {
-                    this.maxHp = statistics.getPersistence() * 40L;
-                    this.maxDef = statistics.getDurability();
-                }
-                case "WARRIOR" -> {
-                    this.maxHp = statistics.getPersistence() * 50L;
-                    this.maxDef = statistics.getDurability() * 2L;
-                }
-                case "MAGE" -> {
-                    this.maxHp = statistics.getPersistence() * 35L;
-                    this.maxDef = statistics.getDurability();
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + profession);
-            }
+        public CharacterStatus(Long maxHp, Long maxDef) {
+            this.maxHp = maxHp;
+            this.maxDef = maxDef;
             this.currentHp = maxHp;
             this.currentDef = maxDef;
             this.isDead = false;
@@ -144,7 +166,7 @@ public class BattleCharacter {
         }
     }
 
-    public class BattleCharacterActions {
+    public class Actions {
         private Long maxAttackPower;
         private Long currentAttackPower;
         private Long maxCriticalRate;
@@ -155,36 +177,25 @@ public class BattleCharacter {
         private Long currentAccuracy;
         private Long maxResistance;
         private Long currentResistance;
-        private Long maxBaseDmg;
-        private Long minBaseDmg;
-
+        private WeaponDto leftHand;
+        private WeaponDto rightHand;
         private final Random random = new Random();
 
-        public BattleCharacterActions(String profession, BattleCharacterStatistics statistics) {
-            switch (profession) {
-                case "MARKSMAN" -> {
-                    this.maxAttackPower = (long) (statistics.getStrength() * 3.5);
-                }
-                case "WARRIOR" -> {
-                    this.maxAttackPower = (long) (statistics.getStrength() * 2.0);
-                }
-                case "MAGE" -> {
-                    this.maxAttackPower = (long) (statistics.getStrength() * 4.0);
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + profession);
-            }
-            this.currentAttackPower = maxAttackPower;
+        public Actions(Long attackPower, Statistics statistics, WeaponDto leftHand, WeaponDto rightHand) {
+            this.maxAttackPower = attackPower;
             this.maxCriticalRate = statistics.getCriticalRate();
-            this.currentCriticalRate = maxCriticalRate;
             this.maxCriticalDamage = statistics.getCriticalDamage();
-            this.currentCriticalDamage = maxCriticalDamage;
             this.maxAccuracy = statistics.getAccuracy();
-            this.currentAccuracy = maxAccuracy;
             this.maxResistance = statistics.getResistance();
+
+            this.currentAttackPower = maxAttackPower;
+            this.currentCriticalRate = maxCriticalRate;
+            this.currentCriticalDamage = maxCriticalDamage;
+            this.currentAccuracy = maxAccuracy;
             this.currentResistance = maxResistance;
-            //TODO get values from item
-            this.maxBaseDmg = this.maxAttackPower * 7;
-            this.minBaseDmg = this.maxAttackPower * 5;
+
+            this.leftHand = leftHand;
+            this.rightHand = rightHand;
         }
 
         public void baseAttack() {
@@ -193,7 +204,7 @@ public class BattleCharacter {
         }
 
         public void baseAttack(BattleCharacter enemy) {
-            var dmg = getValueBetween(this.minBaseDmg, this.maxBaseDmg);
+            var dmg = getValueBetween(getMinBaseDmg(), getMaxBaseDmg());
             Hit hit = new Hit(dmg, currentCriticalRate, currentCriticalDamage, currentAccuracy);
             logger.debug("\t\t{} atacking {} with {}", BattleCharacter.this, enemy, hit);
             log.send(new InnerBattleEvent.CharacterAttackedEvent(innerId, enemy.getInnerId()));
@@ -201,7 +212,7 @@ public class BattleCharacter {
         }
 
         private void takeHit(Hit hit) {
-            logger.debug("\t\t{} take hit",  BattleCharacter.this);
+            logger.debug("\t\t{} take hit", BattleCharacter.this);
             var isCritical = isCriticalAttack(hit.getCriticalRate());
             var dmg = isCritical ? getCriticalDmg(hit.getDmg(), hit.getCriticalDamage()) : hit.getDmg();
             status.subtractHp(dmg);
@@ -219,6 +230,36 @@ public class BattleCharacter {
 
         private Optional<BattleCharacter> getRandomEnemyToAttack() {
             return enemies.stream().filter(ch -> !ch.getStatus().isDead()).findFirst();
+        }
+
+        private Long getMaxBaseDmg() {
+            long maxBaseDmg = 0;
+            maxBaseDmg += calculateMaxDmgForHand(leftHand);
+            maxBaseDmg += calculateMaxDmgForHand(rightHand);
+            return maxBaseDmg;
+        }
+
+        private Long getMinBaseDmg() {
+            long minBaseDmg = 0;
+            minBaseDmg += calculateMinDmgForHand(leftHand);
+            minBaseDmg += calculateMinDmgForHand(rightHand);
+            return minBaseDmg;
+        }
+
+        private long calculateMinDmgForHand(WeaponDto hand) {
+            if (hand == null) {
+                return this.currentAttackPower * info.getLevel() / 3;
+            } else {
+                return this.currentAttackPower * hand.getMinDmg();
+            }
+        }
+
+        private long calculateMaxDmgForHand(WeaponDto hand) {
+            if (hand == null) {
+                return this.currentAttackPower * info.getLevel() / 3;
+            } else {
+                return this.currentAttackPower * hand.getMaxDmg();
+            }
         }
 
         private long getValueBetween(Long minBaseDmg, Long maxBaseDmg) {
@@ -270,6 +311,6 @@ public class BattleCharacter {
 
     @Override
     public String toString() {
-        return name + "(" + getStatus().getCurrentHp() + "/" + getStatus().getMaxHp() + ")";
+        return info.getName() + "(" + getStatus().getCurrentHp() + "/" + getStatus().getMaxHp() + ")";
     }
 }

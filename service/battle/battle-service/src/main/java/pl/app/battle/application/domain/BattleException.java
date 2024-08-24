@@ -16,4 +16,17 @@ public interface BattleException {
             return new NotFoundCharacterException("not found character with id: " + id);
         }
     }
+    class NotFoundBattleException extends NotFoundException {
+        public NotFoundBattleException() {
+            super("not found battle");
+        }
+
+        public NotFoundBattleException(String message) {
+            super(message);
+        }
+
+        public static NotFoundBattleException fromId(String id) {
+            return new NotFoundBattleException("not found battle with id: " + id);
+        }
+    }
 }

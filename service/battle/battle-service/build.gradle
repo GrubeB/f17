@@ -38,6 +38,7 @@ dependencies {
     implementation project(':common:mapper')
     implementation project(':service:voting:voting-domain')
     implementation project(':service:character:character-http-interface')
+    implementation project(':service:item:item-http-interface')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

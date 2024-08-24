@@ -5,4 +5,5 @@ import reactor.core.publisher.Mono;
 
 public interface BattleService {
     Mono<BattleResult> startDuelBattle(BattleCommand.StartDuelBattleCommand command);
+    Mono<BattleResult> startTwoGodBattle(BattleCommand.StartTwoGodBattleCommand command);
 }

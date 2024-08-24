@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
+import java.util.Set;
 
 
 public interface BattleCommand {
@@ -13,7 +14,18 @@ public interface BattleCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     class StartDuelBattleCommand implements Serializable {
-        private ObjectId player1;
-        private ObjectId player2;
+        private ObjectId god1;
+        private ObjectId characterId1;
+        private ObjectId god2;
+        private ObjectId characterId2;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class StartTwoGodBattleCommand implements Serializable {
+        private ObjectId god1;
+        private Set<ObjectId> god1CharacterIds;
+        private ObjectId god2;
+        private Set<ObjectId> god2CharacterIds;
     }
 }
