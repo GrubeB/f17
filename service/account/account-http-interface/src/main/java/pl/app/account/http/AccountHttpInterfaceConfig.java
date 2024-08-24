@@ -10,11 +10,10 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 public class AccountHttpInterfaceConfig {
 
+    @Value("${app.service.account-service.base-url}")
+    private String accountServiceBaseUrl;
 
-    @Bean
-    HttpServiceProxyFactory accountServiceHttpServiceProxyFactory(
-            @Value("${app.service.account-service.base-url}") String accountServiceBaseUrl
-    ) {
+    HttpServiceProxyFactory factory() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(accountServiceBaseUrl)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -24,9 +23,8 @@ public class AccountHttpInterfaceConfig {
                 .build();
     }
 
-
     @Bean
-    AccountQueryControllerHttpInterface accountQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(AccountQueryControllerHttpInterface.class);
+    AccountQueryControllerHttpInterface accountQueryControllerHttpInterface() {
+        return factory().createClient(AccountQueryControllerHttpInterface.class);
     }
 }

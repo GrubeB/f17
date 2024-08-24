@@ -9,11 +9,9 @@ import org.springframework.web.reactive.function.client.support.WebClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 public class GodHttpInterfaceConfig {
-
-    @Bean
-    HttpServiceProxyFactory godServiceHttpServiceProxyFactory(
-            @Value("${app.service.god-service.base-url}") String godServiceBaseUrl
-    ) {
+    @Value("${app.service.god-service.base-url}")
+    private String godServiceBaseUrl;
+    HttpServiceProxyFactory factory() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(godServiceBaseUrl)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -24,7 +22,7 @@ public class GodHttpInterfaceConfig {
     }
 
     @Bean
-    GodQueryControllerHttpInterface godQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(GodQueryControllerHttpInterface.class);
+    GodQueryControllerHttpInterface godQueryControllerHttpInterface() {
+        return factory().createClient(GodQueryControllerHttpInterface.class);
     }
 }

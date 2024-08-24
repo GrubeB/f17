@@ -156,16 +156,18 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
         logger.debug("setting item to character: {}, for god: {}", command.getCharacterId(), command.getGodId());
         return domainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while setting item to character: {}, for god: {}, exception: {}", command.getCharacterId(), command.getGodId(), e.getMessage()))
-                .flatMap(godEquipment -> {
-                    Item item = godEquipment.setItemToCharacterGear(command.getCharacterId(), command.getSlot(), command.getItemId(), command.getItemType());
+                .flatMap(domain -> {
+                    CharacterGear characterGear = domain.getCharacterGearByIdOrThrow(command.getCharacterId());
+                    Item item = domain.setItemToCharacterGear(command.getCharacterId(), command.getSlot(), command.getItemId(), command.getItemType());
                     var event = new GodEquipmentEvent.CharacterItemSetEvent(
-                            godEquipment.getId(),
-                            godEquipment.getGodId(),
+                            domain.getId(),
+                            domain.getGodId(),
                             item.getId(),
                             item.getType().name(),
                             command.getCharacterId()
                     );
-                    return mongoTemplate.save(godEquipment)
+                    return mongoTemplate.save(characterGear)
+                            .flatMap(unused -> mongoTemplate.save(domain))
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodEquipmentItemAdded().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("set item to character: {}, for god: {}", command.getCharacterId(), saved.getGodId());
@@ -179,16 +181,18 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
         logger.debug("removing item from character: {}, for god: {}", command.getCharacterId(), command.getGodId());
         return domainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while removing item from character: {}, for god: {}, exception: {}", command.getCharacterId(), command.getGodId(), e.getMessage()))
-                .flatMap(godEquipment -> {
-                    Item item = godEquipment.removeItemFromCharacterGear(command.getCharacterId(), command.getSlot());
+                .flatMap(domain -> {
+                    CharacterGear characterGear = domain.getCharacterGearByIdOrThrow(command.getCharacterId());
+                    Item item = domain.removeItemFromCharacterGear(command.getCharacterId(), command.getSlot());
                     var event = new GodEquipmentEvent.CharacterItemRemovedEvent(
-                            godEquipment.getId(),
-                            godEquipment.getGodId(),
+                            domain.getId(),
+                            domain.getGodId(),
                             item.getId(),
                             item.getType().name(),
                             command.getCharacterId()
                     );
-                    return mongoTemplate.save(godEquipment)
+                    return mongoTemplate.save(characterGear)
+                            .flatMap(unused -> mongoTemplate.save(domain))
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodEquipmentItemAdded().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("removed item from character: {}, for god: {}", command.getCharacterId(), saved.getGodId());

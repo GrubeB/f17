@@ -23,6 +23,6 @@ public interface GodEquipmentQueryControllerHttpInterface {
     Mono<ResponseEntity<GodEquipmentDto>> fetchByGodId(@PathVariable ObjectId godId);
 
     @GetExchange
-    Mono<ResponseEntity<ResponsePage<GodEquipmentDto>>> fetchAllByGodIds(@RequestParam List<ObjectId> ids);
+    Mono<ResponseEntity<ResponsePage<GodEquipmentDto>>> fetchAllByGodIds(@RequestParam("ids") List<ObjectId> godIds);
 
 }

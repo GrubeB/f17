@@ -123,7 +123,7 @@ class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
 
         Flux<GodEquipment> findAllBy(Pageable pageable);
 
-        @Query("{ 'godId.': { $in: ?0 } }")
+        @Query("{ 'godId': { $in: ?0 } }")
         Flux<GodEquipment> findAllByGodId(List<ObjectId> ids, Pageable pageable);
     }
 }

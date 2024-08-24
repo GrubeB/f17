@@ -8,12 +8,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+
 public class ItemHttpInterfaceConfig {
 
-    @Bean
-    HttpServiceProxyFactory itemServiceHttpServiceProxyFactory(
-            @Value("${app.service.item-service.base-url}") String itemServiceBaseUrl
-    ) {
+    @Value("${app.service.item-service.base-url}")
+    private String itemServiceBaseUrl;
+
+    HttpServiceProxyFactory factory() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(itemServiceBaseUrl)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -24,32 +25,32 @@ public class ItemHttpInterfaceConfig {
     }
 
     @Bean
-    OutfitQueryControllerHttpInterface outfitQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(OutfitQueryControllerHttpInterface.class);
+    OutfitQueryControllerHttpInterface outfitQueryControllerHttpInterface() {
+        return factory().createClient(OutfitQueryControllerHttpInterface.class);
     }
 
     @Bean
-    OutfitTemplateQueryControllerHttpInterface outfitTemplateQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(OutfitTemplateQueryControllerHttpInterface.class);
+    OutfitTemplateQueryControllerHttpInterface outfitTemplateQueryControllerHttpInterface() {
+        return factory().createClient(OutfitTemplateQueryControllerHttpInterface.class);
     }
 
     @Bean
-    WeaponQueryControllerHttpInterface weaponQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(WeaponQueryControllerHttpInterface.class);
+    WeaponQueryControllerHttpInterface weaponQueryControllerHttpInterface() {
+        return factory().createClient(WeaponQueryControllerHttpInterface.class);
     }
 
     @Bean
-    WeaponTemplateQueryControllerHttpInterface weaponTemplateQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(WeaponTemplateQueryControllerHttpInterface.class);
+    WeaponTemplateQueryControllerHttpInterface weaponTemplateQueryControllerHttpInterface() {
+        return factory().createClient(WeaponTemplateQueryControllerHttpInterface.class);
     }
 
     @Bean
-    GodEquipmentQueryControllerHttpInterface godEquipmentQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(GodEquipmentQueryControllerHttpInterface.class);
+    GodEquipmentQueryControllerHttpInterface godEquipmentQueryControllerHttpInterface() {
+        return factory().createClient(GodEquipmentQueryControllerHttpInterface.class);
     }
 
     @Bean
-    CharacterGearDtoQueryControllerHttpInterface characterGearDtoQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(CharacterGearDtoQueryControllerHttpInterface.class);
+    CharacterGearDtoQueryControllerHttpInterface characterGearDtoQueryControllerHttpInterface() {
+        return factory().createClient(CharacterGearDtoQueryControllerHttpInterface.class);
     }
 }

@@ -29,7 +29,7 @@ class GodFamilyQueryRestController {
                 .switchIfEmpty(Mono.error(GodFamilyException.NotFoundGodFamilyException.fromGodId(godId.toHexString())));
     }
     @GetMapping
-    Mono<ResponseEntity<Page<GodFamilyDto>>> fetchAllByGodIds(Pageable pageable, @RequestParam(required = false) List<ObjectId> godIds) {
+    Mono<ResponseEntity<Page<GodFamilyDto>>> fetchAllByGodIds(Pageable pageable, @RequestParam(name = "ids",required = false) List<ObjectId> godIds) {
         return queryService.fetchAllByGodIds(godIds, pageable)
                 .map(ResponseEntity::ok);
     }

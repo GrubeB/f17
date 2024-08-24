@@ -72,7 +72,7 @@ public class GodEquipment {
     }
 
 
-    private CharacterGear getCharacterGearByIdOrThrow(ObjectId characterId) {
+    public CharacterGear getCharacterGearByIdOrThrow(ObjectId characterId) {
         return getCharacterGearById(characterId)
                 .orElseThrow(() -> GodEquipmentException.NotFoundCharacterGearException.fromCharacterId(characterId.toHexString()));
     }

@@ -81,7 +81,7 @@ class GodFamilyWithGearQueryServiceImpl implements GodFamilyWithGearDtoQueryServ
         if (Objects.isNull(godIds)) {
             return fetchAllByPageable(pageable);
         }
-        return repository.findAllById(godIds)
+        return repository.findAllByGodId(godIds, pageable)
                 .collect(Collectors.toSet())
                 .zipWith(godEquipmentQueryController
                         .fetchAllByGodIds(godIds)
@@ -155,7 +155,7 @@ class GodFamilyWithGearQueryServiceImpl implements GodFamilyWithGearDtoQueryServ
 
         Flux<GodFamily> findAllBy(Pageable pageable);
 
-        @Query("{ 'godId.': { $in: ?0 } }")
+        @Query("{ 'godId': { $in: ?0 } }")
         Flux<GodFamily> findAllByGodId(List<ObjectId> ids, Pageable pageable);
     }
 }

@@ -9,10 +9,9 @@ import org.springframework.web.reactive.function.client.support.WebClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 public class CharacterHttpInterfaceConfig {
-    @Bean
-    HttpServiceProxyFactory characterServiceHttpServiceProxyFactory(
-            @Value("${app.service.character-service.base-url}") String characterServiceBaseUrl
-    ) {
+    @Value("${app.service.character-service.base-url}")
+    private String characterServiceBaseUrl;
+    HttpServiceProxyFactory factory() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(characterServiceBaseUrl)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
@@ -22,19 +21,19 @@ public class CharacterHttpInterfaceConfig {
                 .build();
     }
     @Bean
-    CharacterQueryControllerHttpInterface characterQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(CharacterQueryControllerHttpInterface.class);
+    CharacterQueryControllerHttpInterface characterQueryControllerHttpInterface() {
+        return factory().createClient(CharacterQueryControllerHttpInterface.class);
     }
     @Bean
-    GodFamilyQueryControllerHttpInterface godFamilyQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(GodFamilyQueryControllerHttpInterface.class);
+    GodFamilyQueryControllerHttpInterface godFamilyQueryControllerHttpInterface() {
+        return factory().createClient(GodFamilyQueryControllerHttpInterface.class);
     }
     @Bean
-    CharacterWithGearQueryControllerHttpInterface characterWithGearQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(CharacterWithGearQueryControllerHttpInterface.class);
+    CharacterWithGearQueryControllerHttpInterface characterWithGearQueryControllerHttpInterface() {
+        return factory().createClient(CharacterWithGearQueryControllerHttpInterface.class);
     }
     @Bean
-    GodFamilyWithGearQueryControllerHttpInterface godFamilyWithGearQueryControllerHttpInterface(HttpServiceProxyFactory factory) {
-        return factory.createClient(GodFamilyWithGearQueryControllerHttpInterface.class);
+    GodFamilyWithGearQueryControllerHttpInterface godFamilyWithGearQueryControllerHttpInterface() {
+        return factory().createClient(GodFamilyWithGearQueryControllerHttpInterface.class);
     }
 }

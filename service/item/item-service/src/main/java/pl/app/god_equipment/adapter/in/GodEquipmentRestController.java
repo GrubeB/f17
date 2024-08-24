@@ -32,7 +32,7 @@ class GodEquipmentRestController {
     public Mono<ResponseEntity<GodEquipmentDto>> add(@PathVariable ObjectId godId, @RequestBody GodEquipmentCommand.AddItemToGodEquipmentCommand command) {
         command.setGodId(godId);
         return service.addItemToEquipment(command)
-                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
 
@@ -40,7 +40,7 @@ class GodEquipmentRestController {
     public Mono<ResponseEntity<GodEquipmentDto>> remove(@PathVariable ObjectId godId, @RequestBody GodEquipmentCommand.RemoveItemFromGodEquipmentCommand command) {
         command.setGodId(godId);
         return service.removeItemFromEquipment(command)
-                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
 
@@ -50,7 +50,7 @@ class GodEquipmentRestController {
         command.setGodId(godId);
         command.setCharacterId(characterId);
         return service.setCharacterItem(command)
-                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
 
@@ -60,7 +60,7 @@ class GodEquipmentRestController {
         command.setGodId(godId);
         command.setCharacterId(characterId);
         return service.removeCharacterItem(command)
-                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
 }
