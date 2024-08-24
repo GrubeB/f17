@@ -54,6 +54,7 @@ public class KafkaConfig {
         KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
             NewTopic[] array = Stream.of(
                     createTopicFromConfig(topicNames.getCharacterCreated()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterRemoved()).stream(),
                     createTopicFromConfig(topicNames.getStatisticAdded()).stream(),
                     createTopicFromConfig(topicNames.getExpAdded()).stream(),
                     createTopicFromConfig(topicNames.getCharacterLevelIncreased()).stream(),
@@ -62,11 +63,11 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getCharacterAddedToGodFamily()).stream(),
                     createTopicFromConfig(topicNames.getCharacterRemovedFromGodFamily()).stream(),
 
-                    createTopicFromConfig(topicNames.getGodApplicationCollectionCreated()).stream(),
-                    createTopicFromConfig(topicNames.getGodApplicationCreated()).stream(),
-                    createTopicFromConfig(topicNames.getGodApplicationRemoved()).stream(),
-                    createTopicFromConfig(topicNames.getGodApplicationAccepted()).stream(),
-                    createTopicFromConfig(topicNames.getGodApplicationRejected()).stream()
+                    createTopicFromConfig(topicNames.getGodApplicantCollectionCreated()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicantCreated()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicantRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicantAccepted()).stream(),
+                    createTopicFromConfig(topicNames.getGodApplicantRejected()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

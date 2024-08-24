@@ -17,7 +17,12 @@ public interface CharacterEvent {
         private String name;
         private String profession;
     }
-
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class CharacterRemovedEvent implements Serializable {
+        private ObjectId characterId;
+    }
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

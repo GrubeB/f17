@@ -20,6 +20,12 @@ public interface CharacterCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    class RemoveCharacterCommand implements Serializable {
+        private ObjectId characterId;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     class AddStatisticCommand implements Serializable {
         private ObjectId characterId;
         private String statisticName;

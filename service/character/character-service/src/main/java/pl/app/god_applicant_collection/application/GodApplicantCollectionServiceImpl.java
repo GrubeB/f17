@@ -45,7 +45,7 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                             domain.getGodId()
                     );
                     return mongoTemplate.insert(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicationCollectionCreated().getName(), saved.getId(), event)).thenReturn(saved))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantCollectionCreated().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("created god applicant collection {}, for god: {}", saved.getId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -70,7 +70,7 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                     );
                     return mongoTemplate.insert(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicationCreated().getName(), saved.getId(), event)).thenReturn(saved))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantCreated().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("created god applicant {} for god: {}", applicant.getCharacterId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -93,7 +93,7 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                     );
                     return mongoTemplate.remove(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicationRemoved().getName(), saved.getId(), event)).thenReturn(saved))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantRemoved().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("removed god applicant {}, for god: {}", applicant.getCharacterId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -116,7 +116,7 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                     );
                     return mongoTemplate.remove(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicationAccepted().getName(), saved.getId(), event)).thenReturn(saved))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantAccepted().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("accepted god applicant {}, for god: {}", applicant.getCharacterId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
@@ -139,7 +139,7 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                     );
                     return mongoTemplate.remove(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicationAccepted().getName(), saved.getId(), event)).thenReturn(saved))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantRejected().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("rejected god applicant {}, for god: {}", applicant.getCharacterId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class KafkaTopicConfigurationProperties {
     private Topic characterCreated;
+    private Topic characterRemoved;
     private Topic statisticAdded;
     private Topic expAdded;
     private Topic characterLevelIncreased;
@@ -21,11 +22,11 @@ public class KafkaTopicConfigurationProperties {
     private Topic characterAddedToGodFamily;
     private Topic characterRemovedFromGodFamily;
 
-    private Topic godApplicationCollectionCreated;
-    private Topic godApplicationCreated;
-    private Topic godApplicationRemoved;
-    private Topic godApplicationAccepted;
-    private Topic godApplicationRejected;
+    private Topic godApplicantCollectionCreated;
+    private Topic godApplicantCreated;
+    private Topic godApplicantRemoved;
+    private Topic godApplicantAccepted;
+    private Topic godApplicantRejected;
     @Setter
     @Getter
     public static class Topic {

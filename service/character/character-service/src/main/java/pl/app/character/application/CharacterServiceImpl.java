@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pl.app.character.application.domain.Character;
 import pl.app.character.application.domain.CharacterEvent;
 import pl.app.character.application.domain.CharacterException;
-import pl.app.character.application.domain.Character;
 import pl.app.character.application.port.in.CharacterCommand;
 import pl.app.character.application.port.in.CharacterService;
 import pl.app.character.application.port.out.CharacterDomainRepository;
@@ -56,6 +56,24 @@ class CharacterServiceImpl implements CharacterService {
         );
         return mongoTemplate.exists(query, Character.class)
                 .flatMap(exist -> exist ? Mono.error(CharacterException.DuplicatedNameException.fromName(name)) : Mono.empty());
+    }
+
+    @Override
+    public Mono<Character> removeCharacter(CharacterCommand.RemoveCharacterCommand command) {
+        logger.debug("removing character: {}", command.getCharacterId());
+        return domainRepository.fetchById(command.getCharacterId())
+                .doOnError(e -> logger.error("exception occurred while removing character: {}, exception: {}", command.getCharacterId(), e.getMessage()))
+                .flatMap(character -> {
+                    var event = new CharacterEvent.CharacterRemovedEvent(
+                            character.getId()
+                    );
+                    return mongoTemplate.remove(character)
+                            .then(Mono.defer(() -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCharacterRemoved().getName(), character.getId(), event)).thenReturn(character)))
+                            .doOnSuccess(removed -> {
+                                logger.debug("removed character: {}", removed.getId());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            });
+                });
     }
 
     @Override
