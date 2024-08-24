@@ -35,33 +35,18 @@ public interface GodFamilyException {
         }
     }
 
-    class NoSuchStatisticException extends IllegalArgumentException {
-        public NoSuchStatisticException() {
-            super("there is not statistic");
+    class CharacterBelongsToFamilyException extends IllegalArgumentException {
+        public CharacterBelongsToFamilyException() {
+            super("character already belongs to the family");
         }
 
-        public NoSuchStatisticException(String message) {
+        public CharacterBelongsToFamilyException(String message) {
             super(message);
         }
 
-        public static NoSuchStatisticException fromName(String name) {
-            return new NoSuchStatisticException(MessageFormat.format("there is not statistic of name: {0}", name));
+        public static CharacterBelongsToFamilyException fromId(String characterId) {
+            return new CharacterBelongsToFamilyException(MessageFormat.format("character {0} already belongs to the family\"", characterId));
         }
     }
-
-    class UnmodifiableStatisticException extends IllegalArgumentException {
-        public UnmodifiableStatisticException() {
-            super("statistic is unmodifiable");
-        }
-
-        public UnmodifiableStatisticException(String message) {
-            super(message);
-        }
-
-        public static UnmodifiableStatisticException fromName(String name) {
-            return new UnmodifiableStatisticException(MessageFormat.format("statistic of name: {0} is unmodifiable", name));
-        }
-    }
-
 
 }

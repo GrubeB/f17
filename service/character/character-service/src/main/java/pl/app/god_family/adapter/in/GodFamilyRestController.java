@@ -35,7 +35,7 @@ class GodFamilyRestController {
     @DeleteMapping("/{godId}/characters")
     public Mono<ResponseEntity<GodFamilyDto>> remove(@RequestBody GodFamilyCommand.RemoveCharacterFromGodFamilyCommand command) {
         return service.remove(command)
-                .flatMap(domain -> queryService.fetchByGodId(domain.getId()))
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
 }

@@ -33,6 +33,10 @@ public class GodFamily {
     }
 
     public Character addCharacter(Character character) {
+        Optional<Character> characterById = getCharacterById(character.getId());
+        if(characterById.isPresent()){
+            throw GodFamilyException.CharacterBelongsToFamilyException.fromId(character.getId().toHexString());
+        }
         this.characters.add(character);
         return character;
     }

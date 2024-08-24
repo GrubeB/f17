@@ -1,8 +1,5 @@
 package pl.app.god_family.application;
 
-import pl.app.god_family.application.domain.GodFamily;
-import pl.app.god_family.application.domain.GodFamilyEvent;
-import pl.app.god_family.application.domain.GodFamilyException;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -14,6 +11,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.character.application.domain.Character;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.god_family.application.domain.GodFamily;
+import pl.app.god_family.application.domain.GodFamilyEvent;
+import pl.app.god_family.application.domain.GodFamilyException;
 import pl.app.god_family.application.port.in.GodFamilyCommand;
 import pl.app.god_family.application.port.in.GodFamilyService;
 import pl.app.god_family.application.port.out.CharacterDomainRepository;
@@ -56,7 +56,9 @@ class GodFamilyServiceImpl implements GodFamilyService {
     @Override
     public Mono<GodFamily> add(GodFamilyCommand.AddCharacterToGodFamilyCommand command) {
         logger.debug("adding to god family of god: {}, character {}", command.getGodId(), command.getCharacterId());
-        return godFamilyDomainRepository.fetchByGodId(command.getGodId())
+        return mongoTemplate.exists(Query.query(Criteria.where("characters._id").is(command.getCharacterId())), GodFamily.class)
+                .flatMap(exist -> exist ? Mono.error(GodFamilyException.CharacterBelongsToFamilyException.fromId(command.getCharacterId().toHexString())) : Mono.empty())
+                .then(godFamilyDomainRepository.fetchByGodId(command.getGodId()))
                 .zipWith(characterDomainRepository.fetchById(command.getCharacterId()))
                 .doOnError(e -> logger.error("exception occurred while adding to god family of god: {}, character {}, exception: {}", command.getGodId(), command.getCharacterId(), e.getMessage()))
                 .flatMap(tuple2 -> {
