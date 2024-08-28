@@ -20,6 +20,7 @@ import pl.app.trader.application.domain.TraderException;
 import pl.app.trader.application.port.in.TraderCommand;
 import pl.app.trader.application.port.in.TraderService;
 import pl.app.trader.application.port.out.GodMoneyService;
+import pl.app.trader.application.port.out.ItemDomainRepository;
 import pl.app.trader.application.port.out.ItemGenerator;
 import pl.app.trader.application.port.out.TraderDomainRepository;
 import reactor.core.publisher.Mono;
@@ -37,6 +38,7 @@ class TraderServiceImpl implements TraderService {
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
     private final ItemGenerator itemTemplateDomainRepository;
+    private final ItemDomainRepository itemDomainRepository;
     private final TraderDomainRepository traderDomainRepository;
     private final GodMoneyService godMoneyService;
     private final GodEquipmentService godEquipmentService;
@@ -96,15 +98,37 @@ class TraderServiceImpl implements TraderService {
                             .then(godEquipmentService.addItemToEquipment(new GodEquipmentCommand.AddItemToGodEquipmentCommand(command.getGodId(), item.getId())))
                             .then(Mono.defer(() -> {
                                 var event = new TraderEvent.GodBoughtItemEvent(
-                                        domain.getId(), domain.getGodId(), item.getId()
+                                        domain.getId(), domain.getGodId(), item.getId(), item.getMoney()
                                 );
                                 return mongoTemplate.save(domain)
                                         .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodBoughtItem().getName(), saved.getId(), event)).thenReturn(saved))
                                         .doOnSuccess(saved -> {
-                                            logger.debug("god {} bought item {} ", saved.getGodId(), saved.getId());
+                                            logger.debug("god {} bought item {} ", saved.getGodId(), command.getItemId());
                                             logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                                         });
                             }));
+                });
+    }
+
+    @Override
+    public Mono<Trader> sell(TraderCommand.SellItemCommand command) {
+        logger.debug("selling item {} of from: {}",command.getItemId(), command.getGodId());
+        return traderDomainRepository.fetchByGodId(command.getGodId())
+                .doOnError(e -> logger.error("exception occurred while selling item {} from god: {}, exception: {}",command.getItemId(), command.getGodId(), e.getMessage()))
+                .flatMap(domain -> {
+                    return itemDomainRepository.fetchById(command.getItemId())
+                            .flatMap(item -> godEquipmentService.removeItemFromEquipment(new GodEquipmentCommand.RemoveItemFromGodEquipmentCommand(command.getGodId(), command.getItemId())).thenReturn(item))
+                            .flatMap(item ->{
+                                var event = new TraderEvent.GodSoldItemEvent(
+                                        domain.getId(), domain.getGodId(), command.getItemId(), item.getMoney()
+                                );
+                                return mongoTemplate.save(domain)
+                                        .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodSoldItem().getName(), saved.getId(), event)).thenReturn(saved))
+                                        .doOnSuccess(saved -> {
+                                            logger.debug("god {} sold item {} ", saved.getGodId(), command.getItemId());
+                                            logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                                        });
+                            });
                 });
     }
 }

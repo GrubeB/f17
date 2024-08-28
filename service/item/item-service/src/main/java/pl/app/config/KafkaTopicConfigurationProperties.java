@@ -36,6 +36,7 @@ public class KafkaTopicConfigurationProperties {
     private Topic traderCreated;
     private Topic traderItemsRenewed;
     private Topic godBoughtItem;
+    private Topic godSoldItem;
 
     @Setter
     @Getter

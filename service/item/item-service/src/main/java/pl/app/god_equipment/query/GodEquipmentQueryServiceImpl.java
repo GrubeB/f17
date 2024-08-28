@@ -81,12 +81,10 @@ class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
         }
 
         GodEquipmentDto mapToGodEquipmentDto(GodEquipment domain) {
-            Set<OutfitDto> outfits = domain.getItems().stream()
-                    .filter(d -> d instanceof Outfit)
+            Set<OutfitDto> outfits = domain.getUnattachedOutfits().stream()
                     .map(d -> modelMapper.map(d, OutfitDto.class))
                     .collect(Collectors.toSet());
-            Set<WeaponDto> weapons = domain.getItems().stream()
-                    .filter(d -> d instanceof Weapon)
+            Set<WeaponDto> weapons = domain.getUnattachedWeapons().stream()
                     .map(d -> modelMapper.map(d, WeaponDto.class))
                     .collect(Collectors.toSet());
             return new GodEquipmentDto(

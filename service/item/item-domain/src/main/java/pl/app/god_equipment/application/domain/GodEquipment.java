@@ -6,11 +6,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import pl.app.common.shared.model.ItemType;
 import pl.app.item.application.domain.Item;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Document(collection = "god_equipment")
@@ -46,14 +48,12 @@ public class GodEquipment {
         return item;
     }
 
-    public Item removeItemFromCharacterGear(ObjectId characterId, String slotName) {
-        GearSlot slot = GearSlot.valueOf(slotName);
+    public Item removeItemFromCharacterGear(ObjectId characterId,  GearSlot slot) {
         CharacterGear characterGear = getCharacterGearByIdOrThrow(characterId);
         return characterGear.removeItem(slot);
     }
 
-    public Item setItemToCharacterGear(ObjectId characterId, String slotName, ObjectId itemId) {
-        GearSlot slot = GearSlot.valueOf(slotName);
+    public Item setItemToCharacterGear(ObjectId characterId, GearSlot slot, ObjectId itemId) {
         Item item = getItemByIdOrThrow(itemId);
         CharacterGear characterGear = getCharacterGearByIdOrThrow(characterId);
         characterGear.setItem(item, slot);
@@ -71,7 +71,26 @@ public class GodEquipment {
         return characterGear;
     }
 
-
+    public Set<Item> getOutfits(){
+        return this.items.stream().filter(i -> ItemType.isOutfit(i.getType())).collect(Collectors.toSet());
+    }
+    public Set<Item> getAttachedOutfits(){
+        return this.characterGears.stream().map(CharacterGear::getItems).flatMap(Set::stream).filter(i -> ItemType.isOutfit(i.getType())).collect(Collectors.toSet());
+    }
+    public Set<Item> getUnattachedOutfits(){
+        Set<Item> attachedOutfits = getAttachedOutfits();
+        return  getOutfits().stream().filter(i -> attachedOutfits.stream().noneMatch(au -> au.getId().equals(i.getId()))).collect(Collectors.toSet());
+    }
+    public Set<Item> getWeapons(){
+        return this.items.stream().filter(i -> ItemType.isWeapon(i.getType())).collect(Collectors.toSet());
+    }
+    public Set<Item> getAttachedWeapons(){
+        return this.characterGears.stream().map(CharacterGear::getItems).flatMap(Set::stream).filter(i -> ItemType.isWeapon(i.getType())).collect(Collectors.toSet());
+    }
+    public Set<Item> getUnattachedWeapons(){
+        Set<Item> attachedWeapons = getAttachedWeapons();
+        return  getWeapons().stream().filter(i -> attachedWeapons.stream().noneMatch(au -> au.getId().equals(i.getId()))).collect(Collectors.toSet());
+    }
     public CharacterGear getCharacterGearByIdOrThrow(ObjectId characterId) {
         return getCharacterGearById(characterId)
                 .orElseThrow(() -> GodEquipmentException.NotFoundCharacterGearException.fromCharacterId(characterId.toHexString()));

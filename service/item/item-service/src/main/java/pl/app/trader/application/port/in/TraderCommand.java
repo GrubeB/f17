@@ -30,4 +30,11 @@ public interface TraderCommand {
         private ObjectId godId;
         private ObjectId itemId;
     }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class SellItemCommand implements Serializable {
+        private ObjectId godId;
+        private ObjectId itemId;
+    }
 }

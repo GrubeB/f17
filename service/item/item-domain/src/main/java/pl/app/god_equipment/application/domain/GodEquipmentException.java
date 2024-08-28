@@ -1,5 +1,6 @@
 package pl.app.god_equipment.application.domain;
 
+import pl.app.common.shared.exception.IllegalArgumentException;
 import pl.app.common.shared.exception.NotFoundException;
 import pl.app.common.shared.exception.ValidationException;
 
@@ -60,6 +61,15 @@ public interface GodEquipmentException {
 
         public static DuplicatedCharacterGearException fromId(String id) {
             return new DuplicatedCharacterGearException(MessageFormat.format("there is a gear for given character: {0}", id));
+        }
+    }
+    class WrongSlotException extends IllegalArgumentException {
+        public WrongSlotException() {
+            super("item cannot be placed here");
+        }
+
+        public WrongSlotException(String message) {
+            super(message);
         }
     }
 }

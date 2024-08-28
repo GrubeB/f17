@@ -38,7 +38,9 @@ dependencies {
     implementation project(':common:mapper')
     implementation project(':service:god:god-domain')
     implementation project(':service:god:god-dto')
+
     implementation project(':service:account:account-domain')
+    implementation project(':service:item:item-domain')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

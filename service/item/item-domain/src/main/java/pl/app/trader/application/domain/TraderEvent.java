@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.Money;
 
 import java.io.Serializable;
 
@@ -31,5 +32,15 @@ public interface TraderEvent {
         private ObjectId id;
         private ObjectId godId;
         private ObjectId itemId;
+        private Money money;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class GodSoldItemEvent implements Serializable {
+        private ObjectId id;
+        private ObjectId godId;
+        private ObjectId itemId;
+        private Money money;
     }
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.god_equipment.application.domain.GearSlot;
 
 import java.io.Serializable;
 
@@ -52,7 +53,7 @@ public interface GodEquipmentCommand {
     class SetCharacterItemCommand implements Serializable {
         private ObjectId godId;
         private ObjectId characterId;
-        private String slot;
+        private GearSlot slot;
         private ObjectId itemId;
     }
 
@@ -62,6 +63,6 @@ public interface GodEquipmentCommand {
     class RemoveCharacterItemCommand implements Serializable {
         private ObjectId godId;
         private ObjectId characterId;
-        private String slot;
+        private GearSlot slot;
     }
 }

@@ -38,5 +38,12 @@ class TraaderRestController {
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
-
+    @PostMapping("/{godId}/sell")
+    public Mono<ResponseEntity<TraderDto>> sell(@PathVariable ObjectId godId,
+                                               @RequestBody TraderCommand.SellItemCommand command) {
+        command.setGodId(godId);
+        return service.sell(command)
+                .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
+                .map(ResponseEntity::ok);
+    }
 }
