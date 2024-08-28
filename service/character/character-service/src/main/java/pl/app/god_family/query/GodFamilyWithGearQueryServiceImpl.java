@@ -107,7 +107,6 @@ class GodFamilyWithGearQueryServiceImpl implements GodFamilyWithGearDtoQueryServ
             return families.stream().map(family -> {
                 Optional<GodEquipmentDto> equipment = equipments.stream().filter(e -> e.getGodId().equals(family.getGodId())).findAny();
                 return equipment.map(e -> new GodFamilyWithGearDto(
-                        family.getId(),
                         family.getGodId(),
                         mapToCharacterWithGearDto(family.getCharacters(), e.getCharacterGears())
                 )).orElse(null);
@@ -116,7 +115,6 @@ class GodFamilyWithGearQueryServiceImpl implements GodFamilyWithGearDtoQueryServ
 
         public GodFamilyWithGearDto mapToGodFamilyWithGearDto(GodFamily family, GodEquipmentDto equipment) {
             return new GodFamilyWithGearDto(
-                    family.getId(),
                     family.getGodId(),
                     mapToCharacterWithGearDto(family.getCharacters(), equipment.getCharacterGears())
             );

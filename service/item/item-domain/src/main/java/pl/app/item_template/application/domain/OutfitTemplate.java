@@ -1,10 +1,12 @@
 package pl.app.item_template.application.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "outfit_templates")
 @Getter
+@Setter
 public class OutfitTemplate extends ItemTemplate {
     private Long persistence;
     private Long persistencePercentage;

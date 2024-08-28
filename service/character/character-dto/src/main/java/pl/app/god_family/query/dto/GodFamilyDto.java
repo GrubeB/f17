@@ -14,7 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GodFamilyDto implements Serializable {
-    private ObjectId id;
     private ObjectId godId;
     private List<CharacterDto> characters;
 }

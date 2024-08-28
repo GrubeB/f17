@@ -13,9 +13,15 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class KafkaTopicConfigurationProperties {
     private Topic outfitTemplateCreated;
+    private Topic outfitTemplateUpdated;
+    private Topic outfitTemplateDeleted;
     private Topic outfitCreated;
+    private Topic outfitDeleted;
     private Topic weaponTemplateCreated;
+    private Topic weaponTemplateUpdated;
+    private Topic weaponTemplateDeleted;
     private Topic weaponCreated;
+    private Topic weaponDeleted;
 
     private Topic godEquipmentCreated;
     private Topic characterGearCreated;

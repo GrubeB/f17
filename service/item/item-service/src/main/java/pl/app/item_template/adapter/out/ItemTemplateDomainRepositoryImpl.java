@@ -1,4 +1,4 @@
-package pl.app.item.adapter.out;
+package pl.app.item_template.adapter.out;
 
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -6,14 +6,14 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import pl.app.item.application.port.out.ItemTemplateDomainRepository;
 import pl.app.item_template.application.domain.ItemTemplateException;
 import pl.app.item_template.application.domain.OutfitTemplate;
 import pl.app.item_template.application.domain.WeaponTemplate;
+import pl.app.item_template.application.port.out.ItemTemplateDomainRepository;
 import reactor.core.publisher.Mono;
 
 
-@Component("pl.app.item.adapter.out.ItemTemplateDomainRepositoryImpl")
+@Component("pl.app.item_template.adapter.out.ItemTemplateDomainRepositoryImpl")
 @RequiredArgsConstructor
 class ItemTemplateDomainRepositoryImpl implements ItemTemplateDomainRepository {
     private final ReactiveMongoTemplate mongoTemplate;

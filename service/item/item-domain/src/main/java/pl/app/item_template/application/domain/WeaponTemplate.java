@@ -1,10 +1,12 @@
 package pl.app.item_template.application.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "weapon_templates")
 @Getter
+@Setter
 public class WeaponTemplate extends OutfitTemplate {
     private Long minDmg;
     private Long minDmgPercentage;

@@ -1,10 +1,12 @@
 package pl.app.item_template.application.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
 @Getter
+@Setter
 public class ItemTemplate {
     @Id
     private ObjectId id;
@@ -23,5 +25,9 @@ public class ItemTemplate {
         this.name = name;
         this.description = description;
         this.imageId = imageId;
+    }
+
+    public void setType(String typeName) {
+        this.type = ItemType.valueOf(typeName);
     }
 }

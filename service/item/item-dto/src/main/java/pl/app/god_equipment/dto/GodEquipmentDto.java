@@ -14,7 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GodEquipmentDto implements Serializable {
-    private ObjectId id;
     private ObjectId godId;
     private Set<OutfitDto> outfits;
     private Set<WeaponDto> weapons;

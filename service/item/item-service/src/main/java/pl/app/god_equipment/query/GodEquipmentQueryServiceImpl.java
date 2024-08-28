@@ -90,7 +90,6 @@ class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
                     .map(d -> modelMapper.map(d, WeaponDto.class))
                     .collect(Collectors.toSet());
             return new GodEquipmentDto(
-                    domain.getId(),
                     domain.getGodId(),
                     outfits,
                     weapons,

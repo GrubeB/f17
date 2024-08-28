@@ -22,14 +22,14 @@ class GodEquipmentRestController {
 
 
     @PostMapping
-    public Mono<ResponseEntity<GodEquipmentDto>> createOutfit(@RequestBody GodEquipmentCommand.CreateGodEquipmentCommand command) {
+    public Mono<ResponseEntity<GodEquipmentDto>> createEquipment(@RequestBody GodEquipmentCommand.CreateGodEquipmentCommand command) {
         return service.createEquipment(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
 
     @PostMapping("/{godId}/items")
-    public Mono<ResponseEntity<GodEquipmentDto>> add(@PathVariable ObjectId godId, @RequestBody GodEquipmentCommand.AddItemToGodEquipmentCommand command) {
+    public Mono<ResponseEntity<GodEquipmentDto>> addItemToEquipment(@PathVariable ObjectId godId, @RequestBody GodEquipmentCommand.AddItemToGodEquipmentCommand command) {
         command.setGodId(godId);
         return service.addItemToEquipment(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
@@ -37,7 +37,7 @@ class GodEquipmentRestController {
     }
 
     @DeleteMapping("/{godId}/items")
-    public Mono<ResponseEntity<GodEquipmentDto>> remove(@PathVariable ObjectId godId, @RequestBody GodEquipmentCommand.RemoveItemFromGodEquipmentCommand command) {
+    public Mono<ResponseEntity<GodEquipmentDto>> removeItemFromEquipment(@PathVariable ObjectId godId, @RequestBody GodEquipmentCommand.RemoveItemFromGodEquipmentCommand command) {
         command.setGodId(godId);
         return service.removeItemFromEquipment(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
@@ -45,8 +45,8 @@ class GodEquipmentRestController {
     }
 
     @PutMapping("/{godId}/characters/{characterId}/items")
-    public Mono<ResponseEntity<GodEquipmentDto>> set(@PathVariable ObjectId godId, @PathVariable ObjectId characterId,
-                                                     @RequestBody GodEquipmentCommand.SetCharacterItemCommand command) {
+    public Mono<ResponseEntity<GodEquipmentDto>> setCharacterItem(@PathVariable ObjectId godId, @PathVariable ObjectId characterId,
+                                                                  @RequestBody GodEquipmentCommand.SetCharacterItemCommand command) {
         command.setGodId(godId);
         command.setCharacterId(characterId);
         return service.setCharacterItem(command)
@@ -55,8 +55,8 @@ class GodEquipmentRestController {
     }
 
     @DeleteMapping("/{godId}/characters/{characterId}/items")
-    public Mono<ResponseEntity<GodEquipmentDto>> remove(@PathVariable ObjectId godId, @PathVariable ObjectId characterId,
-                                                        @RequestBody GodEquipmentCommand.RemoveCharacterItemCommand command) {
+    public Mono<ResponseEntity<GodEquipmentDto>> removeCharacterItem(@PathVariable ObjectId godId, @PathVariable ObjectId characterId,
+                                                                     @RequestBody GodEquipmentCommand.RemoveCharacterItemCommand command) {
         command.setGodId(godId);
         command.setCharacterId(characterId);
         return service.removeCharacterItem(command)

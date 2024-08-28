@@ -27,5 +27,5 @@ public class CharacterWithGearDto implements Serializable {
     private Long def;
     private Long attackPower;
 
-    private CharacterGearDto characterGearDto;
+    private CharacterGearDto characterGear;
 }

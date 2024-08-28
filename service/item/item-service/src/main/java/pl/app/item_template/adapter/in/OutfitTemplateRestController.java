@@ -1,11 +1,9 @@
 package pl.app.item_template.adapter.in;
 
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.app.item_template.application.port.in.ItemTemplateCommand;
 import pl.app.item_template.application.port.in.ItemTemplateService;
 import pl.app.item_template.query.OutfitTemplateQueryService;
@@ -28,5 +26,19 @@ class OutfitTemplateRestController {
         return service.createOutfitTemplate(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);
+    }
+
+    @PutMapping("/{id}")
+    public Mono<ResponseEntity<OutfitTemplateDto>> updateOutfitTemplate(@PathVariable ObjectId id, @RequestBody ItemTemplateCommand.UpdateOutfitTemplateCommand command) {
+        command.setId(id);
+        return service.updateOutfitTemplate(command)
+                .flatMap(domain -> queryService.fetchById(domain.getId()))
+                .map(ResponseEntity::ok);
+    }
+
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<Void>> deleteOutfitTemplate(@PathVariable ObjectId id) {
+        return service.deleteOutfitTemplate(new ItemTemplateCommand.DeleteOutfitTemplateCommand(id))
+                .map(domain -> ResponseEntity.accepted().build());
     }
 }

@@ -55,8 +55,8 @@ class CharacterRepositoryImpl implements CharacterRepository {
                 dto.getHp(),
                 dto.getDef(),
                 dto.getAttackPower(),
-                dto.getCharacterGearDto().getLeftHand(),
-                dto.getCharacterGearDto().getRightHand()
+                dto.getCharacterGear().getLeftHand(),
+                dto.getCharacterGear().getRightHand()
         );
     }
 }

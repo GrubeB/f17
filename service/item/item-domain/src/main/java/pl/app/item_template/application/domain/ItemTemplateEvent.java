@@ -21,11 +21,34 @@ public interface ItemTemplateEvent {
     class OutfitTemplateCreatedEvent implements Serializable {
         private ObjectId itemId;
     }
-
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class OutfitTemplateUpdatedEvent implements Serializable {
+        private ObjectId itemId;
+    }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class OutfitTemplateDeletedEvent implements Serializable {
+        private ObjectId itemId;
+    }
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     class WeaponTemplateCreatedEvent implements Serializable {
+        private ObjectId itemId;
+    }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class WeaponTemplateUpdatedEvent implements Serializable {
+        private ObjectId itemId;
+    }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class WeaponTemplateDeletedEvent implements Serializable {
         private ObjectId itemId;
     }
 }

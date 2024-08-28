@@ -13,6 +13,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class WeaponTemplateDto extends OutfitTemplateDto implements Serializable {
     protected Integer minDmg;
+    protected Integer minDmgPercentage;
     protected Integer maxDmg;
+    protected Integer maxDmgPercentage;
 
 }

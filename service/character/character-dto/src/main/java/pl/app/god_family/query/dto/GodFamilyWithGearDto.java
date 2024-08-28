@@ -15,7 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GodFamilyWithGearDto implements Serializable {
-    private ObjectId id;
     private ObjectId godId;
     private Set<CharacterWithGearDto> characters;
 }
