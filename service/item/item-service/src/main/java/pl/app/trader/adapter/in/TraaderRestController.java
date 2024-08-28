@@ -22,7 +22,7 @@ class TraaderRestController {
 
 
     @PostMapping("/{godId}/renew")
-    public Mono<ResponseEntity<TraderDto>> addItemToEquipment(@PathVariable ObjectId godId,
+    public Mono<ResponseEntity<TraderDto>> renew(@PathVariable ObjectId godId,
                                                                     @RequestBody TraderCommand.RenewItemsCommand command) {
         command.setGodId(godId);
         return service.renew(command)

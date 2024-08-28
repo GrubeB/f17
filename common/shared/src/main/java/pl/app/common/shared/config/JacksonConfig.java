@@ -17,6 +17,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /*
  * Changing the serialization and deserialization of the  org.bson.types.ObjectId object to look more or less like this: {"id":"669ba617e3f38965343a34ec",...}
@@ -50,7 +51,12 @@ public class JacksonConfig {
 
         @Override
         public ObjectId deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-            return new ObjectId(jsonParser.getValueAsString());
+            String value = jsonParser.getValueAsString();
+            if(Objects.isNull(value)){
+                return null;
+            }else {
+                return new ObjectId(value);
+            }
         }
 
     }

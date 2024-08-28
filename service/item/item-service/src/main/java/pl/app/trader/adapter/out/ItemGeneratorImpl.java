@@ -19,7 +19,6 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 class ItemGeneratorImpl implements ItemGenerator {
-    private final ReactiveMongoTemplate mongoTemplate;
     private final ItemService  itemService;
 
     @Override

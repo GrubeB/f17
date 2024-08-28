@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.item.application.domain.Item;
-import pl.app.common.shared.model.ItemType;
 
 import java.util.Set;
 
@@ -34,8 +33,10 @@ public class Trader {
         this.items = items;
     }
 
-    public Item getItem( ObjectId itemId) {
-        return this.items.stream().filter(i -> i.getId().equals(itemId) )
+    public Item takeItem(ObjectId itemId) {
+        Item item = this.items.stream().filter(i -> i.getId().equals(itemId))
                 .findAny().orElseThrow(() -> TraderException.NotFoundItemException.fromItemId(itemId.toHexString()));
+        this.items.remove(item);
+        return item;
     }
 }
