@@ -22,6 +22,6 @@ public class God {
         this.id = ObjectId.get();
         this.accountId = accountId;
         this.name = name;
-        this.money = new GodMoney(10_000L);
+        this.money = new GodMoney();
     }
 }

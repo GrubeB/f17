@@ -15,6 +15,7 @@ public class CharacterHttpInterfaceConfig {
         WebClient webClient = WebClient.builder()
                 .baseUrl(characterServiceBaseUrl)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
         WebClientAdapter adapter = WebClientAdapter.create(webClient);
         return HttpServiceProxyFactory.builderFor(adapter)

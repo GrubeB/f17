@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.Money;
 
 import java.io.Serializable;
 
@@ -21,13 +22,13 @@ public interface GodCommand {
     @AllArgsConstructor
     class AddMoneyCommand implements Serializable {
         private ObjectId godId;
-        private Long amount;
+        private Money money;
     }
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class SubtractMoneyCommand implements Serializable {
         private ObjectId godId;
-        private Long amount;
+        private Money money;
     }
 }

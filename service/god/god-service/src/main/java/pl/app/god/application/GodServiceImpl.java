@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pl.app.common.shared.model.Money;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.god.application.domain.God;
 import pl.app.god.application.domain.GodEvent;
@@ -35,6 +36,7 @@ class GodServiceImpl implements GodService {
                 .doOnError(e -> logger.error("exception occurred while creating god with name : {}, for account: {}, exception: {}", command.getName(), command.getAccountId(), e.getMessage()))
                 .then(Mono.defer(() -> {
                     God god = new God(command.getAccountId(), command.getName());
+                    god.getMoney().addMoney(Money.Type.BASE, 10_000L);
                     var event = new GodEvent.GodCreatedEvent(
                             god.getId()
                     );

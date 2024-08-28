@@ -1,36 +1,21 @@
 package pl.app.god.application.domain;
 
 import lombok.Getter;
+import pl.app.common.shared.model.Money;
 
 @Getter
-public class GodMoney {
-    private Long amount;
-
-    @SuppressWarnings("unused")
+public class GodMoney extends Money {
     public GodMoney() {
-        this.amount = 0L;
+        super();
     }
-
-    public GodMoney(Long amount) {
-        this.amount = amount;
-    }
-
-
-    public Long getBalance() {
-        return amount;
-    }
-
-    public void addMoney(Long amount) {
-        this.amount = this.amount + amount;
-    }
-
-    public void subtractMoney(Long amount) {
+    @Override
+    public void subtractMoney(Money.Type type, Long amount) {
         if (amount < 0) {
             throw new GodException.InvalidAmountException();
         }
-        if (this.amount - amount < 0) {
+        if (getBalance(type) - amount < 0) {
             throw new GodException.InsufficientMoneyException();
         }
-        this.amount = this.amount - amount;
+        super.subtractMoney(type, amount);
     }
 }

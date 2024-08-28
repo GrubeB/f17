@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.Money;
 
 import java.io.Serializable;
 
@@ -21,6 +22,7 @@ public interface GodEvent {
     @AllArgsConstructor
     class MoneyAddedEvent implements Serializable {
         private ObjectId godId;
+        private Money.Type type;
         private Long amount;
     }
 
@@ -29,6 +31,7 @@ public interface GodEvent {
     @AllArgsConstructor
     class MoneySubtractedEvent implements Serializable {
         private ObjectId godId;
+        private Money.Type type;
         private Long amount;
     }
 }

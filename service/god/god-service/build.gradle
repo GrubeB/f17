@@ -56,10 +56,6 @@ dependencies {
     testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
 
-    // FAKER
-    implementation('com.github.javafaker:javafaker:1.0.2') { exclude module: 'org.yaml' }
-    implementation 'org.yaml:snakeyaml:1.26'
-
     // MAPPER
     implementation 'org.modelmapper:modelmapper:3.1.1'
     implementation 'org.modelmapper.extensions:modelmapper-spring:3.1.1'
@@ -69,9 +65,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // TESTS
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: "com.vaadin.external.google", module: "android-json"
-    }
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // REACTOR

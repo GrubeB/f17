@@ -53,7 +53,16 @@ class GodQueryServiceImpl implements GodQueryService {
 
         @PostConstruct
         void init() {
-            addMapper(God.class, GodDto.class, e -> modelMapper.map(e, GodDto.class));
+            addMapper(God.class, GodDto.class, this::mapToGodDto);
+
+        }
+
+        GodDto mapToGodDto(God domain) {
+            return new GodDto(
+                    domain.getId(),
+                    domain.getName(),
+                    domain.getMoney()
+            );
         }
     }
 

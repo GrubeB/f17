@@ -41,6 +41,10 @@ public class Money {
         this.monies.put(type, balance - amount);
     }
 
+    public Map<Type, Long> getMonies() {
+        return monies;
+    }
+
     public enum Type {
         BASE,
         PREMIUM,

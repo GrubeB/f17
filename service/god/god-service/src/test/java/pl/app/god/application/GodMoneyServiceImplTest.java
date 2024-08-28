@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import pl.app.common.shared.model.Money;
 import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.god.application.domain.God;
@@ -57,14 +58,14 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
 
         var command = new GodCommand.AddMoneyCommand(
                 god.getId(),
-                amount
+                new Money(Money.Type.BASE, amount, Money.Type.PREMIUM, amount)
         );
         StepVerifier.create(godMoneyService.addMoney(command))
                 .assertNext(next -> {
-                    Assertions.assertThat(next.getMoney().getBalance()).isEqualTo(god.getMoney().getBalance() + amount);
+                    Assertions.assertThat(next.getMoney().getBalance(Money.Type.BASE)).isEqualTo(god.getMoney().getBalance(Money.Type.BASE) + amount);
                 }).verifyComplete();
         verify(mongoTemplate, times(1)).save(any(God.class));
-        verify(kafkaTemplate, times(1))
+        verify(kafkaTemplate, times(2))
                 .send(eq(topicNames.getMoneyAdded().getName()), eq(god.getId()), any(GodEvent.MoneyAddedEvent.class));
     }
 
@@ -74,17 +75,17 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
         final var accountId = ObjectId.get();
         final var amount = 100L;
         God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, godName)).block();
-        godMoneyService.addMoney(new GodCommand.AddMoneyCommand(god.getId(), amount * 2)).block();
+        godMoneyService.addMoney(new GodCommand.AddMoneyCommand(god.getId(), new Money(Money.Type.BASE, amount))).block();
         Assumptions.assumeThat(god).isNotNull();
         Mockito.reset(godDomainRepository, mongoTemplate, kafkaTemplate, topicNames);
 
         var command = new GodCommand.SubtractMoneyCommand(
                 god.getId(),
-                amount
+                new Money(Money.Type.BASE, amount)
         );
         StepVerifier.create(godMoneyService.subtractMoney(command))
                 .assertNext(next -> {
-                    Assertions.assertThat(next.getMoney().getBalance()).isEqualTo(god.getMoney().getBalance() + amount);
+                    Assertions.assertThat(next.getMoney().getBalance(Money.Type.BASE)).isEqualTo(god.getMoney().getBalance(Money.Type.BASE));
                 }).verifyComplete();
         verify(mongoTemplate, times(1)).save(any(God.class));
         verify(kafkaTemplate, times(1))
@@ -102,7 +103,7 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
 
         var command = new GodCommand.SubtractMoneyCommand(
                 god.getId(),
-                amount
+                new Money(Money.Type.BASE, amount)
         );
         StepVerifier.create(godMoneyService.subtractMoney(command))
                 .expectError(GodException.InsufficientMoneyException.class)
@@ -120,7 +121,7 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
 
         var command = new GodCommand.SubtractMoneyCommand(
                 god.getId(),
-                amount
+                new Money(Money.Type.BASE, amount)
         );
         StepVerifier.create(godMoneyService.subtractMoney(command))
                 .expectError(GodException.InvalidAmountException.class)
