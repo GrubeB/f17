@@ -5,5 +5,5 @@ import pl.app.item.application.domain.Item;
 import reactor.core.publisher.Mono;
 
 public interface ItemDomainRepository {
-    Mono<Item> fetchById(ObjectId itemId, String type);
+    Mono<Item> fetchById(ObjectId itemId);
 }

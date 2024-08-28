@@ -36,7 +36,6 @@ public interface GodEquipmentCommand {
     class AddItemToGodEquipmentCommand implements Serializable {
         private ObjectId godId;
         private ObjectId itemId;
-        private String itemType;
     }
 
     @Data
@@ -45,7 +44,6 @@ public interface GodEquipmentCommand {
     class RemoveItemFromGodEquipmentCommand implements Serializable {
         private ObjectId godId;
         private ObjectId itemId;
-        private String itemType;
     }
 
     @Data
@@ -56,7 +54,6 @@ public interface GodEquipmentCommand {
         private ObjectId characterId;
         private String slot;
         private ObjectId itemId;
-        private String itemType;
     }
 
     @Data

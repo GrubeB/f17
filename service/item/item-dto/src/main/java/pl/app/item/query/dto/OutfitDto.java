@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.ItemType;
 import pl.app.common.shared.model.Statistics;
 
 import java.io.Serializable;
@@ -25,7 +26,7 @@ public class OutfitDto extends ItemDto implements Serializable {
     protected Long accuracy;
     protected Long resistance;
 
-    public OutfitDto(ObjectId id, String type, ObjectId templateId, String name, String description, String imageId, Long persistence, Long durability, Long strength, Long speed, Long criticalRate, Long criticalDamage, Long accuracy, Long resistance) {
+    public OutfitDto(ObjectId id, ItemType type, ObjectId templateId, String name, String description, String imageId, Long persistence, Long durability, Long strength, Long speed, Long criticalRate, Long criticalDamage, Long accuracy, Long resistance) {
         super(id, type, templateId, name, description, imageId);
         this.persistence = persistence;
         this.durability = durability;

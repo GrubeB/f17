@@ -40,8 +40,8 @@ public class GodEquipment {
         this.items.add(item);
     }
 
-    public Item removeItemById(ObjectId itemId, String itemType) {
-        Item item = getItemByIdOrThrow(itemId, itemType);
+    public Item removeItemById(ObjectId itemId) {
+        Item item = getItemByIdOrThrow(itemId);
         this.items.removeIf(i -> i.getId().equals(itemId));
         return item;
     }
@@ -52,9 +52,9 @@ public class GodEquipment {
         return characterGear.removeItem(slot);
     }
 
-    public Item setItemToCharacterGear(ObjectId characterId, String slotName, ObjectId itemId, String itemType) {
+    public Item setItemToCharacterGear(ObjectId characterId, String slotName, ObjectId itemId) {
         GearSlot slot = GearSlot.valueOf(slotName);
-        Item item = getItemByIdOrThrow(itemId, itemType);
+        Item item = getItemByIdOrThrow(itemId);
         CharacterGear characterGear = getCharacterGearByIdOrThrow(characterId);
         characterGear.setItem(item, slot);
         return item;
@@ -81,12 +81,12 @@ public class GodEquipment {
         return this.characterGears.stream().filter(ch -> ch.getCharacterId().equals(characterId)).findAny();
     }
 
-    private Item getItemByIdOrThrow(ObjectId itemId, String itemType) {
-        return getItemById(itemId, itemType).orElseThrow(() -> GodEquipmentException.NotFoundGodEquipmentException.fromId(itemId.toHexString()));
+    private Item getItemByIdOrThrow(ObjectId itemId) {
+        return getItemById(itemId).orElseThrow(() -> GodEquipmentException.NotFoundGodEquipmentException.fromId(itemId.toHexString()));
     }
 
-    private Optional<Item> getItemById(ObjectId itemId, String itemType) {
-        return this.items.stream().filter(i -> i.getId().equals(itemId) && i.getType().name().equals(itemType))
+    private Optional<Item> getItemById(ObjectId itemId) {
+        return this.items.stream().filter(i -> i.getId().equals(itemId))
                 .findAny();
     }
 }

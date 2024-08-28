@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import pl.app.god_equipment.application.port.out.ItemDomainRepository;
 import pl.app.item.application.domain.Item;
 import pl.app.item.query.ItemQueryService;
-import pl.app.item_template.application.domain.ItemType;
+import pl.app.common.shared.model.ItemType;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -14,9 +14,8 @@ import reactor.core.publisher.Mono;
 class ItemDomainRepositoryImpl implements ItemDomainRepository {
     private final ItemQueryService itemQueryService;
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Mono<Item> fetchById(ObjectId itemId, String type) {
-        return (Mono<Item>) itemQueryService.fetchByIdAndType(itemId, ItemType.valueOf(type));
+    public Mono<Item> fetchById(ObjectId itemId) {
+        return itemQueryService.fetchById(itemId);
     }
 }

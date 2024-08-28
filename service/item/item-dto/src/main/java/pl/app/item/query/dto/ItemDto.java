@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.ItemType;
 
 import java.io.Serializable;
 
@@ -12,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ItemDto implements Serializable {
     protected ObjectId id;
-    protected String type;
+    protected ItemType type;
     protected ObjectId templateId;
     protected String name;
     protected String description;

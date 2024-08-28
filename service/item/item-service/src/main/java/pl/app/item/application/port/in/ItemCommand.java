@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.ItemType;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 
 public interface ItemCommand {
@@ -22,6 +25,14 @@ public interface ItemCommand {
     @AllArgsConstructor
     class CreateWeaponCommand implements Serializable {
         private ObjectId templateId;
+        private Integer level;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class CreateRandomItemCommand implements Serializable {
+        private Integer numberOfItems;
+        private Set<ItemType> itemTypes;
         private Integer level;
     }
 }

@@ -3,10 +3,11 @@ package pl.app.item_template.application.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
+import pl.app.common.shared.model.ItemType;
 
-@Document(collection = "outfit_templates")
 @Getter
 @Setter
+@Document(collection = "templates")
 public class OutfitTemplate extends ItemTemplate {
     private Long persistence;
     private Long persistencePercentage;
@@ -29,8 +30,8 @@ public class OutfitTemplate extends ItemTemplate {
     public OutfitTemplate() {
     }
 
-    public OutfitTemplate(String typeName, String name, String description, String imageId, Long persistence, Long durability, Long strength, Long speed, Long criticalRate, Long criticalDamage, Long accuracy, Long resistance) {
-        super(typeName, name, description, imageId);
+    public OutfitTemplate(ItemType type, String name, String description, String imageId, Long persistence, Long durability, Long strength, Long speed, Long criticalRate, Long criticalDamage, Long accuracy, Long resistance) {
+        super(type, name, description, imageId);
         this.persistence = persistence;
         this.durability = durability;
         this.strength = strength;
@@ -41,8 +42,8 @@ public class OutfitTemplate extends ItemTemplate {
         this.resistance = resistance;
     }
 
-    public OutfitTemplate(String typeName, String name, String description, String imageId, Long persistence, Long persistencePercentage, Long durability, Long durabilityPercentage, Long strength, Long strengthPercentage, Long speed, Long speedPercentage, Long criticalRate, Long criticalRatePercentage, Long criticalDamage, Long criticalDamagePercentage, Long accuracy, Long accuracyPercentage, Long resistance, Long resistancePercentage) {
-        super(typeName, name, description, imageId);
+    public OutfitTemplate(ItemType type, String name, String description, String imageId, Long persistence, Long persistencePercentage, Long durability, Long durabilityPercentage, Long strength, Long strengthPercentage, Long speed, Long speedPercentage, Long criticalRate, Long criticalRatePercentage, Long criticalDamage, Long criticalDamagePercentage, Long accuracy, Long accuracyPercentage, Long resistance, Long resistancePercentage) {
+        super(type, name, description, imageId);
         this.persistence = persistence;
         this.persistencePercentage = persistencePercentage;
         this.durability = durability;

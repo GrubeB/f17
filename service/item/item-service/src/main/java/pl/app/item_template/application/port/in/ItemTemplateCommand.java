@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.ItemType;
 
 import java.io.Serializable;
 
@@ -14,7 +15,7 @@ public interface ItemTemplateCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     class CreateOutfitTemplateCommand implements Serializable {
-        private String type;
+        private ItemType type;
         private String name;
         private String description;
         private String imageId;
@@ -41,7 +42,7 @@ public interface ItemTemplateCommand {
     @AllArgsConstructor
     class UpdateOutfitTemplateCommand implements Serializable {
         private ObjectId id;
-        private String type;
+        private ItemType type;
         private String name;
         private String description;
         private String imageId;
@@ -73,7 +74,7 @@ public interface ItemTemplateCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     class CreateWeaponTemplateCommand implements Serializable {
-        private String type;
+        private ItemType type;
         private String name;
         private String description;
         private String imageId;
@@ -105,7 +106,7 @@ public interface ItemTemplateCommand {
     @AllArgsConstructor
     class UpdateWeaponTemplateCommand implements Serializable {
         private ObjectId id;
-        private String type;
+        private ItemType type;
         private String name;
         private String description;
         private String imageId;

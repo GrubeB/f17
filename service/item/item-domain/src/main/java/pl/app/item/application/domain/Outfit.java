@@ -4,8 +4,8 @@ import lombok.Getter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.item_template.application.domain.OutfitTemplate;
 
-@Document(collection = "outfits")
 @Getter
+@Document(collection = "items")
 public class Outfit extends Item {
     protected Integer generatedForLevel;
 

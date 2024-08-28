@@ -4,8 +4,8 @@ import lombok.Getter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.item_template.application.domain.WeaponTemplate;
 
-@Document(collection = "weapons")
 @Getter
+@Document(collection = "items")
 public class Weapon extends Outfit {
     @SuppressWarnings("unused")
     public Weapon() {

@@ -109,7 +109,7 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
         logger.debug("adding item to equipment for god: {}", command.getGodId());
         return domainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while adding item to equipment for god: {}, exception: {}", command.getGodId(), e.getMessage()))
-                .zipWith(itemDomainRepository.fetchById(command.getItemId(), command.getItemType()))
+                .zipWith(itemDomainRepository.fetchById(command.getItemId()))
                 .flatMap(tuple2 -> {
                     GodEquipment godEquipment = tuple2.getT1();
                     Item item = tuple2.getT2();
@@ -135,7 +135,7 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
         return domainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while removing item from equipment for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .flatMap(godEquipment -> {
-                    Item item = godEquipment.removeItemById(command.getItemId(), command.getItemType());
+                    Item item = godEquipment.removeItemById(command.getItemId());
                     var event = new GodEquipmentEvent.GodEquipmentItemRemovedEvent(
                             godEquipment.getId(),
                             godEquipment.getGodId(),
@@ -158,7 +158,7 @@ class GodEquipmentServiceImpl implements GodEquipmentService {
                 .doOnError(e -> logger.error("exception occurred while setting item to character: {}, for god: {}, exception: {}", command.getCharacterId(), command.getGodId(), e.getMessage()))
                 .flatMap(domain -> {
                     CharacterGear characterGear = domain.getCharacterGearByIdOrThrow(command.getCharacterId());
-                    Item item = domain.setItemToCharacterGear(command.getCharacterId(), command.getSlot(), command.getItemId(), command.getItemType());
+                    Item item = domain.setItemToCharacterGear(command.getCharacterId(), command.getSlot(), command.getItemId());
                     var event = new GodEquipmentEvent.CharacterItemSetEvent(
                             domain.getId(),
                             domain.getGodId(),

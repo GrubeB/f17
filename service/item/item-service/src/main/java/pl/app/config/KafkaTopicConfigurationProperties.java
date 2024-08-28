@@ -33,6 +33,10 @@ public class KafkaTopicConfigurationProperties {
     private Topic characterItemSet;
     private Topic characterItemRemoved;
 
+    private Topic traderCreated;
+    private Topic traderItemsRenewed;
+    private Topic godBoughtItem;
+
     @Setter
     @Getter
     public static class Topic {

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
 import pl.app.item.application.domain.Outfit;
 import pl.app.item.query.dto.OutfitDto;
-import pl.app.item_template.application.domain.ItemType;
+import pl.app.common.shared.model.ItemType;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -59,7 +59,7 @@ class OutfitQueryServiceImpl implements OutfitQueryService {
         OutfitDto mapToOutfitDto(Outfit domain) {
             return new OutfitDto(
                     domain.getId(),
-                    ItemType.WEAPON.name(),
+                    domain.getType(),
                     domain.getTemplateId(),
                     domain.getName(),
                     domain.getDescription(),
