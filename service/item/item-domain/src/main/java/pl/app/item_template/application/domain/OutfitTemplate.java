@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.common.shared.model.ItemType;
+import pl.app.common.shared.model.Money;
 
 @Getter
 @Setter
@@ -25,25 +26,12 @@ public class OutfitTemplate extends ItemTemplate {
     private Long accuracyPercentage;
     private Long resistance;
     private Long resistancePercentage;
-
     @SuppressWarnings("unused")
     public OutfitTemplate() {
     }
 
-    public OutfitTemplate(ItemType type, String name, String description, String imageId, Long persistence, Long durability, Long strength, Long speed, Long criticalRate, Long criticalDamage, Long accuracy, Long resistance) {
-        super(type, name, description, imageId);
-        this.persistence = persistence;
-        this.durability = durability;
-        this.strength = strength;
-        this.speed = speed;
-        this.criticalRate = criticalRate;
-        this.criticalDamage = criticalDamage;
-        this.accuracy = accuracy;
-        this.resistance = resistance;
-    }
-
-    public OutfitTemplate(ItemType type, String name, String description, String imageId, Long persistence, Long persistencePercentage, Long durability, Long durabilityPercentage, Long strength, Long strengthPercentage, Long speed, Long speedPercentage, Long criticalRate, Long criticalRatePercentage, Long criticalDamage, Long criticalDamagePercentage, Long accuracy, Long accuracyPercentage, Long resistance, Long resistancePercentage) {
-        super(type, name, description, imageId);
+    public OutfitTemplate(ItemType type, String name, String description, String imageId, Money money, Long moneyPercentage, Long persistence, Long persistencePercentage, Long durability, Long durabilityPercentage, Long strength, Long strengthPercentage, Long speed, Long speedPercentage, Long criticalRate, Long criticalRatePercentage, Long criticalDamage, Long criticalDamagePercentage, Long accuracy, Long accuracyPercentage, Long resistance, Long resistancePercentage) {
+        super(type, name, description, imageId, money, moneyPercentage);
         this.persistence = persistence;
         this.persistencePercentage = persistencePercentage;
         this.durability = durability;

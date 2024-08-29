@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.common.shared.model.ItemType;
+import pl.app.common.shared.model.Money;
 
 @Getter
 @Setter
@@ -17,18 +18,22 @@ public class ItemTemplate {
     private String name;
     private String description;
     private String imageId;
+    private Money money;
+    private Long moneyPercentage;
 
     @SuppressWarnings("unused")
     public ItemTemplate() {
     }
-
-    public ItemTemplate(ItemType type, String name, String description, String imageId) {
+    public ItemTemplate(ItemType type, String name, String description, String imageId, Money money, Long moneyPercentage) {
         this.id = ObjectId.get();
         this.type = type;
         this.name = name;
         this.description = description;
         this.imageId = imageId;
+        this.money = money;
+        this.moneyPercentage = moneyPercentage;
     }
+
     public void setType(ItemType type) {
         this.type = type;
     }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.Money;
 
 import java.io.Serializable;
 
@@ -16,4 +17,6 @@ public class ItemTemplateDto implements Serializable {
     protected String name;
     protected String description;
     protected String imageId;
+    protected Money money;
+    private Long moneyPercentage;
 }

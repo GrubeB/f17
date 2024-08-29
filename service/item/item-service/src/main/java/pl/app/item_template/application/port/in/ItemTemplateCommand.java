@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import pl.app.common.shared.model.ItemType;
+import pl.app.common.shared.model.Money;
 
 import java.io.Serializable;
 
@@ -19,6 +20,8 @@ public interface ItemTemplateCommand {
         private String name;
         private String description;
         private String imageId;
+        private Money money;
+        private Long moneyPercentage;
 
         private Long persistence;
         private Long persistencePercentage;
@@ -46,6 +49,8 @@ public interface ItemTemplateCommand {
         private String name;
         private String description;
         private String imageId;
+        private Money money;
+        private Long moneyPercentage;
 
         private Long persistence;
         private Long persistencePercentage;
@@ -78,6 +83,8 @@ public interface ItemTemplateCommand {
         private String name;
         private String description;
         private String imageId;
+        private Money money;
+        private Long moneyPercentage;
 
         private Long persistence;
         private Long persistencePercentage;
@@ -110,6 +117,8 @@ public interface ItemTemplateCommand {
         private String name;
         private String description;
         private String imageId;
+        private Money money;
+        private Long moneyPercentage;
 
         private Long persistence;
         private Long persistencePercentage;

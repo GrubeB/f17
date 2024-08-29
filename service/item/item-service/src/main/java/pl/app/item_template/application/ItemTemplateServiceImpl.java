@@ -52,6 +52,7 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
 
     private OutfitTemplate innerCreateOutfitTemplate(ItemTemplateCommand.CreateOutfitTemplateCommand command) {
         return new OutfitTemplate(command.getType(), command.getName(), command.getDescription(), command.getImageId(),
+                command.getMoney(), command.getMoneyPercentage(),
                 command.getPersistence(), command.getPersistencePercentage(),
                 command.getDurability(), command.getDurabilityPercentage(),
                 command.getStrength(), command.getStrengthPercentage(),
@@ -87,6 +88,8 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
         template.setName(command.getName());
         template.setDescription(command.getDescription());
         template.setImageId(command.getImageId());
+        template.setMoney(command.getMoney());
+        template.setMoneyPercentage(command.getMoneyPercentage());
         template.setPersistence(command.getPersistence());
         template.setPersistencePercentage(command.getPersistencePercentage());
         template.setDurability(command.getDurability());
@@ -146,6 +149,7 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
 
     private WeaponTemplate innerCreateWeaponTemplate(ItemTemplateCommand.CreateWeaponTemplateCommand command) {
         return new WeaponTemplate(command.getType(), command.getName(), command.getDescription(), command.getImageId(),
+                command.getMoney(), command.getMoneyPercentage(),
                 command.getPersistence(), command.getPersistencePercentage(),
                 command.getDurability(), command.getDurabilityPercentage(),
                 command.getStrength(), command.getStrengthPercentage(),
@@ -183,6 +187,8 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
         template.setName(command.getName());
         template.setDescription(command.getDescription());
         template.setImageId(command.getImageId());
+        template.setMoney(command.getMoney());
+        template.setMoneyPercentage(command.getMoneyPercentage());
         template.setPersistence(command.getPersistence());
         template.setPersistencePercentage(command.getPersistencePercentage());
         template.setDurability(command.getDurability());
