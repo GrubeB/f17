@@ -64,6 +64,8 @@ class OutfitQueryServiceImpl implements OutfitQueryService {
                     domain.getName(),
                     domain.getDescription(),
                     domain.getImageId(),
+                    domain.getMoney(),
+                    domain.getQuality(),
                     domain.getPersistence(),
                     domain.getDurability(),
                     domain.getStrength(),

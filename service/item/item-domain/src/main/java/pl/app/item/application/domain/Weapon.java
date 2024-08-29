@@ -22,11 +22,15 @@ public class Weapon extends Outfit {
     }
 
     public Long getMinDmg() {
-        return getTemplate().getMinDmg() + generatedForLevel * getTemplate().getMinDmg() * getTemplate().getMinDmgPercentage() / 100_000;
+        return getQuality()
+                * (getTemplate().getMinDmg() + generatedForLevel * getTemplate().getMinDmg() * getTemplate().getMinDmgPercentage() / 100_000)
+                / 100_000;
     }
 
     public Long getMaxDmg() {
-        return getTemplate().getMaxDmg() + generatedForLevel * getTemplate().getMaxDmg() * getTemplate().getMaxDmgPercentage() / 100_000;
+        return getQuality()
+                * (getTemplate().getMaxDmg() + generatedForLevel * getTemplate().getMaxDmg() * getTemplate().getMaxDmgPercentage() / 100_000)
+                / 100_000;
     }
 }
 

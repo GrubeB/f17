@@ -16,9 +16,7 @@ public class Item {
     @Id
     protected ObjectId id;
     @DBRef
-    private ItemTemplate template;
-    private Money money;
-
+    protected ItemTemplate template;
     @SuppressWarnings("unused")
     public Item() {
     }
@@ -26,7 +24,6 @@ public class Item {
     public Item(ItemTemplate template) {
         this.id = ObjectId.get();
         this.template = template;
-        this.money = new Money(Money.Type.BASE, 1L); // TODO
     }
 
     /* GETTERS */
@@ -52,5 +49,11 @@ public class Item {
 
     public String getImageId() {
         return template.getImageId();
+    }
+    public Money getMoney(){
+        Money money = template.getMoney();
+        Long percentage = template.getMoneyPercentage();
+        money.addMoney(Money.Type.BASE, money.getBalance(Money.Type.BASE) * (percentage/ 100_000) );
+        return money;
     }
 }
