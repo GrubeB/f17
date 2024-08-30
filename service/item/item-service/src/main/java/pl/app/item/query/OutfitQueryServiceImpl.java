@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
 import org.springframework.lang.NonNull;
@@ -53,7 +54,7 @@ class OutfitQueryServiceImpl implements OutfitQueryService {
 
         @PostConstruct
         void init() {
-            addMapper(Outfit.class, OutfitDto.class, this::mapToOutfitDto);
+            addMapper(Outfit.class, OutfitDto.class, e -> modelMapper.map(e, OutfitDto.class));
         }
 
         OutfitDto mapToOutfitDto(Outfit domain) {
@@ -79,6 +80,7 @@ class OutfitQueryServiceImpl implements OutfitQueryService {
     }
 
     interface Repository extends ReactiveMongoRepository<Outfit, ObjectId> {
+        @Query("{ 'template.type': { $in : ['HELMET', 'ARMOR', 'GLOVES', 'BOOTS', 'BELT', 'RING', 'AMULET', 'TALISMAN']} }")
         Flux<Outfit> findAllBy(Pageable pageable);
     }
 }

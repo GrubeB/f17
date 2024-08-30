@@ -8,7 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.common.shared.model.ItemType;
 import pl.app.item.application.domain.Item;
 
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Document(collection = "gears")
@@ -50,12 +53,14 @@ public class CharacterGear {
     }
 
     public Set<Item> getItems() {
-        return Set.of(helmet, armor, gloves, boots, belt, ring, amulet, talisman, leftHand, rightHand);
+        return Stream.of(helmet, armor, gloves, boots, belt, ring, amulet, talisman, leftHand, rightHand)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     public void setItem(Item item, GearSlot slot) {
         if (ItemType.isWeapon(item.getType())) {
-            if (GearSlot.HELMET.equals(slot)) {
+            if (GearSlot.LEFT_HAND.equals(slot)) {
                 this.leftHand = item;
             } else if (GearSlot.RIGHT_HAND.equals(slot)) {
                 this.rightHand = item;
@@ -63,21 +68,21 @@ public class CharacterGear {
                 throw new GodEquipmentException.WrongSlotException();
             }
         } else if (ItemType.isOutfit(item.getType())) {
-            if (GearSlot.HELMET.equals(slot)) {
+            if (GearSlot.HELMET.equals(slot) && ItemType.HELMET.equals(item.getType())) {
                 this.helmet = item;
-            } else if (GearSlot.ARMOR.equals(slot)) {
+            } else if (GearSlot.ARMOR.equals(slot) && ItemType.ARMOR.equals(item.getType())) {
                 this.armor = item;
-            } else if (GearSlot.GLOVES.equals(slot)) {
+            } else if (GearSlot.GLOVES.equals(slot) && ItemType.GLOVES.equals(item.getType())) {
                 this.gloves = item;
-            }else if (GearSlot.BOOTS.equals(slot)) {
+            }else if (GearSlot.BOOTS.equals(slot) && ItemType.BOOTS.equals(item.getType())) {
                 this.boots = item;
-            }else if (GearSlot.BELT.equals(slot)) {
+            }else if (GearSlot.BELT.equals(slot) && ItemType.BELT.equals(item.getType())) {
                 this.belt = item;
-            }else if (GearSlot.RING.equals(slot)) {
+            }else if (GearSlot.RING.equals(slot) && ItemType.RING.equals(item.getType())) {
                 this.ring = item;
-            }else if (GearSlot.AMULET.equals(slot)) {
+            }else if (GearSlot.AMULET.equals(slot) && ItemType.AMULET.equals(item.getType())) {
                 this.amulet = item;
-            }else if (GearSlot.TALISMAN.equals(slot)) {
+            }else if (GearSlot.TALISMAN.equals(slot) && ItemType.TALISMAN.equals(item.getType())) {
                 this.talisman = item;
             }else {
                 throw new GodEquipmentException.WrongSlotException();

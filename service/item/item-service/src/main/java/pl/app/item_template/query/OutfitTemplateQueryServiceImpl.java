@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
 import org.springframework.lang.NonNull;
@@ -58,6 +59,7 @@ class OutfitTemplateQueryServiceImpl implements OutfitTemplateQueryService {
     }
 
     interface Repository extends ReactiveMongoRepository<OutfitTemplate, ObjectId> {
+        @Query("{ 'type': { $in : ['HELMET', 'ARMOR', 'GLOVES', 'BOOTS', 'BELT', 'RING', 'AMULET', 'TALISMAN']} }")
         Flux<OutfitTemplate> findAllBy(Pageable pageable);
     }
 }

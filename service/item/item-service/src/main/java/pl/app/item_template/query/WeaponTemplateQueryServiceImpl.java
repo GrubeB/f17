@@ -8,12 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
+import pl.app.item_template.application.domain.OutfitTemplate;
 import pl.app.item_template.application.domain.WeaponTemplate;
 import pl.app.item_template.query.dto.WeaponTemplateDto;
 import reactor.core.publisher.Flux;
@@ -57,6 +59,7 @@ class WeaponTemplateQueryServiceImpl implements WeaponTemplateQueryService {
     }
 
     interface Repository extends ReactiveMongoRepository<WeaponTemplate, ObjectId> {
+        @Query("{ 'type': { $in : ['AXE', 'CLUB', 'SWORD', 'BOOTS', 'WANDS', 'THROWING_WEAPONS', 'BOWS', 'CROSSBOWS']} }")
         Flux<WeaponTemplate> findAllBy(Pageable pageable);
     }
 }
