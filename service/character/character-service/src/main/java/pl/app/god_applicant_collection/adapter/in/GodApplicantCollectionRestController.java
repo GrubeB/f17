@@ -1,13 +1,13 @@
 package pl.app.god_applicant_collection.adapter.in;
 
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.app.god_applicant_collection.application.port.in.GodApplicantCollectionCommand;
 import pl.app.god_applicant_collection.application.port.in.GodApplicantCollectionService;
 import pl.app.god_applicant_collection.query.GodApplicantCollectionQueryService;
 import pl.app.god_applicant_collection.query.dto.GodApplicantCollectionDto;
-import pl.app.god_family.query.dto.GodFamilyDto;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -22,25 +22,34 @@ class GodApplicantCollectionRestController {
 
 
     @PostMapping("/{godId}/applicants")
-    public Mono<ResponseEntity<GodApplicantCollectionDto>> create(@RequestBody GodApplicantCollectionCommand.CreateGodApplicantCommand command) {
+    Mono<ResponseEntity<GodApplicantCollectionDto>> create(@PathVariable ObjectId godId,
+                                                           @RequestBody GodApplicantCollectionCommand.CreateGodApplicantCommand command) {
         return service.create(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
+
     @DeleteMapping("/{godId}/applicants")
-    public Mono<ResponseEntity<GodApplicantCollectionDto>> remove(@RequestBody GodApplicantCollectionCommand.RemoveGodApplicantCommand command) {
+    Mono<ResponseEntity<GodApplicantCollectionDto>> remove(@PathVariable ObjectId godId,
+                                                           @RequestBody GodApplicantCollectionCommand.RemoveGodApplicantCommand command) {
         return service.remove(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
+
     @PostMapping("/{godId}/applicants/{characterId}/acceptances")
-    public Mono<ResponseEntity<GodApplicantCollectionDto>> accept(@RequestBody GodApplicantCollectionCommand.AcceptGodApplicantCommand command) {
+    Mono<ResponseEntity<GodApplicantCollectionDto>> accept(@PathVariable ObjectId godId,
+                                                           @PathVariable ObjectId characterId,
+                                                           @RequestBody GodApplicantCollectionCommand.AcceptGodApplicantCommand command) {
         return service.accept(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);
     }
+
     @DeleteMapping("/{godId}/applicants/{characterId}/acceptances")
-    public Mono<ResponseEntity<GodApplicantCollectionDto>> reject(@RequestBody GodApplicantCollectionCommand.RejectGodApplicantCommand command) {
+    Mono<ResponseEntity<GodApplicantCollectionDto>> reject(@PathVariable ObjectId godId,
+                                                           @PathVariable ObjectId characterId,
+                                                           @RequestBody GodApplicantCollectionCommand.RejectGodApplicantCommand command) {
         return service.reject(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
                 .map(ResponseEntity::ok);

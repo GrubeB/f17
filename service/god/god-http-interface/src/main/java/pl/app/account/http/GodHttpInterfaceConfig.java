@@ -12,8 +12,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class GodHttpInterfaceConfig {
 
+    @Value("${app.service.god-service.base-url}")
+    private String serviceBaseUrl;
     private final ObjectMapper objectMapper;
 
     public GodHttpInterfaceConfig(ObjectMapper objectMapper) {
@@ -37,9 +42,10 @@ public class GodHttpInterfaceConfig {
                 .build();
     }
 
-    @Value("${app.service.god-service.base-url}")
-    private String serviceBaseUrl;
-
+    @Bean
+    GodControllerHttpInterface godControllerHttpInterface() {
+        return factory().createClient(GodControllerHttpInterface.class);
+    }
     @Bean
     GodQueryControllerHttpInterface godQueryControllerHttpInterface() {
         return factory().createClient(GodQueryControllerHttpInterface.class);

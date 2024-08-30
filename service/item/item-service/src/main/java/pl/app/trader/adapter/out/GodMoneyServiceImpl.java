@@ -16,11 +16,11 @@ class GodMoneyServiceImpl implements GodMoneyService {
 
     @Override
     public Mono<Void> addMoney(ObjectId godId, Money money) {
-        return godMoneyControllerHttpInterface.addMoney(new GodCommand.AddMoneyCommand(godId, money), godId.toHexString()).then();
+        return godMoneyControllerHttpInterface.addMoney(godId, new GodCommand.AddMoneyCommand(godId, money)).then();
     }
 
     @Override
     public Mono<Void> subtractMoney(ObjectId godId, Money money) {
-        return godMoneyControllerHttpInterface.subtractMoney(new GodCommand.SubtractMoneyCommand(godId, money), godId.toHexString()).then();
+        return godMoneyControllerHttpInterface.subtractMoney(godId, new GodCommand.SubtractMoneyCommand(godId, money)).then();
     }
 }

@@ -10,12 +10,15 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.god.application.domain.God;
 import pl.app.god.application.domain.GodException;
-import pl.app.god.application.port.out.GodDomainRepository;
 import reactor.core.publisher.Mono;
+
+;
 
 @Component
 @RequiredArgsConstructor
-class GodDomainRepositoryImpl implements GodDomainRepository {
+class GodDomainRepositoryImpl implements
+        pl.app.god.application.port.out.GodDomainRepository,
+        pl.app.recruitment.application.port.out.GodRepository {
     private static final Logger logger = LoggerFactory.getLogger(GodDomainRepositoryImpl.class);
 
     private final ReactiveMongoTemplate mongoTemplate;
@@ -24,7 +27,6 @@ class GodDomainRepositoryImpl implements GodDomainRepository {
     public Mono<God> fetchById(ObjectId id) {
         Query query = Query.query(Criteria.where("_id").is(id));
         return mongoTemplate.query(God.class).matching(query).one()
-                .doOnNext(obj -> logger.debug("fetched god with id: {}", obj.getId()))
                 .switchIfEmpty(Mono.defer(() -> Mono.error(() -> GodException.NotFoundGodException.fromId(id.toHexString()))))
                 .doOnError(e -> logger.error("error occurred while fetching god with id: {}: {}", id, e.toString()));
     }

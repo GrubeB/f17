@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import pl.app.common.shared.model.CharacterProfession;
 
 @Document(collection = "characters")
 @Getter

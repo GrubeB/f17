@@ -1,6 +1,5 @@
 package pl.app.character.application;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Assumptions;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import pl.app.character.application.domain.Character;
 import pl.app.character.application.domain.CharacterEvent;
-import pl.app.character.application.domain.CharacterProfession;
+import pl.app.common.shared.model.CharacterProfession;
 import pl.app.character.application.port.in.CharacterCommand;
 import pl.app.character.application.port.in.CharacterService;
 import pl.app.character.application.port.out.CharacterDomainRepository;

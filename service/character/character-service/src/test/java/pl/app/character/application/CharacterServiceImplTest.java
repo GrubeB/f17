@@ -15,6 +15,7 @@ import pl.app.character.application.domain.*;
 import pl.app.character.application.domain.Character;
 import pl.app.character.application.port.in.CharacterCommand;
 import pl.app.character.application.port.out.CharacterDomainRepository;
+import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.StatisticType;
 import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;

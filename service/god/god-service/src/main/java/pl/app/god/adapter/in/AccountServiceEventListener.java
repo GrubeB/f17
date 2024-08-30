@@ -22,7 +22,7 @@ class AccountServiceEventListener {
             groupId = "${app.kafka.consumer.group-id}",
             topics = "${app.kafka.topic.account-created.name}"
     )
-    public void createGod(ConsumerRecord<ObjectId, AccountEvent.AccountCreatedEvent> record) {
+    void createGod(ConsumerRecord<ObjectId, AccountEvent.AccountCreatedEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
         var command = new GodCommand.CreateGodCommand(

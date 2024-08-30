@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.character.application.domain.CharacterProfession;
+import pl.app.common.shared.model.CharacterProfession;
 
 import java.io.Serializable;
 

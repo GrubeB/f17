@@ -1,4 +1,4 @@
-package pl.app.god.adapter.in;
+package pl.app.recruitment.adapter.in;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,23 +10,22 @@ import pl.app.god.application.port.in.GodCommand;
 import pl.app.god.application.port.in.GodService;
 import pl.app.god.query.GodQueryService;
 import pl.app.god.query.dto.GodDto;
+import pl.app.recruitment.application.port.in.RecruitmentCommand;
+import pl.app.recruitment.application.port.in.RecruitmentService;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping(GodRestController.resourcePath)
+@RequestMapping(RecruitmentController.resourcePath)
 @RequiredArgsConstructor
-class GodRestController {
-    public static final String resourceName = "gods";
+class RecruitmentController {
+    public static final String resourceName = "recruitments";
     public static final String resourcePath = "/api/v1/" + resourceName;
 
-    private final GodService service;
-    private final GodQueryService queryService;
-
+    private final RecruitmentService service;
 
     @PostMapping
-    Mono<ResponseEntity<GodDto>> create(@RequestBody GodCommand.CreateGodCommand command) {
-        return service.create(command)
-                .flatMap(domain -> queryService.fetchById(domain.getId()))
+    Mono<ResponseEntity<Void>> create(@RequestBody RecruitmentCommand.PostRecruitmentAnnouncementCommand command) {
+        return service.post(command)
                 .map(ResponseEntity::ok);
     }
 }

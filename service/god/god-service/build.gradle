@@ -40,7 +40,9 @@ dependencies {
     implementation project(':service:god:god-dto')
 
     implementation project(':service:account:account-domain')
+
     implementation project(':service:item:item-domain')
+    implementation project(':service:character:character-http-interface')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -61,6 +63,10 @@ dependencies {
     // MAPPER
     implementation 'org.modelmapper:modelmapper:3.1.1'
     implementation 'org.modelmapper.extensions:modelmapper-spring:3.1.1'
+
+    // FAKER
+    implementation('com.github.javafaker:javafaker:1.0.2') { exclude module: 'org.yaml' }
+    implementation 'org.yaml:snakeyaml:1.26'
 
     // LOMBOK
     compileOnly 'org.projectlombok:lombok'

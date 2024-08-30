@@ -16,7 +16,7 @@ public class KafkaTopicConfigurationProperties {
     private Topic moneyAdded;
     private Topic moneySubtracted;
     private Topic accountCreated;
-
+    private Topic recruitmentAnnouncementPosted;
     @Setter
     @Getter
     public static class Topic {
