@@ -4,5 +4,5 @@ import reactor.core.publisher.Mono;
 
 
 public interface RecruitmentService {
-    Mono<Void> post(RecruitmentCommand.PostRecruitmentAnnouncementCommand command);
+    Mono<RecruitmentResponse.RecruitmentAnnouncementPostedResponse> post(RecruitmentCommand.PostRecruitmentAnnouncementCommand command);
 }

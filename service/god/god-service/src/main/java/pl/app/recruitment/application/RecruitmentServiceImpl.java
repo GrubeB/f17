@@ -11,6 +11,7 @@ import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.god.application.domain.God;
 import pl.app.recruitment.application.domain.RecruitmentEvent;
 import pl.app.recruitment.application.port.in.RecruitmentCommand;
+import pl.app.recruitment.application.port.in.RecruitmentResponse;
 import pl.app.recruitment.application.port.in.RecruitmentService;
 import pl.app.recruitment.application.port.out.CharacterCreator;
 import pl.app.recruitment.application.port.out.GodApplicantCreator;
@@ -30,23 +31,23 @@ class RecruitmentServiceImpl implements RecruitmentService {
     private final GodApplicantCreator godApplicantCreator;
 
     @Override
-    public Mono<Void> post(RecruitmentCommand.PostRecruitmentAnnouncementCommand command) {
+    public Mono<RecruitmentResponse.RecruitmentAnnouncementPostedResponse> post(RecruitmentCommand.PostRecruitmentAnnouncementCommand command) {
         logger.debug("posting recruitment announcement for god {}", command.getGodId());
         return godRepository.fetchById(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while posting recruitment announcement for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .zipWith(characterCreator.createRandomCharacter())
                 .flatMap(t -> {
-                    God t1 = t.getT1();
-                    CharacterDto t2 = t.getT2();
+                    God god = t.getT1();
+                    CharacterDto character = t.getT2();
                     var event = new RecruitmentEvent.RecruitmentAnnouncementPostedEvent(
-                            t1.getId(), t2.getId()
+                            god.getId(), character.getId()
                     );
-                    return godApplicantCreator.create(t1.getId(), t2.getId())
-                            .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruitmentAnnouncementPosted().getName(), t1.getId(), event)).then())
+                    return godApplicantCreator.create(god.getId(), character.getId())
+                            .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruitmentAnnouncementPosted().getName(), god.getId(), event)).then())
                             .doOnSuccess(unused -> {
-                                logger.debug("posted recruitment announcement for god: {}", t1.getId());
+                                logger.debug("posted recruitment announcement for god: {}", god.getId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
-                            }).then();
+                            }).then(Mono.just(new RecruitmentResponse.RecruitmentAnnouncementPostedResponse(god.getId(), character.getId())));
                 });
     }
 }

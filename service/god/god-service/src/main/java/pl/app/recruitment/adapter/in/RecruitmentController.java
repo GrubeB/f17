@@ -6,11 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.app.god.application.port.in.GodCommand;
-import pl.app.god.application.port.in.GodService;
-import pl.app.god.query.GodQueryService;
-import pl.app.god.query.dto.GodDto;
 import pl.app.recruitment.application.port.in.RecruitmentCommand;
+import pl.app.recruitment.application.port.in.RecruitmentResponse;
 import pl.app.recruitment.application.port.in.RecruitmentService;
 import reactor.core.publisher.Mono;
 
@@ -24,7 +21,7 @@ class RecruitmentController {
     private final RecruitmentService service;
 
     @PostMapping
-    Mono<ResponseEntity<Void>> create(@RequestBody RecruitmentCommand.PostRecruitmentAnnouncementCommand command) {
+    Mono<ResponseEntity<RecruitmentResponse.RecruitmentAnnouncementPostedResponse>> create(@RequestBody RecruitmentCommand.PostRecruitmentAnnouncementCommand command) {
         return service.post(command)
                 .map(ResponseEntity::ok);
     }
