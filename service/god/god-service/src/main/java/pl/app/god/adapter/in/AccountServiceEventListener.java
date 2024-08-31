@@ -22,13 +22,14 @@ class AccountServiceEventListener {
             groupId = "${app.kafka.consumer.group-id}",
             topics = "${app.kafka.topic.account-created.name}"
     )
+    // TODO probably to remove, god should be created manually
     void createGod(ConsumerRecord<ObjectId, AccountEvent.AccountCreatedEvent> record) {
-        logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
-        final var event = record.value();
-        var command = new GodCommand.CreateGodCommand(
-                event.getAccountId(),
-                event.getNickName()
-        );
-        godService.create(command).block();
+//        logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
+//        final var event = record.value();
+//        var command = new GodCommand.CreateGodCommand(
+//                event.getAccountId(),
+//                event.getNickName()
+//        );
+//        godService.create(command).block();
     }
 }

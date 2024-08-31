@@ -16,6 +16,7 @@ import pl.app.god.application.domain.GodEvent;
 import pl.app.god.application.domain.GodException;
 import pl.app.god.application.port.in.GodCommand;
 import pl.app.god.application.port.in.GodService;
+import pl.app.god.application.port.out.GodTemplateRepository;
 import reactor.core.publisher.Mono;
 
 
@@ -27,6 +28,7 @@ class GodServiceImpl implements GodService {
     private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
+    private final GodTemplateRepository godTemplateRepository;
 
     @Override
     public Mono<God> create(GodCommand.CreateGodCommand command) {
@@ -34,8 +36,9 @@ class GodServiceImpl implements GodService {
         return mongoTemplate.exists(Query.query(Criteria.where("name").is(command.getName())), God.class)
                 .flatMap(exist -> exist ? Mono.error(GodException.DuplicatedNameException.fromName(command.getName())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while creating god with name : {}, for account: {}, exception: {}", command.getName(), command.getAccountId(), e.getMessage()))
-                .then(Mono.defer(() -> {
-                    God god = new God(command.getAccountId(), command.getName());
+                .then(godTemplateRepository.fetchById(command.getGodTemplateId()))
+                .flatMap(godTemplate -> {
+                    God god = new God(command.getAccountId(), godTemplate, command.getName());
                     god.getMoney().addMoney(Money.Type.BASE, 10_000L);
                     var event = new GodEvent.GodCreatedEvent(
                             god.getId()
@@ -46,6 +49,6 @@ class GodServiceImpl implements GodService {
                                 logger.debug("created god: {}, with name: {}, for account: {}", saved.getId(), saved.getName(), saved.getAccountId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                             });
-                }));
+                });
     }
 }

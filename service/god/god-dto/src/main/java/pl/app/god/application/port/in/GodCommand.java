@@ -15,6 +15,7 @@ public interface GodCommand {
     @AllArgsConstructor
     class CreateGodCommand implements Serializable {
         private ObjectId accountId;
+        private ObjectId godTemplateId;
         private String name;
     }
     @Data

@@ -17,6 +17,9 @@ public class KafkaTopicConfigurationProperties {
     private Topic moneySubtracted;
     private Topic accountCreated;
     private Topic recruitmentAnnouncementPosted;
+    private Topic godTemplateCreated;
+    private Topic godTemplateUpdated;
+    private Topic godTemplateDeleted;
     @Setter
     @Getter
     public static class Topic {

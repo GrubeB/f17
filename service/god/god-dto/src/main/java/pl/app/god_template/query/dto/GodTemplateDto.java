@@ -1,4 +1,4 @@
-package pl.app.god.query.dto;
+package pl.app.god_template.query.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,10 +11,9 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GodDto implements Serializable {
+public class GodTemplateDto implements Serializable {
     protected ObjectId id;
     protected String name;
     protected String description;
     protected String imageId;
-    private Money money;
 }

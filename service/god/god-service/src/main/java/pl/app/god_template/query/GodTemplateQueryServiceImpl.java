@@ -1,4 +1,4 @@
-package pl.app.god.query;
+package pl.app.god_template.query;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -14,37 +14,51 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
-import pl.app.god.application.domain.God;
-import pl.app.god.query.dto.GodDto;
+import pl.app.god_template.application.domain.GodTemplate;
+import pl.app.god_template.query.dto.GodTemplateDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Objects;
+
 @Service
-class GodQueryServiceImpl implements GodQueryService {
+class GodTemplateQueryServiceImpl implements GodTemplateQueryService {
     private final Mapper mapper;
     private final Repository repository;
 
 
-    public GodQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
+    public GodTemplateQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
         this.mapper = mapper;
         this.repository = new ReactiveMongoRepositoryFactory(mongoTemplate).getRepository(Repository.class);
     }
 
     @Override
-    public Mono<GodDto> fetchById(@NonNull ObjectId id) {
+    public Mono<GodTemplateDto> fetchById(@NonNull ObjectId id) {
         return repository.findById(id)
-                .map(e -> mapper.map(e, GodDto.class));
+                .map(e -> mapper.map(e, GodTemplateDto.class));
     }
 
     @Override
-    public Mono<Page<GodDto>> fetchAllByPageable(Pageable pageable) {
+    public Mono<Page<GodTemplateDto>> fetchAllByPageable(Pageable pageable) {
         return repository.findAllBy(pageable)
-                .map(e -> mapper.map(e, GodDto.class))
+                .map(e -> mapper.map(e, GodTemplateDto.class))
                 .collectList()
                 .zipWith(repository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
     }
 
+    @Override
+    public Mono<Page<GodTemplateDto>> fetchAllByIds(List<ObjectId> ids, Pageable pageable) {
+        if (Objects.isNull(ids)) {
+            return fetchAllByPageable(pageable);
+        }
+        return repository.findAllById(ids)
+                .map(e -> mapper.map(e, GodTemplateDto.class))
+                .collectList()
+                .zipWith(repository.count())
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+    }
 
     @Component
     @RequiredArgsConstructor
@@ -53,22 +67,12 @@ class GodQueryServiceImpl implements GodQueryService {
 
         @PostConstruct
         void init() {
-            addMapper(God.class, GodDto.class, this::mapToGodDto);
-
+            addMapper(GodTemplate.class, GodTemplateDto.class, e -> modelMapper.map(e, GodTemplateDto.class));
         }
 
-        GodDto mapToGodDto(God domain) {
-            return new GodDto(
-                    domain.getId(),
-                    domain.getName(),
-                    domain.getDescription(),
-                    domain.getImageId(),
-                    domain.getMoney()
-            );
-        }
     }
 
-    interface Repository extends ReactiveMongoRepository<God, ObjectId> {
-        Flux<God> findAllBy(Pageable pageable);
+    interface Repository extends ReactiveMongoRepository<GodTemplate, ObjectId> {
+        Flux<GodTemplate> findAllBy(Pageable pageable);
     }
 }
