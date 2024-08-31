@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pl.app.character.application.domain.Character;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.god_applicant_collection.application.domain.GodApplicant;
 import pl.app.god_applicant_collection.application.domain.GodApplicantCollection;
@@ -60,19 +61,22 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                 .flatMap(exist -> exist ? Mono.error(GodApplicantCollectionException.DuplicatedCharacterException.fromCharacterId(command.getCharacterId().toHexString())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while creating god applicant {} for god: {}, exception: {}", command.getCharacterId(), command.getGodId(), e.getMessage()))
                 .then(godApplicantCollectionDomainRepository.fetchByGodId(command.getGodId()))
-                .flatMap(domain -> {
-                    GodApplicant applicant = domain.addApplicant(new GodApplicant(command.getCharacterId()));
+                .zipWith(characterDomainRepository.fetchById(command.getCharacterId()))
+                .flatMap(t -> {
+                    GodApplicantCollection domain = t.getT1();
+                    Character character = t.getT2();
+                    GodApplicant applicant = domain.addApplicant(new GodApplicant(character));
                     var event = new GodApplicantCollectionEvent.GodApplicantCreatedEvent(
                             domain.getId(),
                             domain.getGodId(),
                             applicant.getId(),
-                            applicant.getCharacterId()
+                            applicant.getCharacter().getId()
                     );
                     return mongoTemplate.insert(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantCreated().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
-                                logger.debug("created god applicant {} for god: {}", applicant.getCharacterId(), saved.getGodId());
+                                logger.debug("created god applicant {} for god: {}", applicant.getCharacter().getId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                             });
                 });
@@ -89,13 +93,13 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                             domain.getId(),
                             domain.getGodId(),
                             applicant.getId(),
-                            applicant.getCharacterId()
+                            applicant.getCharacter().getId()
                     );
                     return mongoTemplate.remove(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantRemoved().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
-                                logger.debug("removed god applicant {}, for god: {}", applicant.getCharacterId(), saved.getGodId());
+                                logger.debug("removed god applicant {}, for god: {}", applicant.getCharacter().getId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                             });
                 });
@@ -112,13 +116,13 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                             domain.getId(),
                             domain.getGodId(),
                             applicant.getId(),
-                            applicant.getCharacterId()
+                            applicant.getCharacter().getId()
                     );
                     return mongoTemplate.remove(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantAccepted().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
-                                logger.debug("accepted god applicant {}, for god: {}", applicant.getCharacterId(), saved.getGodId());
+                                logger.debug("accepted god applicant {}, for god: {}",applicant.getCharacter().getId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                             });
                 });
@@ -135,13 +139,13 @@ class GodApplicantCollectionServiceImpl implements GodApplicantCollectionService
                             domain.getId(),
                             domain.getGodId(),
                             applicant.getId(),
-                            applicant.getCharacterId()
+                            applicant.getCharacter().getId()
                     );
                     return mongoTemplate.remove(applicant)
                             .flatMap(unused -> mongoTemplate.save(domain))
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getGodApplicantRejected().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
-                                logger.debug("rejected god applicant {}, for god: {}", applicant.getCharacterId(), saved.getGodId());
+                                logger.debug("rejected god applicant {}, for god: {}", applicant.getCharacter().getId(), saved.getGodId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                             });
                 });

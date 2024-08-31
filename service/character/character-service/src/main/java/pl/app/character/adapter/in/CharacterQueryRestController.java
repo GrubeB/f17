@@ -5,14 +5,13 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.app.character.application.domain.CharacterException;
 import pl.app.character.query.CharacterQueryService;
 import pl.app.character.query.dto.CharacterDto;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(CharacterQueryRestController.resourcePath)
@@ -31,8 +30,9 @@ class CharacterQueryRestController {
     }
 
     @GetMapping
-    Mono<ResponseEntity<Page<CharacterDto>>> fetchAllByPageable(Pageable pageable) {
-        return queryService.fetchAllByPageable(pageable)
+    Mono<ResponseEntity<Page<CharacterDto>>> fetchAllByIds(Pageable pageable,
+                                                                @RequestParam(required = false) List<ObjectId> ids) {
+        return queryService.fetchAllByIds(ids, pageable)
                 .map(ResponseEntity::ok);
     }
 

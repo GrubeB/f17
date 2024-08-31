@@ -56,7 +56,7 @@ public class GodApplicantCollection {
     }
 
     private Optional<GodApplicant> getApplicantById(ObjectId characterId) {
-        return this.applicants.stream().filter(a -> a.getCharacterId().equals(characterId))
+        return this.applicants.stream().filter(a -> a.getCharacter().getId().equals(characterId))
                 .findAny();
     }
 }

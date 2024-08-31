@@ -55,7 +55,6 @@ class GodFamilyWithGearQueryServiceImpl implements GodFamilyWithGearDtoQueryServ
         return repository.findByGodId(godId)
                 .zipWith(godEquipmentQueryController
                         .fetchByGodId(godId)
-                        .log()
                         .map(HttpEntity::getBody)
                 ).map(t -> mapper.mapToGodFamilyWithGearDto(t.getT1(), t.getT2()));
     }
