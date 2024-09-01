@@ -134,12 +134,13 @@ class GodFamilyWithGearQueryServiceImpl implements GodFamilyWithGearDtoQueryServ
             return new CharacterWithGearDto(
                     character.getId(),
                     character.getName(),
-                    character.getProfession().name(),
+                    character.getProfession(),
+                    character.getRace(),
                     new LevelDto(character.getLevel().getLevel(), character.getLevel().getExp()),
                     baseStatistic, gearStatistic, sumStatistics,
-                    Character.getHp(sumStatistics.getPersistence(), character.getProfession().name()),
-                    Character.getDef(sumStatistics.getDurability(), character.getProfession().name()),
-                    Character.getAttackPower(sumStatistics.getStrength(), character.getProfession().name()),
+                    Character.getHp(sumStatistics.getPersistence(), character.getProfession()),
+                    Character.getDef(sumStatistics.getDurability(), character.getProfession()),
+                    Character.getAttackPower(sumStatistics.getStrength(), character.getProfession()),
                     gear
             );
         }

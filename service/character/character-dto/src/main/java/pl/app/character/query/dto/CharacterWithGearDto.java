@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.CharacterProfession;
+import pl.app.common.shared.model.CharacterRace;
 import pl.app.common.shared.model.Statistics;
 import pl.app.god_equipment.dto.CharacterGearDto;
 
@@ -15,7 +17,8 @@ import java.io.Serializable;
 public class CharacterWithGearDto implements Serializable {
     private ObjectId id;
     private String name;
-    private String profession;
+    private CharacterProfession profession;
+    private CharacterRace race;
 
     private LevelDto level;
 

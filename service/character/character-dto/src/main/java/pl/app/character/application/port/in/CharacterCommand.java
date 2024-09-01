@@ -14,8 +14,13 @@ public interface CharacterCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     class CreateCharacterCommand implements Serializable {
+        private ObjectId templateId;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class CreateRandomCharacterCommand implements Serializable {
         private String name;
-        private CharacterProfession profession;
     }
     @Data
     @NoArgsConstructor

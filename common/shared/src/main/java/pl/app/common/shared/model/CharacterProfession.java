@@ -4,4 +4,6 @@ public enum CharacterProfession {
     MARKSMAN,
     WARRIOR,
     MAGE,
+    SUPPORT,
+    TANK,
 }

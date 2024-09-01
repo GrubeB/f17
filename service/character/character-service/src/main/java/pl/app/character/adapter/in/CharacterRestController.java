@@ -1,6 +1,7 @@
 package pl.app.character.adapter.in;
 
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.app.character.application.port.in.CharacterCommand;
@@ -21,13 +22,22 @@ class CharacterRestController {
 
 
     @PostMapping
-    public Mono<ResponseEntity<CharacterDto>> createCharacter(@RequestBody CharacterCommand.CreateCharacterCommand command) {
+    Mono<ResponseEntity<CharacterDto>> createCharacter(@RequestBody CharacterCommand.CreateCharacterCommand command) {
         return service.createCharacter(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);
     }
-    @PutMapping("/{characterId}/statistics")
-    public Mono<ResponseEntity<CharacterDto>> addStatistic(@RequestBody CharacterCommand.AddStatisticCommand command) {
+
+    @PostMapping("/random")
+    Mono<ResponseEntity<CharacterDto>> createRandomCharacter(@RequestBody CharacterCommand.CreateRandomCharacterCommand command) {
+        return service.createRandomCharacter(command)
+                .flatMap(domain -> queryService.fetchById(domain.getId()))
+                .map(ResponseEntity::ok);
+    }
+
+    @PutMapping("/{id}/statistics")
+    Mono<ResponseEntity<CharacterDto>> addStatistic(@PathVariable ObjectId id,
+                                                    @RequestBody CharacterCommand.AddStatisticCommand command) {
         return service.addStatistic(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);

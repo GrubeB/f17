@@ -5,16 +5,14 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.character.application.domain.Character;
 import pl.app.character.application.domain.CharacterEvent;
-import pl.app.character.application.domain.CharacterException;
 import pl.app.character.application.port.in.CharacterCommand;
 import pl.app.character.application.port.in.CharacterService;
 import pl.app.character.application.port.out.CharacterDomainRepository;
+import pl.app.character.application.port.out.CharacterTemplateRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.core.publisher.Mono;
 
@@ -28,34 +26,48 @@ class CharacterServiceImpl implements CharacterService {
     private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
+    private final CharacterTemplateRepository characterTemplateRepository;
 
     @Override
     public Mono<Character> createCharacter(CharacterCommand.CreateCharacterCommand command) {
-        logger.debug("creating character: {}", command.getName());
-        return Mono.when(verifyThereIsNoDuplicatedName(command.getName()))
-                .doOnError(e -> logger.error("exception occurred while creating character: {}, exception: {}", command.getName(), e.getMessage()))
-                .then(Mono.defer(() -> {
-                    Character character = new Character(command.getName(), command.getProfession());
+        logger.debug("creating character: {}", command.getTemplateId());
+        return characterTemplateRepository.fetchById(command.getTemplateId())
+                .doOnError(e -> logger.error("exception occurred while creating character: {}, exception: {}", command.getTemplateId(), e.getMessage()))
+                .flatMap(template -> {
+                    var domain = new Character(template);
                     var event = new CharacterEvent.CharacterCreatedEvent(
-                            character.getId(),
-                            character.getName(),
-                            character.getProfession().name()
+                            domain.getId(),
+                            domain.getName(),
+                            domain.getProfession().name()
                     );
-                    return mongoTemplate.insert(character)
+                    return mongoTemplate.insert(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCharacterCreated().getName(), saved.getId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
-                                logger.debug("created character: {}", command.getName());
+                                logger.debug("created character: {}", saved.getId());
                                 logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
                             });
-                }));
+                });
     }
 
-    private Mono<Void> verifyThereIsNoDuplicatedName(String name) {
-        Query query = Query.query(Criteria
-                .where("name").is(name)
-        );
-        return mongoTemplate.exists(query, Character.class)
-                .flatMap(exist -> exist ? Mono.error(CharacterException.DuplicatedNameException.fromName(name)) : Mono.empty());
+    @Override
+    public Mono<Character> createRandomCharacter(CharacterCommand.CreateRandomCharacterCommand command) {
+        logger.debug("creating random character");
+        return characterTemplateRepository.fetchRandomTemplate()
+                .doOnError(e -> logger.error("exception occurred while creating random character, exception: {}", e.getMessage()))
+                .flatMap(template -> {
+                    var domain = new Character(template);
+                    var event = new CharacterEvent.CharacterCreatedEvent(
+                            domain.getId(),
+                            domain.getName(),
+                            domain.getProfession().name()
+                    );
+                    return mongoTemplate.insert(domain)
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCharacterCreated().getName(), saved.getId(), event)).thenReturn(saved))
+                            .doOnSuccess(saved -> {
+                                logger.debug("created character: {}", saved.getId());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            });
+                });
     }
 
     @Override

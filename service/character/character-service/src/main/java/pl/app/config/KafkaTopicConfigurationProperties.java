@@ -27,6 +27,10 @@ public class KafkaTopicConfigurationProperties {
     private Topic godApplicantRemoved;
     private Topic godApplicantAccepted;
     private Topic godApplicantRejected;
+
+    private Topic characterTemplateCreated;
+    private Topic characterTemplateUpdated;
+    private Topic characterTemplateDeleted;
     @Setter
     @Getter
     public static class Topic {
