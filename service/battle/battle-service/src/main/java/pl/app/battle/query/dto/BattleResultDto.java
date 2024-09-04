@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import pl.app.battle.application.domain.BattleCharacterType;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 
 
@@ -19,6 +20,8 @@ public class BattleResultDto implements Serializable {
     private List<ObjectId> team1CharacterIdsList;
     private List<ObjectId> team2CharacterIdsList;
     private List<CharacterResultDto> characterResults;
+    private Instant start;
+    private Instant end;
 
     @Data
     @AllArgsConstructor

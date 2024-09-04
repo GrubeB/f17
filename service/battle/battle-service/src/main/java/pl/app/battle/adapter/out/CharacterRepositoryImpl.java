@@ -45,7 +45,7 @@ class CharacterRepositoryImpl implements CharacterRepository {
                 dto.getId(),
                 godId,
                 BattleCharacterType.PLAYER,
-                dto.getProfession(),
+                dto.getProfession().name(),
                 dto.getName(),
                 dto.getLevel().getLevel(),
                 dto.getLevel().getExp(),

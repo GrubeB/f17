@@ -28,4 +28,12 @@ public interface BattleCommand {
         private ObjectId god2;
         private Set<ObjectId> god2CharacterIds;
     }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class AttackTowerCommand implements Serializable {
+        private ObjectId godId;
+        private Set<ObjectId> characterIds;
+        private Integer level;
+    }
 }

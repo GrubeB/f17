@@ -22,7 +22,7 @@ class BattleResultQueryRestController {
 
     private final BattleResultQueryService queryService;
 
-    @GetMapping("/{godId}")
+    @GetMapping("/{id}")
     Mono<ResponseEntity<BattleResultDto>> fetchById(@PathVariable ObjectId id) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)

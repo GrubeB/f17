@@ -18,6 +18,7 @@ public class CharacterDto implements Serializable {
     private String name;
     private CharacterProfession profession;
     private CharacterRace race;
+    private String imageId;
     private LevelDto level;
     private Statistics statistics;
 

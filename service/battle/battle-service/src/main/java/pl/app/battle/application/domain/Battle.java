@@ -1,34 +1,43 @@
 package pl.app.battle.application.domain;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Battle {
     private static final Logger logger = LoggerFactory.getLogger(Battle.class);
+    @Getter
     private ObjectId battleId;
     private Long startingTurnSpeed;
     private Set<BattleCharacter> team1;
     private Set<BattleCharacter> team2;
     private BattleLog log;
+    @Getter
     private BattleResult battleResult;
+    private Integer maxNumberOfRounds = 20_000;
+    private Integer currentNumberOfRounds = 0;
+    @Setter
+    private Instant start;
 
     public Battle(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
         this.battleId = ObjectId.get();
         this.log = new BattleLog();
-        this.battleResult = new BattleResult(battleId, team1, team2);
         this.team1 = team1;
         this.team2 = team2;
+        this.battleResult = new BattleResult(battleId, team1, team2);
         calculateStartingTurnSpeed();
         initTeams();
+        this.start = Instant.now();
     }
 
     private void calculateStartingTurnSpeed() {
@@ -56,28 +65,16 @@ public class Battle {
         }
     }
 
-    static class IdGenerator {
-        private short nextId;
-        public short getNextId() {
-            var id = nextId;
-            nextId++;
-            return id;
-        }
-    }
-
     public void startBattle() {
         logger.debug("--starting battle--");
-        int numberOfRounds = 0;
         try {
             while (true) {
-                logger.debug("--starting round {}--", numberOfRounds);
+                logger.debug("--starting round {}--", currentNumberOfRounds);
+                currentNumberOfRounds = currentNumberOfRounds + 1;
                 updateAttackSpeedOfTeams();
                 team1Turn();
                 team2Turn();
-                numberOfRounds++;
-                if (numberOfRounds > 10_000) {
-                    break;
-                }
+                verifyIfBattleEnd();
             }
         } catch (BattleEnded ended) {
             logger.debug("--ended battle--");
@@ -88,6 +85,12 @@ public class Battle {
                 .boxed()
                 .collect(Collectors.toMap(i -> i, log.getEvents()::get))
                 .forEach((idx, event) -> logger.debug("{}:{}", idx, event));
+    }
+
+    private void verifyIfBattleEnd() throws BattleEnded {
+        if (currentNumberOfRounds >= maxNumberOfRounds) {
+            throw new BattleEnded();
+        }
     }
 
     private void finishBattle() {
@@ -105,17 +108,19 @@ public class Battle {
             battleResult.setIsTeam1Win(null);
             log.send(new InnerBattleEvent.BattleEndedEvent(null));
         }
+        battleResult.setNumberOfRounds(currentNumberOfRounds);
+        battleResult.setStart(this.start);
         battleResult.setLog(log);
     }
 
 
     // TODO exp and money should be calculated based on members in team1 and team2
     private Map<ObjectId, Long> calculateExpForWinningTeam(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
-        return team1.stream().collect(Collectors.toMap(ch->ch.getInfo().getId(), ch -> 100L));
+        return team1.stream().collect(Collectors.toMap(ch -> ch.getInfo().getId(), ch -> 100L));
     }
 
     private Map<ObjectId, Long> calculateMoneyForWinningTeam(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
-        return team1.stream().collect(Collectors.toMap(ch->ch.getInfo().getId(), ch -> 10_000L));
+        return team1.stream().collect(Collectors.toMap(ch -> ch.getInfo().getId(), ch -> 10_000L));
     }
 
     /* ATTACK  */
@@ -153,6 +158,7 @@ public class Battle {
         return lastTurnCharacter;
     }
 
+
     /* ATTACK SPEED */
     private void updateAttackSpeedOfTeams() {
         Long maxTimesTurnCounterCanByUpdated = Stream.of(team1, team2)
@@ -175,13 +181,18 @@ public class Battle {
         return team.stream().allMatch(ch -> ch.getStatus().isDead());
     }
 
-    public BattleResult getBattleResult() {
-        return battleResult;
-    }
     static class BattleEnded extends Exception {
         public BattleEnded() {
             super("battle ended");
         }
     }
+    static class IdGenerator {
+        private short nextId;
 
+        public short getNextId() {
+            var id = nextId;
+            nextId++;
+            return id;
+        }
+    }
 }

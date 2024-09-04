@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,8 +28,9 @@ public class JacksonConfig {
     @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
         return new Jackson2ObjectMapperBuilder()
-                .serializers(new ObjectIdSerializer())
-                .deserializers(new ObjectIdDeserializer());
+                .serializers(new ObjectIdSerializer(), new InstantSerializer())
+                .deserializers(new ObjectIdDeserializer(), new InstantDeserializer())
+                ;
     }
 
     public static class ObjectIdSerializer extends StdSerializer<ObjectId> {
@@ -52,10 +55,41 @@ public class JacksonConfig {
         @Override
         public ObjectId deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
             String value = jsonParser.getValueAsString();
-            if(Objects.isNull(value)){
+            if (Objects.isNull(value)) {
                 return null;
-            }else {
+            } else {
                 return new ObjectId(value);
+            }
+        }
+
+    }
+
+    public static class InstantSerializer extends StdSerializer<Instant> {
+
+        public InstantSerializer() {
+            super(Instant.class);
+        }
+
+        @Override
+        public void serialize(Instant object, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+            jsonGenerator.writeString(formatter.format(object));
+        }
+    }
+
+    public static class InstantDeserializer extends StdDeserializer<Instant> {
+
+        public InstantDeserializer() {
+            super(Instant.class);
+        }
+
+        @Override
+        public Instant deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+            String value = jsonParser.getValueAsString();
+            if (Objects.isNull(value)) {
+                return null;
+            } else {
+                return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(value));
             }
         }
 

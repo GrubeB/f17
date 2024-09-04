@@ -49,6 +49,10 @@ public class Character {
     public CharacterProfession getProfession(){
         return this.template.getProfession();
     }
+
+    public String getImageId(){
+        return this.template.getImageId();
+    }
     public static Long getHp(Long persistence, CharacterProfession profession) {
         return switch (profession) {
             case MARKSMAN -> persistence * 40L;

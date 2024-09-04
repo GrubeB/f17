@@ -13,10 +13,10 @@ class BattleTest {
     @Test
     void startBattle() {
         var ch1 = new BattleCharacter(ObjectId.get(), ObjectId.get(),BattleCharacterType.PLAYER, "WARRIOR", "AlaKot", 10, 2000L,
-                new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
+                new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
-                new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
-                920L, 92L, 80L,
+                new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
+                5920L, 92L, 80L,
                 new WeaponDto(20L, 20L),
                 null);
         var ch2 = new BattleCharacter(ObjectId.get(), ObjectId.get(),BattleCharacterType.PLAYER, "WARRIOR", "AlaKot2", 10, 2000L,

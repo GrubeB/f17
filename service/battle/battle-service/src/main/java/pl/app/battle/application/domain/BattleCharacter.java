@@ -140,9 +140,7 @@ public class BattleCharacter {
         public CharacterStatus(Long maxHp, Long maxDef) {
             this.maxHp = maxHp;
             this.maxDef = maxDef;
-            this.currentHp = maxHp;
-            this.currentDef = maxDef;
-            this.isDead = false;
+            reset();
         }
 
         private void subtractHp(Long damage) {
@@ -159,6 +157,12 @@ public class BattleCharacter {
             isDead = true;
             log.send(new InnerBattleEvent.CharacterDiedEvent(innerId));
             turnSpeed.setTurnCounterToStartingPosition();
+        }
+
+        private void reset() {
+            this.currentHp = maxHp;
+            this.currentDef = maxDef;
+            this.isDead = false;
         }
 
         public boolean isDead() {
@@ -309,6 +313,9 @@ public class BattleCharacter {
         this.innerId = innerId;
     }
 
+    public void reset(){
+        this.status.reset();
+    }
     @Override
     public String toString() {
         return info.getName() + "(" + getStatus().getCurrentHp() + "/" + getStatus().getMaxHp() + ")";

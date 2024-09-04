@@ -1,11 +1,14 @@
 package pl.app.battle.application.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +28,10 @@ public class BattleResult {
     private List<CharacterResult> characterResults;
     @DocumentReference
     private BattleLog log;
+    @Setter
+    private Integer numberOfRounds;
+    private Instant start;
+    private Instant end;
 
     @SuppressWarnings("unused")
     public BattleResult() {
@@ -62,6 +69,11 @@ public class BattleResult {
 
     private Optional<CharacterResult> getCharacterResultById(ObjectId objectId) {
         return characterResults.stream().filter(ch -> ch.getCharacterId().equals(objectId)).findAny();
+    }
+
+    public void setStart(Instant start) {
+        this.start = start;
+        this.end = start.plus(this.numberOfRounds, ChronoUnit.SECONDS);
     }
 
     @Getter
