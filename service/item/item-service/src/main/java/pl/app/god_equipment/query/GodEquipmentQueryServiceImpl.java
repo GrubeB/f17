@@ -97,7 +97,6 @@ class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
 
         CharacterGearDto mapToCharacterGearDto(CharacterGear domain) {
             return new CharacterGearDto(
-                    domain.getCharacterId(),
                     domain.getHelmet() != null ? modelMapper.map(domain.getHelmet(), OutfitDto.class) : null,
                     domain.getArmor() != null ? modelMapper.map(domain.getArmor(), OutfitDto.class) : null,
                     domain.getGloves() != null ? modelMapper.map(domain.getGloves(), OutfitDto.class) : null,
@@ -108,7 +107,8 @@ class GodEquipmentQueryServiceImpl implements GodEquipmentQueryService {
                     domain.getTalisman() != null ? modelMapper.map(domain.getTalisman(), OutfitDto.class) : null,
 
                     domain.getLeftHand() != null ? modelMapper.map(domain.getLeftHand(), WeaponDto.class) : null,
-                    domain.getRightHand() != null ? modelMapper.map(domain.getRightHand(), WeaponDto.class) : null
+                    domain.getRightHand() != null ? modelMapper.map(domain.getRightHand(), WeaponDto.class) : null,
+                    domain.getCharacterId()
             );
         }
 

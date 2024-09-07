@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.god_equipment.application.domain.GearSlot;
+import pl.app.gear.aplication.domain.GearSlot;
 
 import java.io.Serializable;
 

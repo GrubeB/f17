@@ -1,7 +1,6 @@
 package pl.app.common.shared.model;
 
 
-import java.text.MessageFormat;
 import java.util.Objects;
 
 public class Statistics {
@@ -36,11 +35,88 @@ public class Statistics {
         this.resistance = resistance;
     }
 
-    private StatisticType getStatisticTypeFromName(String statisticName) {
-        try {
-            return StatisticType.valueOf(statisticName);
-        } catch (IllegalArgumentException e) {
-            throw new pl.app.common.shared.exception.IllegalArgumentException(MessageFormat.format("there is not statistic of name: {0}", statisticName));
+    public static Long getHp(Long persistence, CharacterProfession profession) {
+        return switch (profession) {
+            case MARKSMAN -> persistence * 40L;
+            case WARRIOR -> persistence * 50L;
+            case MAGE -> persistence * 35L;
+            case SUPPORT -> persistence * 45L;
+            case TANK -> persistence * 60L;
+            default -> throw new IllegalStateException("Unexpected value: " + profession);
+        };
+    }
+
+    public static Long getAttackPower(Long strength, CharacterProfession profession) {
+        return (long) switch (profession) {
+            case MARKSMAN -> strength * 3.5;
+            case WARRIOR -> strength * 2.0;
+            case MAGE -> strength * 4.0;
+            case SUPPORT -> strength * 2.0;
+            case TANK -> strength * 2.0;
+            default -> throw new IllegalStateException("Unexpected value: " + profession);
+        };
+    }
+
+    public static Long getDef(Long durability, CharacterProfession profession) {
+        return switch (profession) {
+            case MARKSMAN -> durability * 4L;
+            case WARRIOR -> durability * 5L;
+            case MAGE -> durability * 3L;
+            case SUPPORT -> durability * 3L;
+            case TANK -> durability * 5L;
+            default -> throw new IllegalStateException("Unexpected value: " + profession);
+        };
+    }
+
+    public static Statistics zero() {
+        return new Statistics(0L,0L, 0L,0L,0L, 0L,0L,0L);
+    }
+
+    public void add(Long statisticQuantity) {
+        this.setPersistence(getPersistence() + statisticQuantity);
+        this.setDurability(getDurability() + statisticQuantity);
+        this.setStrength(getStrength() + statisticQuantity);
+        this.setSpeed(getSpeed() + statisticQuantity);
+        this.setCriticalRate(getCriticalRate() + statisticQuantity);
+        this.setCriticalDamage(getCriticalDamage() + statisticQuantity);
+        this.setAccuracy(getAccuracy() + statisticQuantity);
+        this.setResistance(getResistance() + statisticQuantity);
+    }
+
+    public void add(Long statisticQuantity, StatisticType statisticType) {
+        switch (statisticType) {
+            case PERSISTENCE -> this.setPersistence(getPersistence() + statisticQuantity);
+            case DURABILITY -> this.setDurability(getDurability() + statisticQuantity);
+            case STRENGTH -> this.setStrength(getStrength() + statisticQuantity);
+            case SPEED -> this.setSpeed(getSpeed() + statisticQuantity);
+            case CRITICAL_RATE -> this.setCriticalRate(getCriticalRate() + statisticQuantity);
+            case CRITICAL_DAMAGE -> this.setCriticalDamage(getCriticalDamage() + statisticQuantity);
+            case ACCURACY -> this.setAccuracy(getAccuracy() + statisticQuantity);
+            case RESISTANCE -> this.setResistance(getResistance() + statisticQuantity);
+        }
+    }
+
+    public void multiply(Long number) {
+        this.setPersistence(getPersistence() * number);
+        this.setDurability(getDurability() * number);
+        this.setStrength(getStrength() * number);
+        this.setSpeed(getSpeed() * number);
+        this.setCriticalRate(getCriticalRate() * number);
+        this.setCriticalDamage(getCriticalDamage() * number);
+        this.setAccuracy(getAccuracy() * number);
+        this.setResistance(getResistance() * number);
+    }
+
+    public void multiply(Long number, StatisticType statisticType) {
+        switch (statisticType) {
+            case PERSISTENCE -> this.setPersistence(getPersistence() * number);
+            case DURABILITY -> this.setDurability(getDurability() * number);
+            case STRENGTH -> this.setStrength(getStrength() * number);
+            case SPEED -> this.setSpeed(getSpeed() * number);
+            case CRITICAL_RATE -> this.setCriticalRate(getCriticalRate() * number);
+            case CRITICAL_DAMAGE -> this.setCriticalDamage(getCriticalDamage() * number);
+            case ACCURACY -> this.setAccuracy(getAccuracy() * number);
+            case RESISTANCE -> this.setResistance(getResistance() * number);
         }
     }
 
@@ -107,7 +183,7 @@ public class Statistics {
         return this;
     }
 
-
+    /* GETTERS & SETTERS */
     public Long getPersistence() {
         return persistence;
     }

@@ -14,15 +14,15 @@ import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.god_equipment.application.port.in.GodEquipmentCommand;
 import pl.app.god_equipment.application.port.in.GodEquipmentService;
 import pl.app.item.application.domain.Item;
+import pl.app.item.application.port.in.ItemDomainRepository;
 import pl.app.trader.application.domain.Trader;
 import pl.app.trader.application.domain.TraderEvent;
 import pl.app.trader.application.domain.TraderException;
 import pl.app.trader.application.port.in.TraderCommand;
 import pl.app.trader.application.port.in.TraderService;
 import pl.app.trader.application.port.out.GodMoneyService;
-import pl.app.trader.application.port.out.ItemDomainRepository;
 import pl.app.trader.application.port.out.ItemGenerator;
-import pl.app.trader.application.port.out.TraderDomainRepository;
+import pl.app.trader.application.port.in.TraderDomainRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;

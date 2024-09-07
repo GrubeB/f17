@@ -38,6 +38,11 @@ public class KafkaTopicConfigurationProperties {
     private Topic godBoughtItem;
     private Topic godSoldItem;
 
+    private Topic monsterGearCreated;
+    private Topic monsterGearRemoved;
+    private Topic monsterItemSet;
+    private Topic monsterItemRemoved;
+
     @Setter
     @Getter
     public static class Topic {

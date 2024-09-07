@@ -127,7 +127,7 @@ class GodFamilyWithGearQueryServiceImpl implements GodFamilyWithGearDtoQueryServ
         }
 
         public CharacterWithGearDto mapToCharacterWithGearDto(Character character, CharacterGearDto gear) {
-            Statistics baseStatistic = character.getStatistics().getStatistics();
+            Statistics baseStatistic = character.getStatistics();
             Statistics gearStatistic = gear.getStatistic();
             Statistics sumStatistics = new Statistics().mergeWith(baseStatistic).mergeWith(gearStatistic);
 

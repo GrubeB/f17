@@ -32,5 +32,9 @@ include "service:voting:voting-dto"
 include "service:voting:voting-service"
 include "service:voting:voting-http-interface"
 
+include "service:monster:monster-domain"
+include "service:monster:monster-dto"
+include "service:monster:monster-service"
+include "service:monster:monster-http-interface"
 
 

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.common.shared.model.ItemType;
+import pl.app.gear.aplication.domain.GearSlot;
 import pl.app.item.application.domain.Item;
 
 import java.util.LinkedHashSet;

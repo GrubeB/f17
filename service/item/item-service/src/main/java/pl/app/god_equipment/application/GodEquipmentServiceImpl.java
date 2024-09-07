@@ -16,9 +16,9 @@ import pl.app.god_equipment.application.domain.GodEquipmentEvent;
 import pl.app.god_equipment.application.domain.GodEquipmentException;
 import pl.app.god_equipment.application.port.in.GodEquipmentCommand;
 import pl.app.god_equipment.application.port.in.GodEquipmentService;
-import pl.app.god_equipment.application.port.out.GodEquipmentDomainRepository;
-import pl.app.god_equipment.application.port.out.ItemDomainRepository;
+import pl.app.god_equipment.application.port.in.GodEquipmentDomainRepository;
 import pl.app.item.application.domain.Item;
+import pl.app.item.application.port.in.ItemDomainRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.LinkedHashSet;

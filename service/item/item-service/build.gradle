@@ -43,6 +43,7 @@ dependencies {
     implementation project(':service:god:god-http-interface')
 
     implementation project(':service:character:character-domain')
+    implementation project(':service:monster:monster-domain')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

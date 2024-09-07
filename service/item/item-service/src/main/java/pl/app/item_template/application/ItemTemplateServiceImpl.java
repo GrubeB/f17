@@ -16,7 +16,7 @@ import pl.app.item_template.application.domain.OutfitTemplate;
 import pl.app.item_template.application.domain.WeaponTemplate;
 import pl.app.item_template.application.port.in.ItemTemplateCommand;
 import pl.app.item_template.application.port.in.ItemTemplateService;
-import pl.app.item_template.application.port.out.ItemTemplateDomainRepository;
+import pl.app.item_template.application.port.in.ItemTemplateDomainRepository;
 import reactor.core.publisher.Mono;
 
 

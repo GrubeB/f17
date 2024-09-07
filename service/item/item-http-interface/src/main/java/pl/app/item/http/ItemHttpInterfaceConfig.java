@@ -41,6 +41,21 @@ public class ItemHttpInterfaceConfig {
     }
 
     @Bean
+    CharacterGearDtoQueryControllerHttpInterface characterGearDtoQueryControllerHttpInterface() {
+        return factory().createClient(CharacterGearDtoQueryControllerHttpInterface.class);
+    }
+
+    @Bean
+    GodEquipmentQueryControllerHttpInterface godEquipmentQueryControllerHttpInterface() {
+        return factory().createClient(GodEquipmentQueryControllerHttpInterface.class);
+    }
+
+    @Bean
+    MonsterGearDtoQueryControllerHttpInterface monsterGearDtoQueryControllerHttpInterface() {
+        return factory().createClient(MonsterGearDtoQueryControllerHttpInterface.class);
+    }
+
+    @Bean
     OutfitQueryControllerHttpInterface outfitQueryControllerHttpInterface() {
         return factory().createClient(OutfitQueryControllerHttpInterface.class);
     }
@@ -60,13 +75,4 @@ public class ItemHttpInterfaceConfig {
         return factory().createClient(WeaponTemplateQueryControllerHttpInterface.class);
     }
 
-    @Bean
-    GodEquipmentQueryControllerHttpInterface godEquipmentQueryControllerHttpInterface() {
-        return factory().createClient(GodEquipmentQueryControllerHttpInterface.class);
-    }
-
-    @Bean
-    CharacterGearDtoQueryControllerHttpInterface characterGearDtoQueryControllerHttpInterface() {
-        return factory().createClient(CharacterGearDtoQueryControllerHttpInterface.class);
-    }
 }

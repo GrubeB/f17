@@ -15,7 +15,7 @@ import pl.app.god_equipment.application.domain.GodEquipmentEvent;
 import pl.app.god_equipment.application.domain.GodEquipmentException;
 import pl.app.god_equipment.application.port.in.CharacterGearCommand;
 import pl.app.god_equipment.application.port.in.CharacterGearService;
-import pl.app.god_equipment.application.port.out.GodEquipmentDomainRepository;
+import pl.app.god_equipment.application.port.in.GodEquipmentDomainRepository;
 import reactor.core.publisher.Mono;
 
 

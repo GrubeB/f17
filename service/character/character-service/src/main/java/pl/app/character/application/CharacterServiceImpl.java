@@ -13,6 +13,7 @@ import pl.app.character.application.port.in.CharacterCommand;
 import pl.app.character.application.port.in.CharacterService;
 import pl.app.character.application.port.out.CharacterDomainRepository;
 import pl.app.character.application.port.out.CharacterTemplateRepository;
+import pl.app.common.shared.model.StatisticType;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.core.publisher.Mono;
 
@@ -94,7 +95,7 @@ class CharacterServiceImpl implements CharacterService {
         return domainRepository.fetchById(command.getCharacterId())
                 .doOnError(e -> logger.error("exception occurred while adding statistic to character: {}, exception: {}", command.getCharacterId(), e.getMessage()))
                 .flatMap(character -> {
-                    character.getStatistics().addStatistic(command.getStatisticQuantity(), command.getStatisticName());
+                    character.getStatistics().add(command.getStatisticQuantity(), StatisticType.valueOf(command.getStatisticName()));
                     var event = new CharacterEvent.StatisticAddedEvent(
                             character.getId(),
                             command.getStatisticName(),

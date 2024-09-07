@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CharacterApplication" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="CharacterApplication" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="pl.app.CharacterApplication" />
     <module name="f14-comments-present.service.character.character-service.main" />
     <extension name="coverage">

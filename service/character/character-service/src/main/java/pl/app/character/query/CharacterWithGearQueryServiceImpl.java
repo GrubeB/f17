@@ -100,11 +100,11 @@ class CharacterWithGearQueryServiceImpl implements CharacterWithGearDtoQueryServ
         public List<CharacterWithGearDto> mapToCharacterWithGearDto(Set<Character> characters, Set<CharacterGearDto> gears){
             return characters.stream().map(character -> {
                 Optional<CharacterGearDto> gear = gears.stream().filter(g -> g.getCharacterId().equals(character.getId())).findAny();
-                return gear.map(characterGearDto -> mapToCharacterWithGearDto(character, characterGearDto)).orElse(null);
+                return gear.map(characterGearDto -> mapToCharacterWithGearDto(character, characterGearDto)).orElse(mapToCharacterWithGearDto(character));
             }).collect(Collectors.toList());
         }
         public CharacterWithGearDto mapToCharacterWithGearDto(Character character, CharacterGearDto gear) {
-            Statistics baseStatistic = character.getStatistics().getStatistics();
+            Statistics baseStatistic = character.getStatistics();
             Statistics gearStatistic = gear.getStatistic();
             Statistics sumStatistics = new Statistics().mergeWith(baseStatistic).mergeWith(gearStatistic);
 
@@ -120,6 +120,25 @@ class CharacterWithGearQueryServiceImpl implements CharacterWithGearDtoQueryServ
                     Character.getDef(sumStatistics.getDurability(), character.getProfession()),
                     Character.getAttackPower(sumStatistics.getStrength(), character.getProfession()),
                     gear
+            );
+        }
+        public CharacterWithGearDto mapToCharacterWithGearDto(Character character) {
+            Statistics baseStatistic = character.getStatistics();
+            Statistics gearStatistic = Statistics.zero();
+            Statistics sumStatistics = new Statistics().mergeWith(baseStatistic).mergeWith(gearStatistic);
+
+            return new CharacterWithGearDto(
+                    character.getId(),
+                    character.getName(),
+                    character.getProfession(),
+                    character.getRace(),
+                    character.getImageId(),
+                    new LevelDto(character.getLevel().getLevel(), character.getLevel().getExp()),
+                    baseStatistic, gearStatistic, sumStatistics,
+                    Character.getHp(sumStatistics.getPersistence(), character.getProfession()),
+                    Character.getDef(sumStatistics.getDurability(), character.getProfession()),
+                    Character.getAttackPower(sumStatistics.getStrength(), character.getProfession()),
+                    new CharacterGearDto()
             );
         }
     }
