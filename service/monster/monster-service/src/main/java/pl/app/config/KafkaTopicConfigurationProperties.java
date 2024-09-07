@@ -19,6 +19,11 @@ public class KafkaTopicConfigurationProperties {
     private Topic monsterTemplateCreated;
     private Topic monsterTemplateRemoved;
     private Topic monsterTemplateUpdated;
+
+    private Topic towerLevelCreated;
+    private Topic towerLevelRemoved;
+    private Topic towerLevelUpdated;
+
     @Setter
     @Getter
     public static class Topic {
