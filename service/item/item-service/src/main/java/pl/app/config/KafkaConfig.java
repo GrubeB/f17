@@ -66,7 +66,19 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getGodEquipmentItemAdded()).stream(),
                     createTopicFromConfig(topicNames.getGodEquipmentItemRemoved()).stream(),
                     createTopicFromConfig(topicNames.getCharacterItemSet()).stream(),
-                    createTopicFromConfig(topicNames.getCharacterItemRemoved()).stream()
+                    createTopicFromConfig(topicNames.getCharacterItemRemoved()).stream(),
+
+                    createTopicFromConfig(topicNames.getMonsterGearCreated()).stream(),
+                    createTopicFromConfig(topicNames.getMonsterItemRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getMonsterItemSet()).stream(),
+                    createTopicFromConfig(topicNames.getMonsterItemRemoved()).stream(),
+
+                    createTopicFromConfig(topicNames.getLootCreated()).stream(),
+                    createTopicFromConfig(topicNames.getLootRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getLootItemSet()).stream(),
+                    createTopicFromConfig(topicNames.getLootRemoved()).stream()
+
+
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

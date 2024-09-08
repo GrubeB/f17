@@ -21,6 +21,7 @@ configurations {
 dependencies {
     // SUBPROJECTS
     implementation project(':common:shared')
+    implementation project(':service:item:item-domain')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-json'

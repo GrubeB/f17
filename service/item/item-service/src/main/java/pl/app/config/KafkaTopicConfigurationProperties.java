@@ -15,11 +15,14 @@ public class KafkaTopicConfigurationProperties {
     private Topic outfitTemplateCreated;
     private Topic outfitTemplateUpdated;
     private Topic outfitTemplateDeleted;
+
     private Topic outfitCreated;
     private Topic outfitDeleted;
+
     private Topic weaponTemplateCreated;
     private Topic weaponTemplateUpdated;
     private Topic weaponTemplateDeleted;
+
     private Topic weaponCreated;
     private Topic weaponDeleted;
 
@@ -43,6 +46,10 @@ public class KafkaTopicConfigurationProperties {
     private Topic monsterItemSet;
     private Topic monsterItemRemoved;
 
+    private Topic lootCreated;
+    private Topic lootRemoved;
+    private Topic lootItemSet;
+    private Topic lootItemRemoved;
     @Setter
     @Getter
     public static class Topic {
