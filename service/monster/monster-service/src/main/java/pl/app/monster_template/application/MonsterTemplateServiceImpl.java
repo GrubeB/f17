@@ -44,8 +44,10 @@ class MonsterTemplateServiceImpl implements MonsterTemplateService {
                             command.getRace(),
                             command.getProfession(),
                             command.getImageId(),
-                            command.getBase(),
-                            command.getPerLevel(),
+                            command.getBaseStatistics(),
+                            command.getPerLevelStatistics(),
+                            command.getBaseProgress(),
+                            command.getPerLevelProgress(),
                             new TemplateGear(
                                     command.getHelmetTemplateId(),
                                     command.getArmorTemplateId(),
@@ -83,8 +85,12 @@ class MonsterTemplateServiceImpl implements MonsterTemplateService {
                     domain.setProfession(command.getProfession());
                     domain.setImageId(command.getImageId());
 
-                    domain.setBase(command.getBase());
-                    domain.setPerLevel(command.getPerLevel());
+                    domain.setBaseStatistics(command.getBaseStatistics());
+                    domain.setPerLevelStatistics(command.getPerLevelStatistics());
+
+                    domain.setBaseProgress(command.getBaseProgress());
+                    domain.setPerLevelProgress(command.getPerLevelProgress());
+
                     domain.getGear().setHelmetTemplateId(command.getHelmetTemplateId());
                     domain.getGear().setArmorTemplateId(command.getArmorTemplateId());
                     domain.getGear().setGlovesTemplateId(command.getGlovesTemplateId());

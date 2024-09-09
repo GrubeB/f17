@@ -20,8 +20,12 @@ public class MonsterTemplateDto implements Serializable {
     private CharacterRace race;
     private CharacterProfession profession;
     private String imageId;
-    private Statistics base;
-    private Statistics perLevel;
+
+    private Statistics baseStatistics;
+    private Statistics perLevelStatistics;
+
+    private ProgressDto baseProgress;
+    private ProgressDto perLevelProgress;
 
     private MonsterTemplateGearDto gear;
     @Data

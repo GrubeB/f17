@@ -7,7 +7,9 @@ import org.bson.types.ObjectId;
 import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.CharacterRace;
 import pl.app.common.shared.model.Statistics;
-import pl.app.monster_gear.dto.MonsterGearDto;
+import pl.app.gear.dto.GearDto;
+import pl.app.loot.dto.LootDto;
+import pl.app.monster_template.dto.ProgressDto;
 
 import java.io.Serializable;
 
@@ -32,5 +34,7 @@ public class MonsterWithGearDto implements Serializable {
     private Long def;
     private Long attackPower;
 
-    private MonsterGearDto monsterGear;
+    private GearDto monsterGear;
+    private LootDto monsterLoot;
+    private ProgressDto progress;
 }

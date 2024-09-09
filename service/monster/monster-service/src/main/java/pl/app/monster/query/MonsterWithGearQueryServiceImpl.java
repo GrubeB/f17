@@ -17,30 +17,39 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
 import pl.app.common.shared.model.Statistics;
-import pl.app.item.http.MonsterGearDtoQueryControllerHttpInterface;
+import pl.app.gear.aplication.domain.Gear;
+import pl.app.gear.dto.GearDto;
+import pl.app.item.http.GearDtoQueryControllerHttpInterface;
+import pl.app.item.http.LootDtoQueryControllerHttpInterface;
+import pl.app.loot.aplication.domain.Loot;
+import pl.app.loot.dto.LootDto;
 import pl.app.monster.application.domain.Monster;
 import pl.app.monster.query.dto.MonsterWithGearDto;
-import pl.app.monster_gear.dto.MonsterGearDto;
+import pl.app.common.shared.model.Progress;
+import pl.app.monster_template.dto.ProgressDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuples;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService {
     private final Repository repository;
-    private final MonsterGearDtoQueryControllerHttpInterface monsterGearDtoQueryController;
+    private final GearDtoQueryControllerHttpInterface gearDtoQueryController;
+    private final LootDtoQueryControllerHttpInterface lootDtoQueryController;
     private final Mapper mapper;
 
 
-    public MonsterWithGearQueryServiceImpl(Mapper mapper, MonsterGearDtoQueryControllerHttpInterface monsterGearDtoQueryController, ReactiveMongoTemplate mongoTemplate) {
-        this.monsterGearDtoQueryController = monsterGearDtoQueryController;
+    public MonsterWithGearQueryServiceImpl(Mapper mapper,
+                                           GearDtoQueryControllerHttpInterface gearDtoQueryController,
+                                           LootDtoQueryControllerHttpInterface lootDtoQueryController,
+                                           ReactiveMongoTemplate mongoTemplate) {
+        this.lootDtoQueryController = lootDtoQueryController;
+        this.gearDtoQueryController = gearDtoQueryController;
         this.mapper = mapper;
         this.repository = new ReactiveMongoRepositoryFactory(mongoTemplate).getRepository(Repository.class);
     }
@@ -48,25 +57,18 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
 
     @Override
     public Mono<MonsterWithGearDto> fetchById(@NotNull ObjectId id) {
-        return repository.findById(id)
-                .zipWith(monsterGearDtoQueryController.fetchByMonsterId(id).map(HttpEntity::getBody))
-                .map(t -> mapper.mapToMonsterWithGearDto(t.getT1(), t.getT2()));
+        return Mono.zip(
+                repository.findById(id),
+                gearDtoQueryController.fetchByDomainObject(id, Gear.LootDomainObjectType.MONSTER).map(HttpEntity::getBody),
+                lootDtoQueryController.fetchByDomainObject(id, Loot.LootDomainObjectType.MONSTER).map(HttpEntity::getBody)
+        ).map(t -> mapper.mapToMonsterWithGearDto(t.getT1(), t.getT2(), t.getT3()));
     }
 
     @Override
     public Mono<Page<MonsterWithGearDto>> fetchAllByPageable(Pageable pageable) {
         return repository.findAllBy(pageable)
                 .collect(Collectors.toSet())
-                .map(set -> monsterGearDtoQueryController
-                        .fetchAllByMonsterIds(set.stream().map(Monster::getId).collect(Collectors.toList()))
-                        .map(HttpEntity::getBody)
-                        .map(Streamable::get)
-                        .map(s -> s.collect(Collectors.toSet()))
-                        .map(g -> Tuples.of(set, g)))
-                .flatMap(Function.identity())
-                .map(t -> mapper.mapToMonsterWithGearDto(t.getT1(), t.getT2()))
-                .zipWith(repository.count())
-                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+                .flatMap(set -> this.fetchAllByIds(set.stream().map(Monster::getId).collect(Collectors.toList()), pageable));
     }
 
     @Override
@@ -74,17 +76,21 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
         if (Objects.isNull(ids)) {
             return fetchAllByPageable(pageable);
         }
-        return repository.findAllById(ids)
-                .collect(Collectors.toSet())
-                .zipWith(monsterGearDtoQueryController
-                        .fetchAllByMonsterIds(ids)
-                        .map(HttpEntity::getBody)
-                        .map(Streamable::get)
-                        .map(s -> s.collect(Collectors.toSet()))
-
-                ).map(t -> mapper.mapToMonsterWithGearDto(t.getT1(), t.getT2()))
+        return Mono.zip(
+                        repository.findAllById(ids).collect(Collectors.toSet()),
+                        gearDtoQueryController
+                                .fetchByDomainObject(Gear.LootDomainObjectType.MONSTER, ids)
+                                .map(HttpEntity::getBody)
+                                .map(Streamable::get)
+                                .map(s -> s.collect(Collectors.toSet())),
+                        lootDtoQueryController.fetchByDomainObject(Loot.LootDomainObjectType.MONSTER, ids)
+                                .map(HttpEntity::getBody)
+                                .map(Streamable::get)
+                                .map(s -> s.collect(Collectors.toSet()))
+                ).map(t -> mapper.mapToMonsterWithGearDto(t.getT1(), t.getT2(), t.getT3()))
                 .zipWith(repository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+
     }
 
     @Component
@@ -94,16 +100,22 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
 
         @PostConstruct
         void init() {
+            addMapper(Monster.class, MonsterWithGearDto.class, this::mapToMonsterWithGearDto);
+            addMapper(Progress.class, ProgressDto.class, e -> modelMapper.map(e, ProgressDto.class));
         }
 
-        public List<MonsterWithGearDto> mapToMonsterWithGearDto(Set<Monster> characters, Set<MonsterGearDto> gears) {
+        List<MonsterWithGearDto> mapToMonsterWithGearDto(Set<Monster> characters, Set<GearDto> gears, Set<LootDto> loots) {
             return characters.stream().map(monster -> {
-                Optional<MonsterGearDto> gear = gears.stream().filter(g -> g.getMonsterId().equals(monster.getId())).findAny();
-                return gear.map(g -> mapToMonsterWithGearDto(monster, g)).orElse(mapToMonsterWithGearDto(monster));
+                Optional<GearDto> gear = gears.stream().filter(e -> e.getId().equals(monster.getId())).findAny();
+                Optional<LootDto> loot = loots.stream().filter(e -> e.getId().equals(monster.getId())).findAny();
+                if (gear.isPresent() && loot.isPresent()) {
+                    return mapToMonsterWithGearDto(monster, gear.get(), loot.get());
+                }
+                return mapToMonsterWithGearDto(monster);
             }).collect(Collectors.toList());
         }
 
-        public MonsterWithGearDto mapToMonsterWithGearDto(Monster monster, MonsterGearDto gear) {
+        MonsterWithGearDto mapToMonsterWithGearDto(Monster monster, GearDto gear, LootDto loot) {
             Statistics baseStatistic = monster.getStatistics();
             Statistics gearStatistic = gear.getStatistic();
             Statistics sumStatistics = new Statistics().mergeWith(baseStatistic).mergeWith(gearStatistic);
@@ -120,11 +132,13 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
                     Statistics.getHp(sumStatistics.getPersistence(), monster.getProfession()),
                     Statistics.getDef(sumStatistics.getDurability(), monster.getProfession()),
                     Statistics.getAttackPower(sumStatistics.getStrength(), monster.getProfession()),
-                    gear
+                    gear,
+                    loot,
+                    map(monster.getProgress(), ProgressDto.class)
             );
         }
 
-        public MonsterWithGearDto mapToMonsterWithGearDto(Monster monster) {
+        MonsterWithGearDto mapToMonsterWithGearDto(Monster monster) {
             Statistics baseStatistic = monster.getStatistics();
             Statistics gearStatistic = Statistics.zero();
             Statistics sumStatistics = new Statistics().mergeWith(baseStatistic).mergeWith(gearStatistic);
@@ -141,9 +155,12 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
                     Statistics.getHp(sumStatistics.getPersistence(), monster.getProfession()),
                     Statistics.getDef(sumStatistics.getDurability(), monster.getProfession()),
                     Statistics.getAttackPower(sumStatistics.getStrength(), monster.getProfession()),
-                    new MonsterGearDto()
+                    new GearDto(),
+                    new LootDto(),
+                    map(monster.getProgress(), ProgressDto.class)
             );
         }
+
     }
 
 

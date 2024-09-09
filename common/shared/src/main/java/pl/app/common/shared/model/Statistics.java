@@ -34,6 +34,9 @@ public class Statistics {
         this.accuracy = accuracy;
         this.resistance = resistance;
     }
+    public static Statistics zero() {
+        return new Statistics(0L,0L, 0L,0L,0L, 0L,0L,0L);
+    }
 
     public static Long getHp(Long persistence, CharacterProfession profession) {
         return switch (profession) {
@@ -68,9 +71,6 @@ public class Statistics {
         };
     }
 
-    public static Statistics zero() {
-        return new Statistics(0L,0L, 0L,0L,0L, 0L,0L,0L);
-    }
 
     public void add(Long statisticQuantity) {
         this.setPersistence(getPersistence() + statisticQuantity);
