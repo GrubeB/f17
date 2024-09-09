@@ -55,6 +55,7 @@ class TraderQueryServiceImpl implements TraderQueryService {
     @RequiredArgsConstructor
     static class Mapper extends BaseMapper {
         private final ModelMapper modelMapper;
+
         @PostConstruct
         void init() {
             addMapper(Trader.class, TraderDto.class, this::mapToTraderDto);

@@ -24,7 +24,9 @@ class OutfitRestController {
 
 
     @PostMapping
-    public Mono<ResponseEntity<OutfitDto>> createOutfit(@RequestBody ItemCommand.CreateOutfitCommand command) {
+    public Mono<ResponseEntity<OutfitDto>> createOutfit(
+            @RequestBody ItemCommand.CreateOutfitCommand command
+    ) {
         return service.createOutfit(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);

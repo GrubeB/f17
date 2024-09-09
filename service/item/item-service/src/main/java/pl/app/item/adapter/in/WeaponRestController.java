@@ -24,7 +24,9 @@ class WeaponRestController {
 
 
     @PostMapping
-    public Mono<ResponseEntity<WeaponDto>> createOutfit(@RequestBody ItemCommand.CreateWeaponCommand command) {
+    public Mono<ResponseEntity<WeaponDto>> createOutfit(
+            @RequestBody ItemCommand.CreateWeaponCommand command
+    ) {
         return service.createWeapon(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);

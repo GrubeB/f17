@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.common.shared.model.ItemType;
 
 import java.io.Serializable;
 
@@ -17,12 +16,14 @@ public interface TraderCommand {
         private ObjectId godId;
 
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class RenewItemsCommand implements Serializable {
         private ObjectId godId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -30,6 +31,7 @@ public interface TraderCommand {
         private ObjectId godId;
         private ObjectId itemId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

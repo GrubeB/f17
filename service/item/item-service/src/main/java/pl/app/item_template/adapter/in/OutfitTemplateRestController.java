@@ -22,14 +22,19 @@ class OutfitTemplateRestController {
 
 
     @PostMapping
-    public Mono<ResponseEntity<OutfitTemplateDto>> createOutfitTemplate(@RequestBody ItemTemplateCommand.CreateOutfitTemplateCommand command) {
+    public Mono<ResponseEntity<OutfitTemplateDto>> createOutfitTemplate(
+            @RequestBody ItemTemplateCommand.CreateOutfitTemplateCommand command
+    ) {
         return service.createOutfitTemplate(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<OutfitTemplateDto>> updateOutfitTemplate(@PathVariable ObjectId id, @RequestBody ItemTemplateCommand.UpdateOutfitTemplateCommand command) {
+    public Mono<ResponseEntity<OutfitTemplateDto>> updateOutfitTemplate(
+            @PathVariable ObjectId id,
+            @RequestBody ItemTemplateCommand.UpdateOutfitTemplateCommand command
+    ) {
         command.setId(id);
         return service.updateOutfitTemplate(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
@@ -37,7 +42,9 @@ class OutfitTemplateRestController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> deleteOutfitTemplate(@PathVariable ObjectId id) {
+    public Mono<ResponseEntity<Void>> deleteOutfitTemplate(
+            @PathVariable ObjectId id
+    ) {
         return service.deleteOutfitTemplate(new ItemTemplateCommand.DeleteOutfitTemplateCommand(id))
                 .map(domain -> ResponseEntity.accepted().build());
     }

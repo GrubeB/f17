@@ -3,6 +3,7 @@ package pl.app.gear.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import pl.app.common.shared.model.Statistics;
 import pl.app.item.query.dto.OutfitDto;
 import pl.app.item.query.dto.WeaponDto;
@@ -14,6 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GearDto implements Serializable {
+    private ObjectId id; // domainObjectId
     private OutfitDto helmet;
     private OutfitDto armor;
     private OutfitDto gloves;

@@ -21,6 +21,6 @@ public interface OutfitTemplateQueryControllerHttpInterface {
     Mono<ResponseEntity<OutfitTemplateDto>> fetchById(@PathVariable ObjectId id);
 
     @GetExchange
-    Mono<ResponseEntity<ResponsePage<OutfitTemplateDto>>> fetchAllByPageable(Pageable pageable);
+    Mono<ResponseEntity<ResponsePage<OutfitTemplateDto>>> fetchAllByPageable();
 
 }

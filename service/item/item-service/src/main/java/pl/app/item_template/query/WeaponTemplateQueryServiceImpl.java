@@ -15,7 +15,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
-import pl.app.item_template.application.domain.OutfitTemplate;
 import pl.app.item_template.application.domain.WeaponTemplate;
 import pl.app.item_template.query.dto.WeaponTemplateDto;
 import reactor.core.publisher.Flux;

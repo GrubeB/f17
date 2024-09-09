@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import pl.app.common.shared.config.JacksonConfig;
-import pl.app.god_equipment.dto.CharacterGearDto;
+import pl.app.equipment.dto.CharacterGearDto;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

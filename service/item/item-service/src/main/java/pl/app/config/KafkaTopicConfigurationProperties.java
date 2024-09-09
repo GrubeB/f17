@@ -26,30 +26,27 @@ public class KafkaTopicConfigurationProperties {
     private Topic weaponCreated;
     private Topic weaponDeleted;
 
-    private Topic godEquipmentCreated;
-    private Topic characterGearCreated;
-    private Topic characterGearRemoved;
-    private Topic characterGearAddedToGodEquipment;
-    private Topic characterGearRemovedFromGodEquipment;
-    private Topic godEquipmentItemAdded;
-    private Topic godEquipmentItemRemoved;
-    private Topic characterItemSet;
-    private Topic characterItemRemoved;
+    private Topic equipmentCreated;
+    private Topic characterGearAddedToEquipment;
+    private Topic characterGearRemovedFromEquipment;
+    private Topic equipmentItemAdded;
+    private Topic equipmentItemRemoved;
 
     private Topic traderCreated;
     private Topic traderItemsRenewed;
     private Topic godBoughtItem;
     private Topic godSoldItem;
 
-    private Topic monsterGearCreated;
-    private Topic monsterGearRemoved;
-    private Topic monsterItemSet;
-    private Topic monsterItemRemoved;
+    private Topic gearCreated;
+    private Topic gearRemoved;
+    private Topic gearItemSet;
+    private Topic gearItemRemoved;
 
     private Topic lootCreated;
     private Topic lootRemoved;
     private Topic lootItemSet;
     private Topic lootItemRemoved;
+
     @Setter
     @Getter
     public static class Topic {

@@ -21,6 +21,6 @@ public interface WeaponQueryControllerHttpInterface {
     Mono<ResponseEntity<WeaponDto>> fetchById(@PathVariable ObjectId id);
 
     @GetExchange
-    Mono<ResponseEntity<ResponsePage<WeaponDto>>> fetchAllByPageable(Pageable pageable);
+    Mono<ResponseEntity<ResponsePage<WeaponDto>>> fetchAllByPageable();
 
 }

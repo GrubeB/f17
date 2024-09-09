@@ -4,8 +4,9 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.common.shared.model.ItemType;
-import pl.app.god_equipment.application.domain.GodEquipmentException;
+import pl.app.equipment.application.domain.EquipmentException;
 import pl.app.item.application.domain.Item;
 
 import java.util.Objects;
@@ -14,9 +15,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
+@Document(collection = "gear")
 public class Gear {
     @Id
     protected ObjectId id;
+    private ObjectId domainObjectId;
+    private LootDomainObjectType domainObjectType;
+    public enum LootDomainObjectType {
+        CHARACTER,
+        MONSTER,
+    }
+
     @DBRef
     protected Item helmet;
     @DBRef
@@ -39,8 +48,10 @@ public class Gear {
     @DBRef
     protected Item rightHand;
 
-    public Gear() {
+    public Gear(ObjectId domainObjectId, LootDomainObjectType domainObjectType) {
         this.id = ObjectId.get();
+        this.domainObjectId = domainObjectId;
+        this.domainObjectType = domainObjectType;
     }
 
     public Set<Item> getItems() {
@@ -56,7 +67,7 @@ public class Gear {
             } else if (GearSlot.RIGHT_HAND.equals(slot)) {
                 this.rightHand = item;
             }else {
-                throw new GodEquipmentException.WrongSlotException();
+                throw new EquipmentException.WrongSlotException();
             }
         } else if (ItemType.isOutfit(item.getType())) {
             if (GearSlot.HELMET.equals(slot) && ItemType.HELMET.equals(item.getType())) {
@@ -76,7 +87,7 @@ public class Gear {
             }else if (GearSlot.TALISMAN.equals(slot) && ItemType.TALISMAN.equals(item.getType())) {
                 this.talisman = item;
             }else {
-                throw new GodEquipmentException.WrongSlotException();
+                throw new EquipmentException.WrongSlotException();
             }
         }
     }

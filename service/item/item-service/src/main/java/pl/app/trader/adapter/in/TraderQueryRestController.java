@@ -5,8 +5,11 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import pl.app.god_equipment.application.domain.GodEquipmentException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import pl.app.equipment.application.domain.EquipmentException;
 import pl.app.trader.dto.TraderDto;
 import pl.app.trader.query.TraderQueryService;
 import reactor.core.publisher.Mono;
@@ -21,14 +24,18 @@ class TraderQueryRestController {
     private final TraderQueryService queryService;
 
     @GetMapping("/{godId}")
-    Mono<ResponseEntity<TraderDto>> fetchByGodId(@PathVariable ObjectId godId) {
+    Mono<ResponseEntity<TraderDto>> fetchByGodId(
+            @PathVariable ObjectId godId
+    ) {
         return queryService.fetchByGodId(godId)
                 .map(ResponseEntity::ok)
-                .switchIfEmpty(Mono.error(GodEquipmentException.NotFoundGodEquipmentException.fromGodId(godId.toHexString())));
+                .switchIfEmpty(Mono.error(EquipmentException.NotFoundGodEquipmentException.fromGodId(godId.toHexString())));
     }
 
     @GetMapping
-    Mono<ResponseEntity<Page<TraderDto>>> fetchAllByPageable(Pageable pageable) {
+    Mono<ResponseEntity<Page<TraderDto>>> fetchAllByPageable(
+            Pageable pageable
+    ) {
         return queryService.fetchAllByPageable(pageable)
                 .map(ResponseEntity::ok);
     }

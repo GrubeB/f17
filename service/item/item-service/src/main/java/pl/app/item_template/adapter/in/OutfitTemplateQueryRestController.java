@@ -24,14 +24,18 @@ class OutfitTemplateQueryRestController {
     private final OutfitTemplateQueryService queryService;
 
     @GetMapping("/{id}")
-    Mono<ResponseEntity<OutfitTemplateDto>> fetchById(@PathVariable ObjectId id) {
+    Mono<ResponseEntity<OutfitTemplateDto>> fetchById(
+            @PathVariable ObjectId id
+    ) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.error(ItemTemplateException.NotFoundItemTemplateException.fromId(id.toHexString())));
     }
 
     @GetMapping
-    Mono<ResponseEntity<Page<OutfitTemplateDto>>> fetchAllByPageable(Pageable pageable) {
+    Mono<ResponseEntity<Page<OutfitTemplateDto>>> fetchAllByPageable(
+            Pageable pageable
+    ) {
         return queryService.fetchAllByPageable(pageable)
                 .map(ResponseEntity::ok);
     }

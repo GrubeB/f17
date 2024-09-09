@@ -1,31 +1,22 @@
 package pl.app.config;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import pl.app.common.shared.config.CustomArgumentResolver;
 import pl.app.common.shared.config.ExceptionAdviceConfig;
 import pl.app.common.shared.config.JacksonConfig;
 import pl.app.common.shared.config.ModelMapperConfig;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebFlux
@@ -45,6 +36,7 @@ public class WebConfig implements WebFluxConfigurer {
     }
 
     private final Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
+
     @Override
     public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
         ObjectMapper objectMapper = jackson2ObjectMapperBuilder.build();

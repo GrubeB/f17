@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import pl.app.common.shared.model.ItemType;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 
@@ -27,6 +26,7 @@ public interface ItemCommand {
         private ObjectId templateId;
         private Integer level;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

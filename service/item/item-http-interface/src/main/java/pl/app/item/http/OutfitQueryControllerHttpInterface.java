@@ -18,9 +18,11 @@ import reactor.core.publisher.Mono;
 )
 public interface OutfitQueryControllerHttpInterface {
     @GetExchange("/{id}")
-    Mono<ResponseEntity<OutfitDto>> fetchById(@PathVariable ObjectId id);
+    Mono<ResponseEntity<OutfitDto>> fetchById(
+            @PathVariable ObjectId id
+    );
 
     @GetExchange
-    Mono<ResponseEntity<ResponsePage<OutfitDto>>> fetchAllByPageable(Pageable pageable);
+    Mono<ResponseEntity<ResponsePage<OutfitDto>>> fetchAllByPageable();
 
 }

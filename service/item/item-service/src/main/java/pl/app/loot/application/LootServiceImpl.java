@@ -11,7 +11,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.common.shared.model.Money;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.item_template.application.domain.ItemTemplate;
 import pl.app.item_template.application.port.in.ItemTemplateDomainRepository;
 import pl.app.loot.aplication.domain.Loot;
 import pl.app.loot.aplication.domain.LootEvent;

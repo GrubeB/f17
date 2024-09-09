@@ -22,14 +22,19 @@ class WeaponTemplateRestController {
 
 
     @PostMapping
-    public Mono<ResponseEntity<WeaponTemplateDto>> createWeaponTemplate(@RequestBody ItemTemplateCommand.CreateWeaponTemplateCommand command) {
+    public Mono<ResponseEntity<WeaponTemplateDto>> createWeaponTemplate(
+            @RequestBody ItemTemplateCommand.CreateWeaponTemplateCommand command
+    ) {
         return service.createWeaponTemplate(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<WeaponTemplateDto>> updateWeaponTemplate(@PathVariable ObjectId id, @RequestBody ItemTemplateCommand.UpdateWeaponTemplateCommand command) {
+    public Mono<ResponseEntity<WeaponTemplateDto>> updateWeaponTemplate(
+            @PathVariable ObjectId id,
+            @RequestBody ItemTemplateCommand.UpdateWeaponTemplateCommand command
+    ) {
         command.setId(id);
         return service.updateWeaponTemplate(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
@@ -37,7 +42,9 @@ class WeaponTemplateRestController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> deleteWeaponTemplate(@PathVariable ObjectId id) {
+    public Mono<ResponseEntity<Void>> deleteWeaponTemplate(
+            @PathVariable ObjectId id
+    ) {
         return service.deleteWeaponTemplate(new ItemTemplateCommand.DeleteWeaponTemplateCommand(id))
                 .map(domain -> ResponseEntity.accepted().build());
     }

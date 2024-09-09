@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.god_equipment.dto.CharacterGearDto;
 import pl.app.item.query.dto.OutfitDto;
 import pl.app.item.query.dto.WeaponDto;
 

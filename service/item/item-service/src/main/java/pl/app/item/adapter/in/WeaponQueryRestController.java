@@ -24,14 +24,18 @@ class WeaponQueryRestController {
     private final WeaponQueryService queryService;
 
     @GetMapping("/{id}")
-    Mono<ResponseEntity<WeaponDto>> fetchById(@PathVariable ObjectId id) {
+    Mono<ResponseEntity<WeaponDto>> fetchById(
+            @PathVariable ObjectId id
+    ) {
         return queryService.fetchById(id)
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.error(ItemException.NotFoundItemException.fromId(id.toHexString())));
     }
 
     @GetMapping
-    Mono<ResponseEntity<Page<WeaponDto>>> fetchAllByPageable(Pageable pageable) {
+    Mono<ResponseEntity<Page<WeaponDto>>> fetchAllByPageable(
+            Pageable pageable
+    ) {
         return queryService.fetchAllByPageable(pageable)
                 .map(ResponseEntity::ok);
     }

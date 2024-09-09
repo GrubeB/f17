@@ -22,8 +22,10 @@ class TraaderRestController {
 
 
     @PostMapping("/{godId}/renew")
-    public Mono<ResponseEntity<TraderDto>> renew(@PathVariable ObjectId godId,
-                                                 @RequestBody TraderCommand.RenewItemsCommand command) {
+    Mono<ResponseEntity<TraderDto>> renew(
+            @PathVariable ObjectId godId,
+            @RequestBody TraderCommand.RenewItemsCommand command
+    ) {
         command.setGodId(godId);
         return service.renew(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
@@ -31,8 +33,10 @@ class TraaderRestController {
     }
 
     @PostMapping("/{godId}/buy")
-    public Mono<ResponseEntity<TraderDto>> buy(@PathVariable ObjectId godId,
-                                               @RequestBody TraderCommand.BuyItemCommand command) {
+    Mono<ResponseEntity<TraderDto>> buy(
+            @PathVariable ObjectId godId,
+            @RequestBody TraderCommand.BuyItemCommand command
+    ) {
         command.setGodId(godId);
         return service.buy(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))
@@ -40,8 +44,10 @@ class TraaderRestController {
     }
 
     @PostMapping("/{godId}/sell")
-    public Mono<ResponseEntity<TraderDto>> sell(@PathVariable ObjectId godId,
-                                                @RequestBody TraderCommand.SellItemCommand command) {
+    Mono<ResponseEntity<TraderDto>> sell(
+            @PathVariable ObjectId godId,
+            @RequestBody TraderCommand.SellItemCommand command
+    ) {
         command.setGodId(godId);
         return service.sell(command)
                 .flatMap(domain -> queryService.fetchByGodId(domain.getGodId()))

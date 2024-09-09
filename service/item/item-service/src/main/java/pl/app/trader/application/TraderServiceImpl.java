@@ -11,18 +11,18 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.common.shared.model.ItemType;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.god_equipment.application.port.in.GodEquipmentCommand;
-import pl.app.god_equipment.application.port.in.GodEquipmentService;
+import pl.app.equipment.application.port.in.GodEquipmentCommand;
+import pl.app.equipment.application.port.in.GodEquipmentService;
 import pl.app.item.application.domain.Item;
 import pl.app.item.application.port.in.ItemDomainRepository;
 import pl.app.trader.application.domain.Trader;
 import pl.app.trader.application.domain.TraderEvent;
 import pl.app.trader.application.domain.TraderException;
 import pl.app.trader.application.port.in.TraderCommand;
+import pl.app.trader.application.port.in.TraderDomainRepository;
 import pl.app.trader.application.port.in.TraderService;
 import pl.app.trader.application.port.out.GodMoneyService;
 import pl.app.trader.application.port.out.ItemGenerator;
-import pl.app.trader.application.port.in.TraderDomainRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
@@ -112,13 +112,13 @@ class TraderServiceImpl implements TraderService {
 
     @Override
     public Mono<Trader> sell(TraderCommand.SellItemCommand command) {
-        logger.debug("selling item {} of from: {}",command.getItemId(), command.getGodId());
+        logger.debug("selling item {} of from: {}", command.getItemId(), command.getGodId());
         return traderDomainRepository.fetchByGodId(command.getGodId())
-                .doOnError(e -> logger.error("exception occurred while selling item {} from god: {}, exception: {}",command.getItemId(), command.getGodId(), e.getMessage()))
+                .doOnError(e -> logger.error("exception occurred while selling item {} from god: {}, exception: {}", command.getItemId(), command.getGodId(), e.getMessage()))
                 .flatMap(domain -> {
                     return itemDomainRepository.fetchById(command.getItemId())
                             .flatMap(item -> godEquipmentService.removeItemFromEquipment(new GodEquipmentCommand.RemoveItemFromGodEquipmentCommand(command.getGodId(), command.getItemId())).thenReturn(item))
-                            .flatMap(item ->{
+                            .flatMap(item -> {
                                 var event = new TraderEvent.GodSoldItemEvent(
                                         domain.getId(), domain.getGodId(), command.getItemId(), item.getMoney()
                                 );

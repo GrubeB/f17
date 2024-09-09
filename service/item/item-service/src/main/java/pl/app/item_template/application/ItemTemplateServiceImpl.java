@@ -15,8 +15,8 @@ import pl.app.item_template.application.domain.ItemTemplateException;
 import pl.app.item_template.application.domain.OutfitTemplate;
 import pl.app.item_template.application.domain.WeaponTemplate;
 import pl.app.item_template.application.port.in.ItemTemplateCommand;
-import pl.app.item_template.application.port.in.ItemTemplateService;
 import pl.app.item_template.application.port.in.ItemTemplateDomainRepository;
+import pl.app.item_template.application.port.in.ItemTemplateService;
 import reactor.core.publisher.Mono;
 
 
@@ -69,7 +69,7 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
         logger.debug("updating outfit template: {}", command.getId());
         return domainRepository.fetchOutfitTemplateById(command.getId())
                 .doOnError(e -> logger.error("exception occurred while updating outfit template: {}, exception: {}", command.getId(), e.getMessage()))
-                .flatMap(domain ->{
+                .flatMap(domain -> {
                     innerUpdateOutfitTemplate(domain, command);
                     var event = new ItemTemplateEvent.OutfitTemplateUpdatedEvent(
                             domain.getId()
@@ -113,7 +113,7 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
         logger.debug("deleting outfit template: {}", command.getId());
         return domainRepository.fetchOutfitTemplateById(command.getId())
                 .doOnError(e -> logger.error("exception occurred while deleting outfit template: {}, exception: {}", command.getId(), e.getMessage()))
-                .flatMap(domain ->{
+                .flatMap(domain -> {
                     var event = new ItemTemplateEvent.OutfitTemplateDeletedEvent(
                             domain.getId()
                     );
@@ -168,7 +168,7 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
         logger.debug("updating weapon template: {}", command.getId());
         return domainRepository.fetchWeaponTemplateById(command.getId())
                 .doOnError(e -> logger.error("exception occurred while updating weapon template: {}, exception: {}", command.getId(), e.getMessage()))
-                .flatMap(domain ->{
+                .flatMap(domain -> {
                     innerUpdateWeaponTemplate(domain, command);
                     var event = new ItemTemplateEvent.WeaponTemplateUpdatedEvent(
                             domain.getId()
@@ -210,12 +210,13 @@ class ItemTemplateServiceImpl implements ItemTemplateService {
         template.setMaxDmg(command.getMaxDmg());
         template.setMaxDmgPercentage(command.getMaxDmgPercentage());
     }
+
     @Override
     public Mono<WeaponTemplate> deleteWeaponTemplate(ItemTemplateCommand.DeleteWeaponTemplateCommand command) {
         logger.debug("deleting weapon template: {}", command.getId());
         return domainRepository.fetchWeaponTemplateById(command.getId())
                 .doOnError(e -> logger.error("exception occurred while deleting weapon template: {}, exception: {}", command.getId(), e.getMessage()))
-                .flatMap(domain ->{
+                .flatMap(domain -> {
                     var event = new ItemTemplateEvent.WeaponTemplateDeletedEvent(
                             domain.getId()
                     );

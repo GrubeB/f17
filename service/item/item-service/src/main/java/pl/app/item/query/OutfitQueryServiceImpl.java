@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
 import pl.app.item.application.domain.Outfit;
 import pl.app.item.query.dto.OutfitDto;
-import pl.app.common.shared.model.ItemType;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

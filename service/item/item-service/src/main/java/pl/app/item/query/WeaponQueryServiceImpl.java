@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
 import pl.app.item.application.domain.Weapon;
 import pl.app.item.query.dto.WeaponDto;
-import pl.app.common.shared.model.ItemType;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -54,7 +53,7 @@ class WeaponQueryServiceImpl implements WeaponQueryService {
 
         @PostConstruct
         void init() {
-            addMapper(Weapon.class, WeaponDto.class, e -> modelMapper.map(e,WeaponDto.class));
+            addMapper(Weapon.class, WeaponDto.class, e -> modelMapper.map(e, WeaponDto.class));
         }
 
         WeaponDto mapToWeaponDto(Weapon domain) {

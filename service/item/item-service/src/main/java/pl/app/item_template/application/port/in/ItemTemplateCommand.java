@@ -40,6 +40,7 @@ public interface ItemTemplateCommand {
         private Long resistance;
         private Long resistancePercentage;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -69,12 +70,14 @@ public interface ItemTemplateCommand {
         private Long resistance;
         private Long resistancePercentage;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class DeleteOutfitTemplateCommand implements Serializable {
         private ObjectId id;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -108,6 +111,7 @@ public interface ItemTemplateCommand {
         private Long maxDmg;
         private Long maxDmgPercentage;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -142,6 +146,7 @@ public interface ItemTemplateCommand {
         private Long maxDmg;
         private Long maxDmgPercentage;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
