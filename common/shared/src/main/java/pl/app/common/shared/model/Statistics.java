@@ -34,8 +34,9 @@ public class Statistics {
         this.accuracy = accuracy;
         this.resistance = resistance;
     }
+
     public static Statistics zero() {
-        return new Statistics(0L,0L, 0L,0L,0L, 0L,0L,0L);
+        return new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L);
     }
 
     public static Long getHp(Long persistence, CharacterProfession profession) {
@@ -71,116 +72,138 @@ public class Statistics {
         };
     }
 
-
-    public void add(Long statisticQuantity) {
-        this.setPersistence(getPersistence() + statisticQuantity);
-        this.setDurability(getDurability() + statisticQuantity);
-        this.setStrength(getStrength() + statisticQuantity);
-        this.setSpeed(getSpeed() + statisticQuantity);
-        this.setCriticalRate(getCriticalRate() + statisticQuantity);
-        this.setCriticalDamage(getCriticalDamage() + statisticQuantity);
-        this.setAccuracy(getAccuracy() + statisticQuantity);
-        this.setResistance(getResistance() + statisticQuantity);
+    public Statistics add(Long statisticQuantity, StatisticType statisticType) {
+        return switch (statisticType) {
+            case PERSISTENCE ->
+                    new Statistics(this.getPersistence() + statisticQuantity, this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case DURABILITY ->
+                    new Statistics(this.getPersistence(), this.getDurability() + statisticQuantity, this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case STRENGTH ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength() + statisticQuantity, this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case SPEED ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed() + statisticQuantity,
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case CRITICAL_RATE ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate() + statisticQuantity, this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case CRITICAL_DAMAGE ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage() + statisticQuantity, this.getAccuracy(), this.getResistance());
+            case ACCURACY ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy() + statisticQuantity, this.getResistance());
+            case RESISTANCE ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance() + statisticQuantity);
+        };
     }
 
-    public void add(Long statisticQuantity, StatisticType statisticType) {
-        switch (statisticType) {
-            case PERSISTENCE -> this.setPersistence(getPersistence() + statisticQuantity);
-            case DURABILITY -> this.setDurability(getDurability() + statisticQuantity);
-            case STRENGTH -> this.setStrength(getStrength() + statisticQuantity);
-            case SPEED -> this.setSpeed(getSpeed() + statisticQuantity);
-            case CRITICAL_RATE -> this.setCriticalRate(getCriticalRate() + statisticQuantity);
-            case CRITICAL_DAMAGE -> this.setCriticalDamage(getCriticalDamage() + statisticQuantity);
-            case ACCURACY -> this.setAccuracy(getAccuracy() + statisticQuantity);
-            case RESISTANCE -> this.setResistance(getResistance() + statisticQuantity);
-        }
-    }
-
-    public void multiply(Long number) {
-        this.setPersistence(getPersistence() * number);
-        this.setDurability(getDurability() * number);
-        this.setStrength(getStrength() * number);
-        this.setSpeed(getSpeed() * number);
-        this.setCriticalRate(getCriticalRate() * number);
-        this.setCriticalDamage(getCriticalDamage() * number);
-        this.setAccuracy(getAccuracy() * number);
-        this.setResistance(getResistance() * number);
-    }
-
-    public void multiply(Long number, StatisticType statisticType) {
-        switch (statisticType) {
-            case PERSISTENCE -> this.setPersistence(getPersistence() * number);
-            case DURABILITY -> this.setDurability(getDurability() * number);
-            case STRENGTH -> this.setStrength(getStrength() * number);
-            case SPEED -> this.setSpeed(getSpeed() * number);
-            case CRITICAL_RATE -> this.setCriticalRate(getCriticalRate() * number);
-            case CRITICAL_DAMAGE -> this.setCriticalDamage(getCriticalDamage() * number);
-            case ACCURACY -> this.setAccuracy(getAccuracy() * number);
-            case RESISTANCE -> this.setResistance(getResistance() * number);
-        }
-    }
-
-    public Statistics mergeWith(Statistics statistics) {
+    public Statistics add(Statistics statistics) {
         if (Objects.isNull(statistics)) {
             return this;
         }
+        Long persistence = this.persistence;
+        Long durability = this.durability;
+        Long strength = this.strength;
+        Long speed = this.speed;
+        Long criticalRate = this.criticalRate;
+        Long criticalDamage = this.criticalDamage;
+        Long accuracy = this.accuracy;
+        Long resistance = this.resistance;
         if (Objects.nonNull(statistics.getPersistence())) {
             if (Objects.nonNull(this.persistence)) {
-                this.persistence = this.persistence + statistics.persistence;
+                persistence = this.persistence + statistics.persistence;
             } else {
-                this.persistence = statistics.persistence;
+                persistence = statistics.persistence;
             }
         }
         if (Objects.nonNull(statistics.getDurability())) {
             if (Objects.nonNull(this.durability)) {
-                this.durability = this.durability + statistics.durability;
+                durability = this.durability + statistics.durability;
             } else {
-                this.durability = statistics.durability;
+                durability = statistics.durability;
             }
         }
         if (Objects.nonNull(statistics.getStrength())) {
             if (Objects.nonNull(this.strength)) {
-                this.strength = this.strength + statistics.strength;
+                strength = this.strength + statistics.strength;
             } else {
-                this.strength = statistics.strength;
+                strength = statistics.strength;
             }
         }
         if (Objects.nonNull(statistics.getSpeed())) {
             if (Objects.nonNull(this.speed)) {
-                this.speed = this.speed + statistics.speed;
+                speed = this.speed + statistics.speed;
             } else {
-                this.speed = statistics.speed;
+                speed = statistics.speed;
             }
         }
         if (Objects.nonNull(statistics.getCriticalRate())) {
             if (Objects.nonNull(this.criticalRate)) {
-                this.criticalRate = this.criticalRate + statistics.criticalRate;
+                criticalRate = this.criticalRate + statistics.criticalRate;
             } else {
-                this.criticalRate = statistics.criticalRate;
+                criticalRate = statistics.criticalRate;
             }
         }
         if (Objects.nonNull(statistics.getCriticalDamage())) {
             if (Objects.nonNull(this.criticalDamage)) {
-                this.criticalDamage = this.criticalDamage + statistics.criticalDamage;
+                criticalDamage = this.criticalDamage + statistics.criticalDamage;
             } else {
-                this.criticalDamage = statistics.criticalDamage;
+                criticalDamage = statistics.criticalDamage;
             }
         }
         if (Objects.nonNull(statistics.getAccuracy())) {
             if (Objects.nonNull(this.accuracy)) {
-                this.accuracy = this.accuracy + statistics.accuracy;
+                accuracy = this.accuracy + statistics.accuracy;
             } else {
-                this.accuracy = statistics.accuracy;
+                accuracy = statistics.accuracy;
             }
         }
         if (Objects.nonNull(statistics.getResistance())) {
             if (Objects.nonNull(this.resistance)) {
-                this.resistance = this.resistance + statistics.resistance;
+                resistance = this.resistance + statistics.resistance;
             } else {
-                this.resistance = statistics.resistance;
+                resistance = statistics.resistance;
             }
         }
-        return this;
+        return new Statistics(persistence, durability, strength, speed, criticalRate, criticalDamage, accuracy, resistance);
+    }
+
+    public Statistics multiply(Long number) {
+        return new Statistics(this.getPersistence() * number, this.getDurability() * number, this.getStrength() * number, this.getSpeed() * number,
+                this.getCriticalRate() * number, this.getCriticalDamage() * number, this.getAccuracy() * number, this.getResistance() * number);
+    }
+
+    public Statistics multiply(Long number, StatisticType statisticType) {
+        return switch (statisticType) {
+            case PERSISTENCE ->
+                    new Statistics(this.getPersistence() * number, this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case DURABILITY ->
+                    new Statistics(this.getPersistence(), this.getDurability() * number, this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case STRENGTH ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength() * number, this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case SPEED ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed() * number,
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case CRITICAL_RATE ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate() * number, this.getCriticalDamage(), this.getAccuracy(), this.getResistance());
+            case CRITICAL_DAMAGE ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage() * number, this.getAccuracy(), this.getResistance());
+            case ACCURACY ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy() * number, this.getResistance());
+            case RESISTANCE ->
+                    new Statistics(this.getPersistence(), this.getDurability(), this.getStrength(), this.getSpeed(),
+                            this.getCriticalRate(), this.getCriticalDamage(), this.getAccuracy(), this.getResistance() * number);
+        };
     }
 
     /* GETTERS & SETTERS */

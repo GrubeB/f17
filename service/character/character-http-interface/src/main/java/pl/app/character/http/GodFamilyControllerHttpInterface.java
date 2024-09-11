@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.DeleteExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
-import pl.app.god_family.application.port.in.GodFamilyCommand;
-import pl.app.god_family.query.dto.GodFamilyDto;
+import pl.app.family.application.port.in.FamilyCommand;
+import pl.app.family.query.dto.FamilyDto;
 import reactor.core.publisher.Mono;
 
 @HttpExchange(
@@ -19,13 +19,13 @@ import reactor.core.publisher.Mono;
 )
 public interface GodFamilyControllerHttpInterface {
     @PostExchange
-    Mono<ResponseEntity<GodFamilyDto>> create(@RequestBody GodFamilyCommand.CreateGodFamilyCommand command);
+    Mono<ResponseEntity<FamilyDto>> create(@RequestBody FamilyCommand.CreateGodFamilyCommand command);
 
     @PostExchange("/{godId}/characters")
-    Mono<ResponseEntity<GodFamilyDto>> add(@PathVariable ObjectId godId,
-                                           @RequestBody GodFamilyCommand.AddCharacterToGodFamilyCommand command);
+    Mono<ResponseEntity<FamilyDto>> add(@PathVariable ObjectId godId,
+                                        @RequestBody FamilyCommand.AddCharacterToGodFamilyCommand command);
 
     @DeleteExchange("/{godId}/characters")
-    Mono<ResponseEntity<GodFamilyDto>> remove(@PathVariable ObjectId godId,
-                                              @RequestBody GodFamilyCommand.RemoveCharacterFromGodFamilyCommand command);
+    Mono<ResponseEntity<FamilyDto>> remove(@PathVariable ObjectId godId,
+                                           @RequestBody FamilyCommand.RemoveCharacterFromGodFamilyCommand command);
 }

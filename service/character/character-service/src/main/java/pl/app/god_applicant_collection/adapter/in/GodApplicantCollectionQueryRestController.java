@@ -6,15 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.god_applicant_collection.application.domain.GodApplicantCollection;
 import pl.app.god_applicant_collection.application.domain.GodApplicantCollectionException;
 import pl.app.god_applicant_collection.query.GodApplicantCollectionQueryService;
 import pl.app.god_applicant_collection.query.dto.GodApplicantCollectionDto;
-import pl.app.god_family.application.domain.GodFamilyException;
-import pl.app.god_family.query.dto.GodFamilyDto;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(GodApplicantCollectionQueryRestController.resourcePath)

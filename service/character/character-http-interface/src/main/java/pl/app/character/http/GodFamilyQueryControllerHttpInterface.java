@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import pl.app.common.shared.config.ResponsePage;
-import pl.app.god_family.query.dto.GodFamilyDto;
+import pl.app.family.query.dto.FamilyDto;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -20,8 +20,8 @@ import java.util.List;
 )
 public interface GodFamilyQueryControllerHttpInterface {
     @GetExchange("/{id}")
-    Mono<ResponseEntity<GodFamilyDto>> fetchByGodId(@PathVariable ObjectId id);
+    Mono<ResponseEntity<FamilyDto>> fetchByGodId(@PathVariable ObjectId id);
 
     @GetExchange
-    Mono<ResponseEntity<ResponsePage<GodFamilyDto>>> fetchAllByGodIds(@RequestParam List<ObjectId> godIds);
+    Mono<ResponseEntity<ResponsePage<FamilyDto>>> fetchAllByGodIds(@RequestParam List<ObjectId> godIds);
 }

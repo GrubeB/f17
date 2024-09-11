@@ -10,8 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.god_applicant_collection.application.domain.GodApplicantCollection;
 import pl.app.god_applicant_collection.application.port.out.GodApplicantCollectionDomainRepository;
-import pl.app.god_family.application.domain.GodFamily;
-import pl.app.god_family.application.domain.GodFamilyException;
+import pl.app.family.application.domain.FamilyException;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -26,7 +25,7 @@ class GodApplicantCollectionDomainRepositoryImpl implements GodApplicantCollecti
         Query query = Query.query(Criteria.where("godId").is(godId));
         return mongoTemplate.query(GodApplicantCollection.class).matching(query).one()
                 .doOnNext(domain -> logger.debug("fetched god applicant collection with id: {}", domain.getId()))
-                .switchIfEmpty(Mono.defer(() -> Mono.error(() -> GodFamilyException.NotFoundGodFamilyException.fromGodId(godId.toString()))))
+                .switchIfEmpty(Mono.defer(() -> Mono.error(() -> FamilyException.NotFoundGodFamilyException.fromGodId(godId.toString()))))
                 .doOnError(e -> logger.error("error occurred while fetching god applicant collection of god: {}: {}", godId, e.toString()));
     }
 }

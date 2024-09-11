@@ -59,9 +59,9 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getExpAdded()).stream(),
                     createTopicFromConfig(topicNames.getCharacterLevelIncreased()).stream(),
 
-                    createTopicFromConfig(topicNames.getGodFamilyCreated()).stream(),
-                    createTopicFromConfig(topicNames.getCharacterAddedToGodFamily()).stream(),
-                    createTopicFromConfig(topicNames.getCharacterRemovedFromGodFamily()).stream(),
+                    createTopicFromConfig(topicNames.getFamilyCreated()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterAddedToFamily()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterRemovedFromFamily()).stream(),
 
                     createTopicFromConfig(topicNames.getGodApplicantCollectionCreated()).stream(),
                     createTopicFromConfig(topicNames.getGodApplicantCreated()).stream(),

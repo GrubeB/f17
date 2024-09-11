@@ -37,7 +37,8 @@ class CharacterTemplateServiceImpl implements CharacterTemplateService {
                 .flatMap(exist -> exist ? Mono.error(CharacterTemplateException.DuplicatedNameException.fromName(command.getName())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while creating character template, exception: {}", e.getMessage()))
                 .then(Mono.defer(() -> {
-                    var domain = new CharacterTemplate(command.getName(), command.getDescription(), command.getRace(), command.getProfession(), command.getImageId());
+                    var domain = new CharacterTemplate(command.getName(), command.getDescription(), command.getRace(), command.getProfession(), command.getImageId(),
+                            command.getBaseStatistics(), command.getPerLevelStatistics());
                     var event = new CharacterTemplateEvent.CharacterTemplateCreatedEvent(
                             domain.getId()
                     );
@@ -61,6 +62,8 @@ class CharacterTemplateServiceImpl implements CharacterTemplateService {
                     domain.setRace(command.getRace());
                     domain.setProfession(command.getProfession());
                     domain.setImageId(command.getImageId());
+                    domain.setBaseStatistics(command.getBaseStatistics());
+                    domain.setPerLevelStatistics(command.getPerLevelStatistics());
                     var event = new CharacterTemplateEvent.CharacterTemplateUpdatedEvent(
                             domain.getId()
                     );

@@ -31,37 +31,37 @@ public class GearDto implements Serializable {
     public Statistics getStatistic() {
         Statistics statistics = new Statistics();
         if (Objects.nonNull(helmet)) {
-            statistics.mergeWith(helmet.getStatistic());
+            statistics.add(helmet.getStatistic());
         }
         if (Objects.nonNull(armor)) {
-            statistics.mergeWith(armor.getStatistic());
+            statistics.add(armor.getStatistic());
         }
         if (Objects.nonNull(gloves)) {
-            statistics.mergeWith(gloves.getStatistic());
+            statistics.add(gloves.getStatistic());
         }
 
         if (Objects.nonNull(boots)) {
-            statistics.mergeWith(boots.getStatistic());
+            statistics.add(boots.getStatistic());
         }
         if (Objects.nonNull(belt)) {
-            statistics.mergeWith(belt.getStatistic());
+            statistics.add(belt.getStatistic());
         }
         if (Objects.nonNull(ring)) {
-            statistics.mergeWith(ring.getStatistic());
+            statistics.add(ring.getStatistic());
         }
 
         if (Objects.nonNull(amulet)) {
-            statistics.mergeWith(amulet.getStatistic());
+            statistics.add(amulet.getStatistic());
         }
         if (Objects.nonNull(talisman)) {
-            statistics.mergeWith(talisman.getStatistic());
+            statistics.add(talisman.getStatistic());
         }
         if (Objects.nonNull(leftHand)) {
-            statistics.mergeWith(leftHand.getStatistic());
+            statistics.add(leftHand.getStatistic());
         }
 
         if (Objects.nonNull(leftHand)) {
-            statistics.mergeWith(leftHand.getStatistic());
+            statistics.add(leftHand.getStatistic());
         }
 
         return statistics;

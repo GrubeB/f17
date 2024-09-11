@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.CharacterRace;
 import pl.app.common.shared.model.Statistics;
-import pl.app.god_equipment.dto.CharacterGearDto;
+import pl.app.gear.dto.GearDto;
 
 import java.io.Serializable;
 
@@ -31,5 +31,5 @@ public class CharacterWithGearDto implements Serializable {
     private Long def;
     private Long attackPower;
 
-    private CharacterGearDto characterGear;
+    private GearDto characterGear;
 }

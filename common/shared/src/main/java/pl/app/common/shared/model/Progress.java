@@ -12,8 +12,16 @@ public class Progress {
         this.exp = exp;
     }
 
-    public void multiply(Long n) {
-        this.exp = this.exp * n;
+    public Progress add(Long n) {
+        return new Progress(this.exp + n);
+    }
+
+    public Progress add(Progress p) {
+        return new Progress(this.exp + p.getExp());
+    }
+
+    public Progress multiply(Long n) {
+        return new Progress(this.exp * n);
     }
 
     public Long getExp() {

@@ -21,5 +21,4 @@ public class CharacterDto implements Serializable {
     private String imageId;
     private LevelDto level;
     private Statistics statistics;
-
 }

@@ -118,7 +118,7 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
         MonsterWithGearDto mapToMonsterWithGearDto(Monster monster, GearDto gear, LootDto loot) {
             Statistics baseStatistic = monster.getStatistics();
             Statistics gearStatistic = gear.getStatistic();
-            Statistics sumStatistics = new Statistics().mergeWith(baseStatistic).mergeWith(gearStatistic);
+            Statistics sumStatistics = new Statistics().add(baseStatistic).add(gearStatistic);
 
             return new MonsterWithGearDto(
                     monster.getId(),
@@ -141,7 +141,7 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
         MonsterWithGearDto mapToMonsterWithGearDto(Monster monster) {
             Statistics baseStatistic = monster.getStatistics();
             Statistics gearStatistic = Statistics.zero();
-            Statistics sumStatistics = new Statistics().mergeWith(baseStatistic).mergeWith(gearStatistic);
+            Statistics sumStatistics = new Statistics().add(baseStatistic).add(gearStatistic);
 
             return new MonsterWithGearDto(
                     monster.getId(),

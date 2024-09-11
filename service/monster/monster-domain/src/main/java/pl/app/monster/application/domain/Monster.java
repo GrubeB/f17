@@ -7,9 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.CharacterRace;
+import pl.app.common.shared.model.Progress;
 import pl.app.common.shared.model.Statistics;
 import pl.app.monster_template.application.domain.MonsterTemplate;
-import pl.app.common.shared.model.Progress;
 
 @Document(collection = "monster")
 @Getter
@@ -33,15 +33,13 @@ public class Monster {
     public Statistics getStatistics() {
         Statistics base = template.getBaseStatistics();
         Statistics perLevel = template.getPerLevelStatistics();
-        perLevel.multiply(Long.valueOf(level));
-        return base.mergeWith(perLevel);
+        return base.add(perLevel.multiply(Long.valueOf(level)));
     }
 
     public Progress getProgress() {
         Progress base = template.getBaseProgress();
         Progress perLevel = template.getPerLevelProgress();
-        perLevel.multiply(Long.valueOf(level));
-        return new Progress(base.getExp() + perLevel.getExp());
+        return base.add(perLevel.multiply(Long.valueOf(level)));
     }
 
     public String getName() {
