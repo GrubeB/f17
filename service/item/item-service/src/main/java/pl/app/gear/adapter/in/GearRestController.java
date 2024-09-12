@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.app.gear.aplication.domain.Gear;
 import pl.app.gear.application.port.in.GearCommand;
 import pl.app.gear.application.port.in.GearService;
 import pl.app.gear.dto.GearDto;
@@ -24,7 +25,7 @@ class GearRestController {
     @PostMapping("/{domainObjectId}/items")
     Mono<ResponseEntity<GearDto>> setItem(
             @PathVariable ObjectId domainObjectId,
-            @PathVariable Loot.LootDomainObjectType domainObjectType,
+            @PathVariable Gear.LootDomainObjectType domainObjectType,
             @RequestBody GearCommand.SetItemCommand command
     ) {
         return service.setItem(command)
@@ -35,7 +36,7 @@ class GearRestController {
     @DeleteMapping("/{domainObjectId}/items")
     Mono<ResponseEntity<GearDto>> removeItem(
             @PathVariable ObjectId domainObjectId,
-            @PathVariable Loot.LootDomainObjectType domainObjectType,
+            @PathVariable Gear.LootDomainObjectType domainObjectType,
             @RequestBody GearCommand.RemoveItemCommand command
     ) {
         return service.removeItem(command)

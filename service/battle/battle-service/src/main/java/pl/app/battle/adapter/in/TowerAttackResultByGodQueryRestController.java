@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.app.battle.application.domain.TowerAttackException;
+import pl.app.battle.application.domain.tower_attack.TowerAttackException;
 import pl.app.battle.query.TowerAttackResultQueryService;
 import pl.app.battle.query.dto.TowerAttackResultDto;
 import reactor.core.publisher.Mono;

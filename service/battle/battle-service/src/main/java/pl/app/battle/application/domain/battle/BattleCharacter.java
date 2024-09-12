@@ -1,4 +1,4 @@
-package pl.app.battle.application.domain;
+package pl.app.battle.application.domain.battle;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,47 +16,36 @@ import java.util.Set;
 @Getter
 public class BattleCharacter {
     private static final Logger logger = LoggerFactory.getLogger(BattleCharacter.class);
-    private Short innerId;
-    private Info info;
+    private BattleCharacterInfo info;
+    private BattleCharacterStatus status;
 
     private Statistics baseStatistics;
     private Statistics gearStatistics;
     private Statistics statistics;
 
-    private TurnSpeed turnSpeed;
-    private CharacterStatus status;
-    private Actions actions;
+    private BattleCharacterTurnManager turnManager;
+    private BattleCharacterActions actions;
 
     private Set<BattleCharacter> allies;
     private Set<BattleCharacter> enemies;
     private BattleLog log;
 
-    public BattleCharacter(ObjectId id,
-                           ObjectId godId,
-                           BattleCharacterType type,
-                           String profession,
-                           String name,
-                           Integer level,
-                           Long exp,
-                           Statistics base,
-                           Statistics gear,
-                           Statistics statistics,
-                           Long hp,
-                           Long def,
-                           Long attackPower,
-                           WeaponDto leftHand,
-                           WeaponDto rightHand) {
-        this.info = new Info(id, godId, type, profession, name, level, exp);
+    public BattleCharacter(ObjectId id, ObjectId godId, BattleCharacterType type, String profession,
+                           String name, Integer level, Long exp,
+                           Statistics base, Statistics gear, Statistics statistics,
+                           Long hp, Long def, Long attackPower, WeaponDto leftHand, WeaponDto rightHand) {
+        this.info = new BattleCharacterInfo(id, godId, type, profession, name, level, exp);
         this.baseStatistics = base;
         this.gearStatistics = gear;
         this.statistics = statistics;
-        this.turnSpeed = new TurnSpeed(statistics.getSpeed());
-        this.status = new CharacterStatus(hp, def);
-        this.actions = new Actions(attackPower, statistics, leftHand, rightHand);
+        this.turnManager = new BattleCharacterTurnManager(statistics.getSpeed());
+        this.status = new BattleCharacterStatus(hp, def);
+        this.actions = new BattleCharacterActions(attackPower, statistics, leftHand, rightHand);
     }
 
     @Getter
-    public class Info {
+    public class BattleCharacterInfo {
+        private Short innerId;
         private ObjectId id;
         private ObjectId godId;
         private BattleCharacterType type;
@@ -65,7 +54,7 @@ public class BattleCharacter {
         private Integer level;
         private Long exp;
 
-        public Info(ObjectId id, ObjectId godId, BattleCharacterType type, String profession, String name, Integer level, Long exp) {
+        public BattleCharacterInfo(ObjectId id, ObjectId godId, BattleCharacterType type, String profession, String name, Integer level, Long exp) {
             this.id = id;
             this.godId = godId;
             this.type = type;
@@ -74,17 +63,35 @@ public class BattleCharacter {
             this.level = level;
             this.exp = exp;
         }
+        public void setInnerId(Short innerId) {
+            this.innerId = innerId;
+        }
     }
-
-    public class TurnSpeed {
+    @Getter
+    public class BattleCharacterTurnManager {
         private Long attackSpeed;
         private Long startingTurnSpeed;
         private Long turnCounter;
 
-        public TurnSpeed(Long attackSpeed) {
+        public BattleCharacterTurnManager(Long attackSpeed) {
             this.attackSpeed = attackSpeed;
             this.startingTurnSpeed = null;
             this.turnCounter = null;
+        }
+        public void startTurn() {
+            logger.debug("\t\t{} starting his turn", BattleCharacter.this);
+            log.send(new InnerBattleEvent.CharacterTurnStartedEvent(info.getInnerId()));
+            actions.makeAction();
+            endTurn();
+        }
+
+        public void endTurn() {
+            turnManager.setTurnCounterToStartingPosition();
+            logger.debug("\t\t{} turn ended", BattleCharacter.this);
+        }
+
+        public boolean isCharacterTurn() {
+            return turnManager.checkIfCounterIsZero();
         }
 
         public void updateTurnCounter() {
@@ -92,14 +99,14 @@ public class BattleCharacter {
             final var newTurnCounter = turnCounter - attackSpeed;
             logger.debug("{} updated turn counter from {} to {}", BattleCharacter.this, currentTurnCounter, newTurnCounter);
             turnCounter = newTurnCounter;
-            log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(innerId, currentTurnCounter, newTurnCounter));
+            log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(info.getInnerId(), currentTurnCounter, newTurnCounter));
         }
 
         public void updateTurnCounter(Long numberOfTimes) {
             final var currentTurnCounter = turnCounter;
             final var newTurnCounter = turnCounter - numberOfTimes * attackSpeed;
             logger.debug("{} updated turn counter from {} to {}", BattleCharacter.this, currentTurnCounter, newTurnCounter);
-            log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(innerId, currentTurnCounter, newTurnCounter));
+            log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(info.getInnerId(), currentTurnCounter, newTurnCounter));
             turnCounter = newTurnCounter;
         }
 
@@ -107,7 +114,7 @@ public class BattleCharacter {
             final var currentTurnCounter = turnCounter;
             final var newTurnCounter = startingTurnSpeed;
             logger.debug("{} updated turn counter from {} to {}", BattleCharacter.this, currentTurnCounter, newTurnCounter);
-            log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(innerId, currentTurnCounter, newTurnCounter));
+            log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(info.getInnerId(), currentTurnCounter, newTurnCounter));
             turnCounter = startingTurnSpeed;
         }
 
@@ -130,14 +137,14 @@ public class BattleCharacter {
     }
 
     @Getter
-    public class CharacterStatus {
+    public class BattleCharacterStatus {
         private Long maxHp;
         private Long currentHp;
         private Long maxDef;
         private Long currentDef;
         private Boolean isDead;
 
-        public CharacterStatus(Long maxHp, Long maxDef) {
+        public BattleCharacterStatus(Long maxHp, Long maxDef) {
             this.maxHp = maxHp;
             this.maxDef = maxDef;
             reset();
@@ -146,7 +153,7 @@ public class BattleCharacter {
         private void subtractHp(Long damage) {
             currentHp = currentHp - damage;
             logger.debug("\t\t{} took {} dmg", BattleCharacter.this, damage);
-            log.send(new InnerBattleEvent.CharacterHpLostEvent(innerId, damage));
+            log.send(new InnerBattleEvent.CharacterHpLostEvent(info.getInnerId(), damage));
             if (currentHp <= 0) {
                 die();
             }
@@ -155,8 +162,8 @@ public class BattleCharacter {
         private void die() {
             logger.debug("\t\t{} died", this);
             isDead = true;
-            log.send(new InnerBattleEvent.CharacterDiedEvent(innerId));
-            turnSpeed.setTurnCounterToStartingPosition();
+            log.send(new InnerBattleEvent.CharacterDiedEvent(info.getInnerId()));
+            turnManager.setTurnCounterToStartingPosition();
         }
 
         private void reset() {
@@ -170,7 +177,7 @@ public class BattleCharacter {
         }
     }
 
-    public class Actions {
+    public class BattleCharacterActions {
         private Long maxAttackPower;
         private Long currentAttackPower;
         private Long maxCriticalRate;
@@ -185,7 +192,7 @@ public class BattleCharacter {
         private WeaponDto rightHand;
         private final Random random = new Random();
 
-        public Actions(Long attackPower, Statistics statistics, WeaponDto leftHand, WeaponDto rightHand) {
+        public BattleCharacterActions(Long attackPower, Statistics statistics, WeaponDto leftHand, WeaponDto rightHand) {
             this.maxAttackPower = attackPower;
             this.maxCriticalRate = statistics.getCriticalRate();
             this.maxCriticalDamage = statistics.getCriticalDamage();
@@ -202,6 +209,9 @@ public class BattleCharacter {
             this.rightHand = rightHand;
         }
 
+        public void makeAction(){
+            this.baseAttack(); // TODO
+        }
         public void baseAttack() {
             Optional<BattleCharacter> enemyToAttack = getRandomEnemyToAttack();
             enemyToAttack.ifPresent(this::baseAttack);
@@ -211,7 +221,7 @@ public class BattleCharacter {
             var dmg = getValueBetween(getMinBaseDmg(), getMaxBaseDmg());
             Hit hit = new Hit(dmg, currentCriticalRate, currentCriticalDamage, currentAccuracy);
             logger.debug("\t\t{} atacking {} with {}", BattleCharacter.this, enemy, hit);
-            log.send(new InnerBattleEvent.CharacterAttackedEvent(innerId, enemy.getInnerId()));
+            log.send(new InnerBattleEvent.CharacterAttackedEvent(info.getInnerId(), enemy.getInfo().getInnerId()));
             enemy.getActions().takeHit(hit);
         }
 
@@ -280,25 +290,6 @@ public class BattleCharacter {
         }
     }
 
-    /* TURN METHODS */
-    public void startTurn() {
-        logger.debug("\t\t{} starting his turn", this);
-        log.send(new InnerBattleEvent.CharacterTurnStartedEvent(innerId));
-        actions.baseAttack();
-        endTurn();
-        logger.debug("\t\t{} ended his turn", this);
-    }
-
-    public void endTurn() {
-        logger.debug("\t\t{} turn ended", this);
-        turnSpeed.setTurnCounterToStartingPosition();
-    }
-
-    public boolean isCharacterTurn() {
-        return turnSpeed.checkIfCounterIsZero();
-    }
-
-    /* INIT METHODS */
 
     public void setTeams(Set<BattleCharacter> allies, Set<BattleCharacter> enemies) {
         this.allies = allies;
@@ -309,13 +300,10 @@ public class BattleCharacter {
         this.log = log;
     }
 
-    public void setInnerId(Short innerId) {
-        this.innerId = innerId;
-    }
-
-    public void reset(){
+    public void reset() {
         this.status.reset();
     }
+
     @Override
     public String toString() {
         return info.getName() + "(" + getStatus().getCurrentHp() + "/" + getStatus().getMaxHp() + ")";

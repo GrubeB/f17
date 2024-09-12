@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-import pl.app.battle.application.domain.BattleEvent;
-import pl.app.battle.application.domain.BattleResult;
+import pl.app.battle.application.domain.battle.BattleEvent;
+import pl.app.battle.application.domain.battle.BattleResult;
 import pl.app.battle.application.port.in.BattleCommand;
 import pl.app.battle.application.port.out.CharacterRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
@@ -79,5 +79,19 @@ class BattleServiceImplTest {
         verify(mongoTemplate, times(1)).insert(any(BattleResult.class));
         verify(kafkaTemplate, times(1))
                 .send(eq(topicNames.getBattleEnded().getName()), any(), any(BattleEvent.BattleEndedEvent.class));
+    }
+
+    @Test
+    void test() throws InterruptedException {
+        final var god1 = new ObjectId("66e1a61ad87f85197d5bf4b6");
+        final var character1 = new ObjectId("66e1af345f5e3520d88d3134");
+        final var command = new BattleCommand.AttackTowerCommand(
+                god1,
+                Set.of(character1),
+                1
+        );
+        service.attackTower(command).subscribe();
+
+        Thread.sleep(30_000);
     }
 }

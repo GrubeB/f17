@@ -1,4 +1,4 @@
-package pl.app.battle.application.domain;
+package pl.app.battle.application.domain.tower_attack;
 
 import lombok.Getter;
 import org.bson.types.ObjectId;

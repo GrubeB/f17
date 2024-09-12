@@ -38,7 +38,7 @@ class BattleRestController {
     public Mono<ResponseEntity<TowerAttackResultDto>> attackTower(
             @RequestBody BattleCommand.AttackTowerCommand command) {
         return battleService.attackTower(command)
-                .flatMap(domain -> towerAttackResultQueryService.fetchById(domain.getTowerAttackId()))
+                .flatMap(domain -> towerAttackResultQueryService.fetchById(domain.getInfo().getTowerAttackId()))
                 .map(ResponseEntity::ok);
     }
 }

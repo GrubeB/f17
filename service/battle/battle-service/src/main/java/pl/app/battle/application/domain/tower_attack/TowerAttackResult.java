@@ -1,4 +1,4 @@
-package pl.app.battle.application.domain;
+package pl.app.battle.application.domain.tower_attack;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,9 +6,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import pl.app.battle.application.domain.battle.BattleCharacter;
+import pl.app.battle.application.domain.battle.BattleResult;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class TowerAttackResult {
     @Id
     private ObjectId towerAttackId;
+    private Boolean towerAttackEnded;
     private ObjectId godId;
     private Boolean isWin;
     private Set<ObjectId> characterIdsList;

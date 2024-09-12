@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class KafkaTopicConfigurationProperties {
     private Topic battleEnded;
+    private Topic towerAttackStarted;
     private Topic towerAttackEnded;
 
     @Setter

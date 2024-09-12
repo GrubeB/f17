@@ -1,4 +1,4 @@
-package pl.app.battle.application.domain;
+package pl.app.battle.application.domain.battle;
 
 import pl.app.common.shared.exception.NotFoundException;
 

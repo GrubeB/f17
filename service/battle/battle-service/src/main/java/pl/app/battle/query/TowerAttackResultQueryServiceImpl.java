@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.repository.support.ReactiveMongoReposito
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import pl.app.battle.application.domain.TowerAttackResult;
+import pl.app.battle.application.domain.tower_attack.TowerAttackResult;
 import pl.app.battle.query.dto.TowerAttackResultDto;
 import pl.app.common.mapper.BaseMapper;
 import reactor.core.publisher.Flux;

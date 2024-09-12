@@ -6,12 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.battle.application.domain.BattleException;
-import pl.app.battle.application.domain.TowerAttackEvent;
-import pl.app.battle.application.domain.TowerAttackException;
-import pl.app.battle.query.BattleResultQueryService;
+import pl.app.battle.application.domain.tower_attack.TowerAttackException;
 import pl.app.battle.query.TowerAttackResultQueryService;
-import pl.app.battle.query.dto.BattleResultDto;
 import pl.app.battle.query.dto.TowerAttackResultDto;
 import reactor.core.publisher.Mono;
 

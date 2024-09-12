@@ -2,8 +2,8 @@ package pl.app.battle.adapter.out;
 
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
-import pl.app.battle.application.domain.BattleCharacter;
-import pl.app.battle.application.domain.BattleCharacterType;
+import pl.app.battle.application.domain.battle.BattleCharacter;
+import pl.app.battle.application.domain.battle.BattleCharacterType;
 import pl.app.battle.application.port.out.MonsterRepository;
 import pl.app.common.shared.model.Statistics;
 import pl.app.item.query.dto.WeaponDto;

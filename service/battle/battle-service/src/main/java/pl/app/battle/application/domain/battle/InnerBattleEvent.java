@@ -1,4 +1,4 @@
-package pl.app.battle.application.domain;
+package pl.app.battle.application.domain.battle;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
