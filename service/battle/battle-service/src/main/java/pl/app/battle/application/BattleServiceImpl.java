@@ -14,13 +14,13 @@ import pl.app.battle.application.domain.battle.BattleEvent;
 import pl.app.battle.application.domain.battle.BattleResult;
 import pl.app.battle.application.domain.tower_attack.TowerAttack;
 import pl.app.battle.application.domain.tower_attack.TowerAttackEvent;
-import pl.app.battle.application.domain.tower_attack.TowerAttackResult;
 import pl.app.battle.application.port.in.BattleCommand;
 import pl.app.battle.application.port.in.BattleService;
 import pl.app.battle.application.port.out.CharacterRepository;
-import pl.app.battle.application.port.out.MonsterRepository;
 import pl.app.battle.application.port.out.TowerAttackDomainRepository;
+import pl.app.battle.application.port.out.TowerRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.tower.dto.TowerLevelDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -40,7 +40,7 @@ class BattleServiceImpl implements BattleService {
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
     private final CharacterRepository characterRepository;
-    private final MonsterRepository monsterRepository;
+    private final TowerRepository towerRepository;
     private final TowerAttackDomainRepository towerAttackDomainRepository;
 
     @Override
@@ -99,12 +99,12 @@ class BattleServiceImpl implements BattleService {
     public Mono<TowerAttack> attackTower(BattleCommand.AttackTowerCommand command) {
         logger.debug("starting attacking tower, god1({})", command.getGodId());
         return Mono.zip(characterRepository.getBattleCharacterByGodId(command.getGodId(), command.getCharacterIds()),
-                        monsterRepository.getByTowerLevel(command.getLevel()))
+                        towerRepository.getTowerLevel(command.getLevel()))
                 .doOnError(e -> logger.error("exception occurred while attacking tower, god1({}), exception: {}", command.getGodId(), e.getMessage()))
                 .flatMap(t -> {
                     Set<BattleCharacter> characters = t.getT1();
-                    Set<BattleCharacter> monsters = t.getT2();
-                    TowerAttack domain = new TowerAttack(command.getGodId(), characters, monsters);
+                    TowerLevelDto towerLevel = t.getT2();
+                    TowerAttack domain = new TowerAttack(command.getGodId(), characters, towerLevel);
                     towerAttackDomainRepository.save(domain);
                     var event = new TowerAttackEvent.TowerAttackStartedEvent(domain.getInfo().getTowerAttackId());
                     return Mono.when(

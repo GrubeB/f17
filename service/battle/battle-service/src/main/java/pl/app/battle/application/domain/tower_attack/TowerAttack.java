@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.app.battle.application.domain.battle.Battle;
 import pl.app.battle.application.domain.battle.BattleCharacter;
+import pl.app.monster.query.dto.MonsterDto;
+import pl.app.tower.dto.TowerLevelDto;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -110,12 +112,12 @@ public class TowerAttack {
     public class TowerAttaackCharacterManager {
         private Set<BattleCharacter> team;
         private Set<BattleCharacter> monsterList;
-
-        public TowerAttaackCharacterManager(Set<BattleCharacter> team, Set<BattleCharacter> monsterList) {
+        private TowerLevelDto towerLevel;
+        public TowerAttaackCharacterManager(Set<BattleCharacter> team, TowerLevelDto towerLevel) {
             this.team = team;
-            this.monsterList = monsterList;
+            this.towerLevel = towerLevel;
+            this.monsterList = towerLevel.getMonsters().stream().map(BattleCharacter::new).collect(Collectors.toSet());
         }
-
         private Set<BattleCharacter> getMonstersForNewBattle() {
             monsterList.forEach(BattleCharacter::reset);
             return monsterList;
@@ -135,10 +137,10 @@ public class TowerAttack {
         }
     }
 
-    public TowerAttack(ObjectId godId, Set<BattleCharacter> team, Set<BattleCharacter> monsterList) {
+    public TowerAttack(ObjectId godId, Set<BattleCharacter> team, TowerLevelDto towerLevel) {
         this.info = new TowerAttackInfo(godId);
         this.log = new TowerAttackLog();
-        this.characterManager = new TowerAttaackCharacterManager(team, monsterList);
+        this.characterManager = new TowerAttaackCharacterManager(team, towerLevel);
         this.battleManager = new TowerAttackBattleManager();
         this.finishManager = new TowerAttackFinishManager();
         start();

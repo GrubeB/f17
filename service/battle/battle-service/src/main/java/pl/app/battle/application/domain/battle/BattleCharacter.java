@@ -6,8 +6,10 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.Statistics;
 import pl.app.item.query.dto.WeaponDto;
+import pl.app.monster.query.dto.MonsterWithGearDto;
 
 import java.util.Optional;
 import java.util.Random;
@@ -30,7 +32,7 @@ public class BattleCharacter {
     private Set<BattleCharacter> enemies;
     private BattleLog log;
 
-    public BattleCharacter(ObjectId id, ObjectId godId, BattleCharacterType type, String profession,
+    public BattleCharacter(ObjectId id, ObjectId godId, BattleCharacterType type, CharacterProfession profession,
                            String name, Integer level, Long exp,
                            Statistics base, Statistics gear, Statistics statistics,
                            Long hp, Long def, Long attackPower, WeaponDto leftHand, WeaponDto rightHand) {
@@ -43,18 +45,25 @@ public class BattleCharacter {
         this.actions = new BattleCharacterActions(attackPower, statistics, leftHand, rightHand);
     }
 
+    public BattleCharacter(MonsterWithGearDto dto) {
+        this(null, null, BattleCharacterType.MONSTER, dto.getProfession(),
+                dto.getName(), dto.getLevel(), 0L,
+                dto.getBase(), dto.getGear(), dto.getStatistics(),
+                dto.getHp(), dto.getDef(), dto.getAttackPower(), dto.getMonsterGear().getLeftHand(), dto.getMonsterGear().getLeftHand());
+    }
+
     @Getter
     public class BattleCharacterInfo {
         private Short innerId;
         private ObjectId id;
         private ObjectId godId;
         private BattleCharacterType type;
-        private String profession;
+        private CharacterProfession profession;
         private String name;
         private Integer level;
         private Long exp;
 
-        public BattleCharacterInfo(ObjectId id, ObjectId godId, BattleCharacterType type, String profession, String name, Integer level, Long exp) {
+        public BattleCharacterInfo(ObjectId id, ObjectId godId, BattleCharacterType type, CharacterProfession profession, String name, Integer level, Long exp) {
             this.id = id;
             this.godId = godId;
             this.type = type;
@@ -63,10 +72,12 @@ public class BattleCharacter {
             this.level = level;
             this.exp = exp;
         }
+
         public void setInnerId(Short innerId) {
             this.innerId = innerId;
         }
     }
+
     @Getter
     public class BattleCharacterTurnManager {
         private Long attackSpeed;
@@ -78,6 +89,7 @@ public class BattleCharacter {
             this.startingTurnSpeed = null;
             this.turnCounter = null;
         }
+
         public void startTurn() {
             logger.debug("\t\t{} starting his turn", BattleCharacter.this);
             log.send(new InnerBattleEvent.CharacterTurnStartedEvent(info.getInnerId()));
@@ -209,9 +221,10 @@ public class BattleCharacter {
             this.rightHand = rightHand;
         }
 
-        public void makeAction(){
+        public void makeAction() {
             this.baseAttack(); // TODO
         }
+
         public void baseAttack() {
             Optional<BattleCharacter> enemyToAttack = getRandomEnemyToAttack();
             enemyToAttack.ifPresent(this::baseAttack);

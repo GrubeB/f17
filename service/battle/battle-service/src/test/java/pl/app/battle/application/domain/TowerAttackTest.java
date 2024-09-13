@@ -6,6 +6,7 @@ import pl.app.battle.application.domain.battle.BattleCharacter;
 import pl.app.battle.application.domain.battle.BattleCharacterType;
 import pl.app.battle.application.domain.tower_attack.TowerAttack;
 import pl.app.battle.application.domain.tower_attack.TowerAttackResult;
+import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.Statistics;
 import pl.app.item.query.dto.WeaponDto;
 import reactor.core.publisher.Mono;
@@ -24,7 +25,7 @@ class TowerAttackTest {
         Thread.sleep(20_000);
     }
     private BattleCharacter getCharacter1() {
-        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.PLAYER, "WARRIOR", "AlaKot", 10, 2000L,
+        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.PLAYER,  CharacterProfession.WARRIOR, "AlaKot", 10, 2000L,
                 new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                 new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
@@ -34,7 +35,7 @@ class TowerAttackTest {
     }
 
     private BattleCharacter getCharacter2() {
-        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.PLAYER, "WARRIOR", "AlaKot", 10, 2000L,
+        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.PLAYER,  CharacterProfession.WARRIOR, "AlaKot", 10, 2000L,
                 new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                 new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
@@ -44,7 +45,7 @@ class TowerAttackTest {
     }
 
     private BattleCharacter monster1() {
-        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.MONSTER, "WARRIOR", "AlaKot2", 10, 2000L,
+        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.MONSTER,  CharacterProfession.WARRIOR, "AlaKot2", 10, 2000L,
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
@@ -54,7 +55,7 @@ class TowerAttackTest {
     }
 
     private BattleCharacter monster2() {
-        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.MONSTER, "WARRIOR", "AlaKot2", 10, 2000L,
+        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.MONSTER,  CharacterProfession.WARRIOR, "AlaKot2", 10, 2000L,
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
@@ -64,7 +65,7 @@ class TowerAttackTest {
     }
 
     private BattleCharacter monster3() {
-        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.MONSTER, "WARRIOR", "AlaKot2", 10, 2000L,
+        return new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.MONSTER,  CharacterProfession.WARRIOR, "AlaKot2", 10, 2000L,
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),

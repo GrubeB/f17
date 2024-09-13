@@ -16,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
+import pl.app.common.shared.model.Progress;
 import pl.app.common.shared.model.Statistics;
 import pl.app.gear.aplication.domain.Gear;
 import pl.app.gear.dto.GearDto;
@@ -25,7 +26,6 @@ import pl.app.loot.aplication.domain.Loot;
 import pl.app.loot.dto.LootDto;
 import pl.app.monster.application.domain.Monster;
 import pl.app.monster.query.dto.MonsterWithGearDto;
-import pl.app.common.shared.model.Progress;
 import pl.app.monster_template.dto.ProgressDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,7 +33,6 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +86,14 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
                                 .map(HttpEntity::getBody)
                                 .map(Streamable::get)
                                 .map(s -> s.collect(Collectors.toSet()))
-                ).map(t -> mapper.mapToMonsterWithGearDto(t.getT1(), t.getT2(), t.getT3()))
+                ).map(t -> t.getT1().stream().map(monster -> {
+                    Optional<GearDto> gear = t.getT2().stream().filter(e -> e.getId().equals(monster.getId())).findAny();
+                    Optional<LootDto> loot = t.getT3().stream().filter(e -> e.getId().equals(monster.getId())).findAny();
+                    if (gear.isPresent() && loot.isPresent()) {
+                        return mapper.mapToMonsterWithGearDto(monster, gear.get(), loot.get());
+                    }
+                    return mapper.mapToMonsterWithGearDto(monster);
+                }).collect(Collectors.toList()))
                 .zipWith(repository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
 
@@ -101,18 +107,8 @@ class MonsterWithGearQueryServiceImpl implements MonsterWithGearDtoQueryService 
         @PostConstruct
         void init() {
             addMapper(Monster.class, MonsterWithGearDto.class, this::mapToMonsterWithGearDto);
+            addMapper(Monster.class, GearDto.class, LootDto.class, MonsterWithGearDto.class, this::mapToMonsterWithGearDto);
             addMapper(Progress.class, ProgressDto.class, e -> modelMapper.map(e, ProgressDto.class));
-        }
-
-        List<MonsterWithGearDto> mapToMonsterWithGearDto(Set<Monster> characters, Set<GearDto> gears, Set<LootDto> loots) {
-            return characters.stream().map(monster -> {
-                Optional<GearDto> gear = gears.stream().filter(e -> e.getId().equals(monster.getId())).findAny();
-                Optional<LootDto> loot = loots.stream().filter(e -> e.getId().equals(monster.getId())).findAny();
-                if (gear.isPresent() && loot.isPresent()) {
-                    return mapToMonsterWithGearDto(monster, gear.get(), loot.get());
-                }
-                return mapToMonsterWithGearDto(monster);
-            }).collect(Collectors.toList());
         }
 
         MonsterWithGearDto mapToMonsterWithGearDto(Monster monster, GearDto gear, LootDto loot) {

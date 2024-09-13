@@ -47,4 +47,8 @@ public class MonsterHttpInterfaceConfig {
     MonsterWithGearDtoQueryControllerHttpInterface monsterWithGearDtoQueryControllerHttpInterface() {
         return factory().createClient(MonsterWithGearDtoQueryControllerHttpInterface.class);
     }
+    @Bean
+    TowerLevelQueryControllerHttpInterface towerLevelQueryControllerHttpInterface() {
+        return factory().createClient(TowerLevelQueryControllerHttpInterface.class);
+    }
 }

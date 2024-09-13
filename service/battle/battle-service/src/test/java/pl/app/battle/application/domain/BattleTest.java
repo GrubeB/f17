@@ -7,6 +7,7 @@ import pl.app.battle.application.domain.battle.Battle;
 import pl.app.battle.application.domain.battle.BattleCharacter;
 import pl.app.battle.application.domain.battle.BattleCharacterType;
 import pl.app.battle.application.domain.battle.BattleResult;
+import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.Statistics;
 import pl.app.item.query.dto.WeaponDto;
 
@@ -16,14 +17,14 @@ class BattleTest {
 
     @Test
     void startBattle() {
-        var ch1 = new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.PLAYER, "WARRIOR", "AlaKot", 10, 2000L,
+        var ch1 = new BattleCharacter(ObjectId.get(), ObjectId.get(), BattleCharacterType.PLAYER, CharacterProfession.WARRIOR, "AlaKot", 10, 2000L,
                 new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                 new Statistics(40L, 20L, 20L, 20L, 60_000L, 50_000L, 20_000L, 20_000L),
                 5920L, 92L, 80L,
                 new WeaponDto(20L, 20L),
                 null);
-        var ch2 = new BattleCharacter(ObjectId.get(), ObjectId.get(),BattleCharacterType.PLAYER, "WARRIOR", "AlaKot2", 10, 2000L,
+        var ch2 = new BattleCharacter(ObjectId.get(), ObjectId.get(),BattleCharacterType.PLAYER,  CharacterProfession.WARRIOR, "AlaKot2", 10, 2000L,
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),
                 new Statistics(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                 new Statistics(40L, 20L, 20L, 19L, 60_000L, 50_000L, 20_000L, 20_000L),

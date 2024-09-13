@@ -36,9 +36,9 @@ dependencies {
     // SUBPROJECTS
     implementation project(':common:shared')
     implementation project(':common:mapper')
-    implementation project(':service:voting:voting-domain')
     implementation project(':service:character:character-http-interface')
     implementation project(':service:item:item-http-interface')
+    implementation project(':service:monster:monster-http-interface')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -46,9 +46,6 @@ dependencies {
 
     // DATABASE
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-//    runtimeOnly 'org.postgresql:postgresql'
-//    runtimeOnly 'org.postgresql:r2dbc-postgresql'
 
     // KAFKA
     implementation 'org.apache.kafka:kafka-streams'
