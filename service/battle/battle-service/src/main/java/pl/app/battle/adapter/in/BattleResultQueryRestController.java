@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.battle.application.domain.battle.BattleException;
+import pl.app.battle.application.domain.BattleException;
 import pl.app.battle.query.BattleResultQueryService;
 import pl.app.battle.query.dto.BattleResultDto;
 import reactor.core.publisher.Mono;

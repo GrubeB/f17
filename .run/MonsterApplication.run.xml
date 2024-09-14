@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ItemApplication" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="MAIN_CLASS_NAME" value="pl.app.ItemApplication" />
-    <module name="f14.service.item.item-service.main" />
+  <configuration default="false" name="MonsterApplication" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="pl.app.MonsterApplication" />
+    <module name="f14.service.monster.monster-service.main" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="pl.app.*" />

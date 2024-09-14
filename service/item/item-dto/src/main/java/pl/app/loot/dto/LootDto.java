@@ -20,7 +20,7 @@ import java.util.Set;
 public class LootDto implements Serializable {
     private ObjectId id; // domainObjectId
     private Money money;
-    private Set<LootItemDto> items;
+    private Set<LootItemDto> items; // all
     private Set<LootOutfitDto> outfits;
     private Set<LootWeaponDto> weapons;
 

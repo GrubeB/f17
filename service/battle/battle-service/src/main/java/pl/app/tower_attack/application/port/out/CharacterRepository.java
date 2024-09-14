@@ -1,4 +1,4 @@
-package pl.app.battle.application.port.out;
+package pl.app.tower_attack.application.port.out;
 
 import org.bson.types.ObjectId;
 import pl.app.character.application.domain.BattleCharacter;

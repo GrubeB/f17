@@ -13,5 +13,6 @@ public interface BattleResultQueryService {
     Mono<BattleResultDto> fetchById(@NonNull ObjectId id);
 
     Mono<Page<BattleResultDto>> fetchAllByPageable(Pageable pageable);
+
     Mono<Page<BattleResultDto>> fetchAllByIds(List<ObjectId> ids, Pageable pageable);
 }

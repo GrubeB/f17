@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import pl.app.battle.application.domain.battle.BattleCharacter;
-import pl.app.battle.application.domain.battle.BattleCharacterType;
-import pl.app.battle.application.port.out.CharacterRepository;
+import pl.app.character.application.domain.BattleCharacter;
+import pl.app.character.application.domain.BattleCharacterType;
 import pl.app.character.http.CharacterWithGearQueryControllerHttpInterface;
 import pl.app.character.http.GodFamilyWithGearQueryControllerHttpInterface;
 import pl.app.character.query.dto.CharacterWithGearDto;
@@ -17,7 +16,10 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-class CharacterRepositoryImpl implements CharacterRepository {
+class CharacterRepositoryImpl implements
+        pl.app.battle.application.port.out.CharacterRepository,
+        pl.app.tower_attack.application.port.out.CharacterRepository
+{
     private final CharacterWithGearQueryControllerHttpInterface characterWithGearQueryControllerHttpInterface;
     private final GodFamilyWithGearQueryControllerHttpInterface familyWithGearQueryControllerHttpInterface;
 

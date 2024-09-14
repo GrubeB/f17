@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="GodApplication" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="pl.app.GodApplication" />
-    <module name="f14-comments-present.service.god.god-service.main" />
+    <module name="f14.service.god.god-service.main" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="pl.app.god.application.*" />
+        <option name="PATTERN" value="pl.app.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

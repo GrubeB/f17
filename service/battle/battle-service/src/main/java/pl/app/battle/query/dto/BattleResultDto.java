@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.battle.application.domain.battle.BattleCharacterType;
+import pl.app.character.application.domain.BattleCharacterType;
 
 import java.io.Serializable;
 import java.time.Instant;

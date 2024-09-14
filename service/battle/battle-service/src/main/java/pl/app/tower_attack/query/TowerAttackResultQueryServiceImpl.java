@@ -1,4 +1,4 @@
-package pl.app.battle.query;
+package pl.app.tower_attack.query;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +14,9 @@ import org.springframework.data.mongodb.repository.support.ReactiveMongoReposito
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import pl.app.battle.application.domain.BattleResult;
-import pl.app.battle.query.dto.BattleResultDto;
 import pl.app.common.mapper.BaseMapper;
+import pl.app.tower_attack.application.domain.TowerAttackResult;
+import pl.app.tower_attack.query.dto.TowerAttackResultDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,37 +24,46 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-class BattleResultQueryServiceImpl implements BattleResultQueryService {
+class TowerAttackResultQueryServiceImpl implements TowerAttackResultQueryService {
     private final Mapper mapper;
     private final Repository repository;
 
-    public BattleResultQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
+    public TowerAttackResultQueryServiceImpl(ReactiveMongoTemplate mongoTemplate, Mapper mapper) {
         this.mapper = mapper;
         this.repository = new ReactiveMongoRepositoryFactory(mongoTemplate).getRepository(Repository.class);
     }
 
     @Override
-    public Mono<BattleResultDto> fetchById(@NonNull ObjectId id) {
+    public Mono<TowerAttackResultDto> fetchById(@NonNull ObjectId id) {
         return repository.findById(id)
-                .map(e -> mapper.map(e, BattleResultDto.class));
+                .map(e -> mapper.map(e, TowerAttackResultDto.class));
     }
 
     @Override
-    public Mono<Page<BattleResultDto>> fetchAllByPageable(Pageable pageable) {
+    public Mono<Page<TowerAttackResultDto>> fetchAllByPageable(Pageable pageable) {
         return repository.findAllBy(pageable)
-                .map(e -> mapper.map(e, BattleResultDto.class))
+                .map(e -> mapper.map(e, TowerAttackResultDto.class))
                 .collectList()
                 .zipWith(repository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
     }
 
     @Override
-    public Mono<Page<BattleResultDto>> fetchAllByIds(List<ObjectId> ids, Pageable pageable) {
+    public Mono<Page<TowerAttackResultDto>> fetchAllByIds(List<ObjectId> ids, Pageable pageable) {
         if (Objects.isNull(ids)) {
             return fetchAllByPageable(pageable);
         }
         return repository.findAllById(ids, pageable)
-                .map(e -> mapper.map(e, BattleResultDto.class))
+                .map(e -> mapper.map(e, TowerAttackResultDto.class))
+                .collectList()
+                .zipWith(repository.count())
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+    }
+
+    @Override
+    public Mono<Page<TowerAttackResultDto>> fetchAllByGodId(ObjectId godId, Pageable pageable) {
+        return repository.findAllByGodId(godId, pageable)
+                .map(e -> mapper.map(e, TowerAttackResultDto.class))
                 .collectList()
                 .zipWith(repository.count())
                 .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
@@ -67,15 +76,18 @@ class BattleResultQueryServiceImpl implements BattleResultQueryService {
 
         @PostConstruct
         void init() {
-            addMapper(BattleResult.class, BattleResultDto.class, e -> modelMapper.map(e, BattleResultDto.class));
+            addMapper(TowerAttackResult.class, TowerAttackResultDto.class, e -> modelMapper.map(e, TowerAttackResultDto.class));
         }
     }
 
-    interface Repository extends ReactiveMongoRepository<BattleResult, ObjectId> {
+    interface Repository extends ReactiveMongoRepository<TowerAttackResult, ObjectId> {
 
-        Flux<BattleResult> findAllBy(Pageable pageable);
+        Flux<TowerAttackResult> findAllBy(Pageable pageable);
 
         @Query("{ '_id.': { $in: ?0 } }")
-        Flux<BattleResult> findAllById(List<ObjectId> ids, Pageable pageable);
+        Flux<TowerAttackResult> findAllById(List<ObjectId> ids, Pageable pageable);
+
+        @Query("{ 'godId.': ?0 }")
+        Flux<TowerAttackResult> findAllByGodId(ObjectId godId, Pageable pageable);
     }
 }

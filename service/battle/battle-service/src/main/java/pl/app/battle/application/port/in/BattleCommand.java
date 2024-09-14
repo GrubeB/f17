@@ -13,27 +13,10 @@ public interface BattleCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class StartDuelBattleCommand implements Serializable {
-        private ObjectId god1;
-        private ObjectId characterId1;
-        private ObjectId god2;
-        private ObjectId characterId2;
-    }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     class StartTwoGodBattleCommand implements Serializable {
         private ObjectId god1;
         private Set<ObjectId> god1CharacterIds;
         private ObjectId god2;
         private Set<ObjectId> god2CharacterIds;
-    }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class AttackTowerCommand implements Serializable {
-        private ObjectId godId;
-        private Set<ObjectId> characterIds;
-        private Integer level;
     }
 }

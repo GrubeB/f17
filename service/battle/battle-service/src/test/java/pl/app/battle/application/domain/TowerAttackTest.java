@@ -2,17 +2,12 @@ package pl.app.battle.application.domain;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
-import pl.app.battle.application.domain.battle.BattleCharacter;
-import pl.app.battle.application.domain.battle.BattleCharacterType;
-import pl.app.battle.application.domain.tower_attack.TowerAttack;
-import pl.app.battle.application.domain.tower_attack.TowerAttackResult;
+import pl.app.character.application.domain.BattleCharacter;
+import pl.app.character.application.domain.BattleCharacterType;
 import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.Statistics;
 import pl.app.item.query.dto.WeaponDto;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
-import java.time.Duration;
 import java.util.Set;
 
 class TowerAttackTest {

@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.app.battle.application.port.in.BattleCommand;
 import pl.app.battle.application.port.in.BattleService;
 import pl.app.battle.query.BattleResultQueryService;
-import pl.app.battle.query.TowerAttackResultQueryService;
 import pl.app.battle.query.dto.BattleResultDto;
-import pl.app.battle.query.dto.TowerAttackResultDto;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -23,7 +21,6 @@ class BattleRestController {
 
     private final BattleService battleService;
     private final BattleResultQueryService queryService;
-    private final TowerAttackResultQueryService towerAttackResultQueryService;
 
 
     @PostMapping("/two-god-battle")
@@ -34,11 +31,4 @@ class BattleRestController {
                 .map(ResponseEntity::ok);
     }
 
-    @PostMapping("/attack-tower")
-    public Mono<ResponseEntity<TowerAttackResultDto>> attackTower(
-            @RequestBody BattleCommand.AttackTowerCommand command) {
-        return battleService.attackTower(command)
-                .flatMap(domain -> towerAttackResultQueryService.fetchById(domain.getInfo().getTowerAttackId()))
-                .map(ResponseEntity::ok);
-    }
 }
