@@ -9,20 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-import pl.app.battle.application.domain.BattleEvent;
-import pl.app.battle.application.domain.BattleResult;
-import pl.app.battle.application.port.in.BattleCommand;
-import pl.app.battle.application.port.out.CharacterRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.tower_attack.application.port.in.TowerAttackCommand;
-import reactor.test.StepVerifier;
+import pl.app.unit.application.port.in.CharacterRepository;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,6 +1,7 @@
 package pl.app.god.application.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,6 +17,7 @@ public class God {
     private String name;
     @DocumentReference
     private GodTemplate template;
+    @Setter
     private GodMoney money;
 
     @SuppressWarnings("unused")

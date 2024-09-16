@@ -1,7 +1,7 @@
-package pl.app.tower_attack.application.port.out;
+package pl.app.unit.application.port.in;
 
 import org.bson.types.ObjectId;
-import pl.app.character.application.domain.BattleCharacter;
+import pl.app.unit.application.domain.BattleCharacter;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;

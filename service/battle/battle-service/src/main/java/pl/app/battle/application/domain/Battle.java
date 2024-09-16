@@ -4,7 +4,10 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.app.character.application.domain.BattleCharacter;
+import pl.app.common.shared.model.Money;
+import pl.app.unit.application.domain.BattleCharacter;
+import pl.app.unit.application.domain.BattleMonster;
+import pl.app.unit.application.domain.BattleUnit;
 
 import java.time.Instant;
 import java.util.Map;
@@ -21,6 +24,15 @@ public class Battle {
     private BattleTurnManager turnManager;
     private BattleLog log;
     private BattleFinishManager finishManager;
+
+    public Battle(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
+        this.info = new BattleInfo();
+        this.teamsManager = new BattleTeamsManager(team1, team2);
+        this.turnManager = new BattleTurnManager();
+        this.log = new BattleLog();
+        this.finishManager = new BattleFinishManager();
+        initTeams();
+    }
 
     @Getter
     public class BattleInfo {
@@ -78,7 +90,7 @@ public class Battle {
         private void startTeam1Turn() throws TeamLost {
             for (var character : teamsManager.getTeam1()) {
                 if (character.getStatus().isDead()) continue;
-                if (character.getTurnManager().isCharacterTurn()) {
+                if (character.getTurnManager().isUnitTurn()) {
                     character.getTurnManager().startTurn();
                     turnManager.incrementNumberOfTurns();
                     isTeam1LastTurn = true;
@@ -93,7 +105,7 @@ public class Battle {
         private void startTeam2Turn() throws TeamLost {
             for (var character : teamsManager.getTeam2()) {
                 if (character.getStatus().isDead()) continue;
-                if (character.getTurnManager().isCharacterTurn()) {
+                if (character.getTurnManager().isUnitTurn()) {
                     character.getTurnManager().startTurn();
                     turnManager.incrementNumberOfTurns();
                     isTeam1LastTurn = true;
@@ -105,7 +117,7 @@ public class Battle {
             }
         }
 
-        private boolean isTeamLost(Set<BattleCharacter> team) {
+        private boolean isTeamLost(Set<? extends BattleUnit> team) {
             return team.stream().allMatch(ch -> ch.getStatus().isDead());
         }
 
@@ -118,10 +130,10 @@ public class Battle {
 
     @Getter
     public class BattleTeamsManager {
-        private Set<BattleCharacter> team1;
-        private Set<BattleCharacter> team2;
+        private Set<? extends BattleUnit> team1;
+        private  Set<? extends BattleUnit> team2;
 
-        public BattleTeamsManager(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
+        public BattleTeamsManager(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
             this.team1 = team1;
             this.team2 = team2;
         }
@@ -166,23 +178,31 @@ public class Battle {
         }
 
         // TODO exp and money should be calculated based on members in team1 and team2
-        private Map<ObjectId, Long> calculateExpForWinningTeam(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
-            return team1.stream().collect(Collectors.toMap(ch -> ch.getInfo().getId(), ch -> 100L));
+        private Map<ObjectId, Long> calculateExpForWinningTeam( Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
+            Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
+            Long exp = team2.stream().map(e -> {
+                if (e instanceof BattleMonster unit) {
+                    return unit.getProgress().getExp();
+                } else if (e instanceof BattleCharacter unit) {
+                    return unit.getInfo().getExp() / 1_000; // 0.1%
+                }
+                return 0L;
+            }).reduce(0L, Long::sum);
+            return characters.stream().collect(Collectors.toMap(BattleCharacter::getUnitId, ch -> exp / characters.size()));
         }
 
-        private Map<ObjectId, Long> calculateMoneyForWinningTeam(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
-            return team1.stream().collect(Collectors.toMap(ch -> ch.getInfo().getId(), ch -> 10_000L));
+        private Map<ObjectId, Money> calculateMoneyForWinningTeam( Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
+            Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
+            Money money = team2.stream().map(e -> {
+                if (e instanceof BattleMonster unit) {
+                    return unit.getLoot().getMoney();
+                }
+                return new Money();
+            }).reduce(new Money(), Money::addMoney);
+            return characters.stream().collect(Collectors.toMap(BattleCharacter::getUnitId, ch -> money.divideMoney((long) characters.size())));
         }
     }
 
-    public Battle(Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
-        this.info = new BattleInfo();
-        this.teamsManager = new BattleTeamsManager(team1, team2);
-        this.turnManager = new BattleTurnManager();
-        this.log = new BattleLog();
-        this.finishManager = new BattleFinishManager();
-        initTeams();
-    }
 
     public void startBattle() {
         logger.debug("--starting battle--");

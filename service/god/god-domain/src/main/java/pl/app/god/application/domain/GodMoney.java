@@ -8,14 +8,17 @@ public class GodMoney extends Money {
     public GodMoney() {
         super();
     }
+    public GodMoney(Money money){
+        super(money);
+    }
     @Override
-    public void subtractMoney(Money.Type type, Long amount) {
+    public Money subtractMoney(Money.Type type, Long amount) {
         if (amount < 0) {
             throw new GodException.InvalidAmountException();
         }
         if (getBalance(type) - amount < 0) {
             throw new GodException.InsufficientMoneyException();
         }
-        super.subtractMoney(type, amount);
+        return super.subtractMoney(type, amount);
     }
 }

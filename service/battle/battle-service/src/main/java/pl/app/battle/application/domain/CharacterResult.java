@@ -3,14 +3,13 @@ package pl.app.battle.application.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import pl.app.character.application.domain.BattleCharacterType;
+import pl.app.common.shared.model.Money;
 
 @Getter
 @Setter
 public class CharacterResult {
     private ObjectId characterId;
     private ObjectId godId;
-    private BattleCharacterType type;
     private Progress progress;
     private Loot loot;
 
@@ -18,18 +17,16 @@ public class CharacterResult {
     public CharacterResult() {
     }
 
-    public CharacterResult(ObjectId characterId, ObjectId godId, BattleCharacterType type) {
+    public CharacterResult(ObjectId characterId, ObjectId godId) {
         this.characterId = characterId;
         this.godId = godId;
-        this.type = type;
         this.progress = new Progress();
         this.loot = new Loot();
     }
 
-    public CharacterResult(ObjectId characterId, ObjectId godId, BattleCharacterType type, Progress progress, Loot loot) {
+    public CharacterResult(ObjectId characterId, ObjectId godId,Progress progress, Loot loot) {
         this.characterId = characterId;
         this.godId = godId;
-        this.type = type;
         this.progress = progress;
         this.loot = loot;
     }
@@ -38,12 +35,12 @@ public class CharacterResult {
         progress.setExp(exp);
     }
 
-    public void setMoney(Long money) {
+    public void setMoney(Money money) {
         loot.setMoney(money);
     }
 
     public CharacterResult add(CharacterResult characterResult) {
-        return new CharacterResult(this.characterId, this.godId, this.type, this.progress.add(characterResult.getProgress()),
+        return new CharacterResult(this.characterId, this.godId, this.progress.add(characterResult.getProgress()),
                 this.loot.add(characterResult.getLoot()));
     }
 
@@ -70,13 +67,13 @@ public class CharacterResult {
     @Getter
     @Setter
     public static class Loot {
-        private Long money;
+        private Money money;
 
         public Loot() {
-            this.money = 0L;
+            this.money = new Money();
         }
 
-        public Loot(Long money) {
+        public Loot(Money money) {
             this.money = money;
         }
 
@@ -84,7 +81,7 @@ public class CharacterResult {
             if(loot == null){
                 return new Loot(this.money);
             }
-            return new Loot(this.money + loot.getMoney());
+            return new Loot( money.addMoney(loot.getMoney()));
         }
     }
 }

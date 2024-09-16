@@ -1,12 +1,15 @@
 package pl.app.battle.application.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import pl.app.character.application.domain.BattleCharacter;
+import pl.app.common.shared.model.Money;
+import pl.app.unit.application.domain.BattleCharacter;
+import pl.app.unit.application.domain.BattleMonster;
+import pl.app.unit.application.domain.BattleUnit;
+import pl.app.unit.application.domain.BattleUnitType;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -23,49 +26,61 @@ import java.util.stream.Stream;
 public class BattleResult {
     @Id
     private ObjectId battleId;
+    @Setter
     private Boolean isTeam1Win;
-    private List<ObjectId> team1CharacterIdsList;
-    private List<ObjectId> team2CharacterIdsList;
+    private List<TeamUnit> team1;
+    private List<TeamUnit> team2;
     private List<CharacterResult> characterResults;
     @DocumentReference
+    @Setter
     private BattleLog log;
     @Setter
     private Integer numberOfRounds;
     private Instant start;
     private Instant end;
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TeamUnit {
+        private ObjectId id;
+        private BattleUnitType type;
+    }
+
     @SuppressWarnings("unused")
     public BattleResult() {
     }
 
-    public BattleResult(ObjectId battleId, Set<BattleCharacter> team1, Set<BattleCharacter> team2) {
+    public BattleResult(ObjectId battleId,  Set<? extends BattleUnit> team1,  Set<? extends BattleUnit> team2) {
         this.battleId = battleId;
-        this.team1CharacterIdsList = team1.stream().map(ch -> ch.getInfo().getId()).collect(Collectors.toList());
-        this.team2CharacterIdsList = team2.stream().map(ch -> ch.getInfo().getId()).collect(Collectors.toList());
-        this.characterResults = Stream.of(team1, team2)
-                .flatMap(Set::stream)
-                .map(character -> new CharacterResult(character.getInfo().getId(), character.getInfo().getGodId(), character.getInfo().getType()))
+        this.team1 = mapToTeamUnits(team1);
+        this.team2 = mapToTeamUnits(team2);
+        this.characterResults = Stream.of(team1, team2).flatMap(Set::stream)
+                .filter(e -> e instanceof BattleCharacter).map(e->(BattleCharacter) e)
+                .map(character -> new CharacterResult(character.getUnitId(), character.getGodId()))
                 .collect(Collectors.toList());
     }
-
-    public void setIsTeam1Win(Boolean result) {
-        this.isTeam1Win = result;
+    private List<TeamUnit> mapToTeamUnits(Set<? extends BattleUnit> team){
+        return team.stream()
+                .map(e ->{
+                    if(e instanceof BattleMonster battleMonster){
+                        return new TeamUnit(battleMonster.getUnitId(), BattleUnitType.MONSTER);
+                    } else if (e instanceof BattleCharacter battleCharacter){
+                        return new TeamUnit(battleCharacter.getUnitId(), BattleUnitType.CHARACTER);
+                    }
+                    return null;
+                }).toList();
     }
-
     public void setProgress(Map<ObjectId, Long> map) {
         map.forEach((id, exp) -> {
             getCharacterResultById(id).ifPresent(chr -> chr.setExp(exp));
         });
     }
 
-    public void setMoney(Map<ObjectId, Long> map) {
+    public void setMoney(Map<ObjectId, Money> map) {
         map.forEach((id, money) -> {
             getCharacterResultById(id).ifPresent(chr -> chr.setMoney(money));
         });
-    }
-
-    public void setLog(BattleLog log) {
-        this.log = log;
     }
 
     private Optional<CharacterResult> getCharacterResultById(ObjectId objectId) {
@@ -76,6 +91,4 @@ public class BattleResult {
         this.start = start;
         this.end = start.plus(this.numberOfRounds, ChronoUnit.SECONDS);
     }
-
-
 }

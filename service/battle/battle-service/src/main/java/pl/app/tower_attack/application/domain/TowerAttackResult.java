@@ -7,8 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.battle.application.domain.CharacterResult;
-import pl.app.character.application.domain.BattleCharacter;
+import pl.app.unit.application.domain.BattleCharacter;
 import pl.app.battle.application.domain.BattleResult;
+import pl.app.unit.application.domain.BattleUnit;
 
 import java.time.Instant;
 import java.util.*;
@@ -37,10 +38,10 @@ public class TowerAttackResult {
     public TowerAttackResult() {
     }
 
-    public TowerAttackResult(ObjectId towerAttackId, ObjectId godId, Set<BattleCharacter> team) {
+    public TowerAttackResult(ObjectId towerAttackId, ObjectId godId, Set<? extends BattleUnit> team) {
         this.towerAttackId = towerAttackId;
         this.godId = godId;
-        this.characterIdsList = team.stream().map(ch -> ch.getInfo().getId()).collect(Collectors.toSet());
+        this.characterIdsList = team.stream().map(BattleUnit::getUnitId).collect(Collectors.toSet());
     }
 
     public List<CharacterResult> getCharacterResults() {

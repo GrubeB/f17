@@ -5,8 +5,10 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.app.battle.application.domain.Battle;
-import pl.app.character.application.domain.BattleCharacter;
+import pl.app.unit.application.domain.BattleCharacter;
 import pl.app.tower.dto.TowerLevelDto;
+import pl.app.unit.application.domain.BattleMonster;
+import pl.app.unit.application.domain.BattleUnit;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -111,18 +113,18 @@ public class TowerAttack {
 
     @Getter
     public class TowerAttaackCharacterManager {
-        private Set<BattleCharacter> team;
-        private Set<BattleCharacter> monsterList;
+        private Set<? extends BattleUnit> team;
+        private Set<? extends BattleUnit> monsterList;
         private TowerLevelDto towerLevel;
 
         public TowerAttaackCharacterManager(Set<BattleCharacter> team, TowerLevelDto towerLevel) {
             this.team = team;
             this.towerLevel = towerLevel;
-            this.monsterList = towerLevel.getMonsters().stream().map(BattleCharacter::new).collect(Collectors.toSet());
+            this.monsterList = towerLevel.getMonsters().stream().map(e ->new BattleMonster(e)).collect(Collectors.toSet());
         }
 
-        private Set<BattleCharacter> getMonstersForNewBattle() {
-            monsterList.forEach(BattleCharacter::reset);
+        private Set<? extends BattleUnit> getMonstersForNewBattle() {
+            monsterList.forEach(BattleUnit::reset);
             return monsterList;
         }
     }

@@ -1,8 +1,9 @@
-package pl.app.character.application.domain;
+package pl.app.unit.application.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,89 +12,70 @@ import pl.app.battle.application.domain.InnerBattleEvent;
 import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.Statistics;
 import pl.app.item.query.dto.WeaponDto;
-import pl.app.monster.query.dto.MonsterWithGearDto;
 
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
 @Getter
-public class BattleCharacter {
-    private static final Logger logger = LoggerFactory.getLogger(BattleCharacter.class);
-    private BattleCharacterInfo info;
-    private BattleCharacterStatus status;
-
-    private Statistics baseStatistics;
-    private Statistics gearStatistics;
+public class BattleUnit {
+    private static final Logger logger = LoggerFactory.getLogger(BattleUnit.class);
+    private ObjectId unitId;
+    private BattleUnitType type;
+    private BattleUnitInfo info;
+    private BattleUnitStatus status;
     private Statistics statistics;
 
-    private BattleCharacterTurnManager turnManager;
-    private BattleCharacterActions actions;
+    private BattleUnitTurnManager turnManager;
+    private BattleUnitActions actions;
 
-    private Set<BattleCharacter> allies;
-    private Set<BattleCharacter> enemies;
+    private Set<? extends BattleUnit> allies;
+    private Set<? extends BattleUnit> enemies;
     private BattleLog log;
 
-    public BattleCharacter(ObjectId id, ObjectId godId, BattleCharacterType type, CharacterProfession profession,
-                           String name, Integer level, Long exp,
-                           Statistics base, Statistics gear, Statistics statistics,
-                           Long hp, Long def, Long attackPower, WeaponDto leftHand, WeaponDto rightHand) {
-        this.info = new BattleCharacterInfo(id, godId, type, profession, name, level, exp);
-        this.baseStatistics = base;
-        this.gearStatistics = gear;
+    public BattleUnit(ObjectId unitId, BattleUnitType type, CharacterProfession profession, String name, Integer level, Long exp,
+                      Statistics statistics,
+                      Long hp, Long def, Long attackPower, WeaponDto leftHand, WeaponDto rightHand) {
+        this.unitId = unitId;
+        this.type = type;
+        this.info = new BattleUnitInfo(profession, name, level, exp);
         this.statistics = statistics;
-        this.turnManager = new BattleCharacterTurnManager(statistics.getSpeed());
-        this.status = new BattleCharacterStatus(hp, def);
-        this.actions = new BattleCharacterActions(attackPower, statistics, leftHand, rightHand);
-    }
-
-    public BattleCharacter(MonsterWithGearDto dto) {
-        this(null, null, BattleCharacterType.MONSTER, dto.getProfession(),
-                dto.getName(), dto.getLevel(), 0L,
-                dto.getBase(), dto.getGear(), dto.getStatistics(),
-                dto.getHp(), dto.getDef(), dto.getAttackPower(), dto.getMonsterGear().getLeftHand(), dto.getMonsterGear().getLeftHand());
+        this.turnManager = new BattleUnitTurnManager(statistics.getSpeed());
+        this.status = new BattleUnitStatus(hp, def, attackPower, statistics, leftHand, rightHand);
+        this.actions = new BattleUnitActions();
     }
 
     @Getter
-    public class BattleCharacterInfo {
+    public class BattleUnitInfo {
+        @Setter
         private Short innerId;
-        private ObjectId id;
-        private ObjectId godId;
-        private BattleCharacterType type;
         private CharacterProfession profession;
         private String name;
         private Integer level;
         private Long exp;
 
-        public BattleCharacterInfo(ObjectId id, ObjectId godId, BattleCharacterType type, CharacterProfession profession, String name, Integer level, Long exp) {
-            this.id = id;
-            this.godId = godId;
-            this.type = type;
+        public BattleUnitInfo(CharacterProfession profession, String name, Integer level, Long exp) {
             this.profession = profession;
             this.name = name;
             this.level = level;
             this.exp = exp;
         }
-
-        public void setInnerId(Short innerId) {
-            this.innerId = innerId;
-        }
     }
 
     @Getter
-    public class BattleCharacterTurnManager {
+    public class BattleUnitTurnManager {
         private Long attackSpeed;
         private Long startingTurnSpeed;
         private Long turnCounter;
 
-        public BattleCharacterTurnManager(Long attackSpeed) {
+        public BattleUnitTurnManager(Long attackSpeed) {
             this.attackSpeed = attackSpeed;
             this.startingTurnSpeed = null;
             this.turnCounter = null;
         }
 
         public void startTurn() {
-            logger.debug("\t\t{} starting his turn", BattleCharacter.this);
+            logger.debug("\t\t{} starting his turn", BattleUnit.this);
             log.send(new InnerBattleEvent.CharacterTurnStartedEvent(info.getInnerId()));
             actions.makeAction();
             endTurn();
@@ -101,17 +83,17 @@ public class BattleCharacter {
 
         public void endTurn() {
             turnManager.setTurnCounterToStartingPosition();
-            logger.debug("\t\t{} turn ended", BattleCharacter.this);
+            logger.debug("\t\t{} turn ended", BattleUnit.this);
         }
 
-        public boolean isCharacterTurn() {
+        public boolean isUnitTurn() {
             return turnManager.checkIfCounterIsZero();
         }
 
         public void updateTurnCounter() {
             final var currentTurnCounter = turnCounter;
             final var newTurnCounter = turnCounter - attackSpeed;
-            logger.debug("{} updated turn counter from {} to {}", BattleCharacter.this, currentTurnCounter, newTurnCounter);
+            logger.debug("{} updated turn counter from {} to {}", BattleUnit.this, currentTurnCounter, newTurnCounter);
             turnCounter = newTurnCounter;
             log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(info.getInnerId(), currentTurnCounter, newTurnCounter));
         }
@@ -119,7 +101,7 @@ public class BattleCharacter {
         public void updateTurnCounter(Long numberOfTimes) {
             final var currentTurnCounter = turnCounter;
             final var newTurnCounter = turnCounter - numberOfTimes * attackSpeed;
-            logger.debug("{} updated turn counter from {} to {}", BattleCharacter.this, currentTurnCounter, newTurnCounter);
+            logger.debug("{} updated turn counter from {} to {}", BattleUnit.this, currentTurnCounter, newTurnCounter);
             log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(info.getInnerId(), currentTurnCounter, newTurnCounter));
             turnCounter = newTurnCounter;
         }
@@ -127,7 +109,7 @@ public class BattleCharacter {
         public void setTurnCounterToStartingPosition() {
             final var currentTurnCounter = turnCounter;
             final var newTurnCounter = startingTurnSpeed;
-            logger.debug("{} updated turn counter from {} to {}", BattleCharacter.this, currentTurnCounter, newTurnCounter);
+            logger.debug("{} updated turn counter from {} to {}", BattleUnit.this, currentTurnCounter, newTurnCounter);
             log.send(new InnerBattleEvent.CharacterTurnCounterUpdatedEvent(info.getInnerId(), currentTurnCounter, newTurnCounter));
             turnCounter = startingTurnSpeed;
         }
@@ -151,22 +133,52 @@ public class BattleCharacter {
     }
 
     @Getter
-    public class BattleCharacterStatus {
+    public class BattleUnitStatus {
         private Long maxHp;
         private Long currentHp;
         private Long maxDef;
         private Long currentDef;
+
+        private Long maxAttackPower;
+        private Long currentAttackPower;
+        private Long maxCriticalRate;
+        private Long currentCriticalRate;
+        private Long maxCriticalDamage;
+        private Long currentCriticalDamage;
+        private Long maxAccuracy;
+        private Long currentAccuracy;
+        private Long maxResistance;
+        private Long currentResistance;
+        private WeaponDto leftHand;
+        private WeaponDto rightHand;
+
         private Boolean isDead;
 
-        public BattleCharacterStatus(Long maxHp, Long maxDef) {
+        public BattleUnitStatus(Long maxHp, Long maxDef, Long attackPower, Statistics statistics, WeaponDto leftHand, WeaponDto rightHand) {
             this.maxHp = maxHp;
             this.maxDef = maxDef;
+
+            this.maxAttackPower = attackPower;
+            this.maxCriticalRate = statistics.getCriticalRate();
+            this.maxCriticalDamage = statistics.getCriticalDamage();
+            this.maxAccuracy = statistics.getAccuracy();
+            this.maxResistance = statistics.getResistance();
+
+            this.currentAttackPower = maxAttackPower;
+            this.currentCriticalRate = maxCriticalRate;
+            this.currentCriticalDamage = maxCriticalDamage;
+            this.currentAccuracy = maxAccuracy;
+            this.currentResistance = maxResistance;
+
+            this.leftHand = leftHand;
+            this.rightHand = rightHand;
+
             reset();
         }
 
         private void subtractHp(Long damage) {
             currentHp = currentHp - damage;
-            logger.debug("\t\t{} took {} dmg", BattleCharacter.this, damage);
+            logger.debug("\t\t{} took {} dmg", BattleUnit.this, damage);
             log.send(new InnerBattleEvent.CharacterHpLostEvent(info.getInnerId(), damage));
             if (currentHp <= 0) {
                 die();
@@ -174,7 +186,7 @@ public class BattleCharacter {
         }
 
         private void die() {
-            logger.debug("\t\t{} died", this);
+            logger.debug("\t\t{} died", BattleUnit.this);
             isDead = true;
             log.send(new InnerBattleEvent.CharacterDiedEvent(info.getInnerId()));
             turnManager.setTurnCounterToStartingPosition();
@@ -191,36 +203,10 @@ public class BattleCharacter {
         }
     }
 
-    public class BattleCharacterActions {
-        private Long maxAttackPower;
-        private Long currentAttackPower;
-        private Long maxCriticalRate;
-        private Long currentCriticalRate;
-        private Long maxCriticalDamage;
-        private Long currentCriticalDamage;
-        private Long maxAccuracy;
-        private Long currentAccuracy;
-        private Long maxResistance;
-        private Long currentResistance;
-        private WeaponDto leftHand;
-        private WeaponDto rightHand;
+    public class BattleUnitActions {
         private final Random random = new Random();
 
-        public BattleCharacterActions(Long attackPower, Statistics statistics, WeaponDto leftHand, WeaponDto rightHand) {
-            this.maxAttackPower = attackPower;
-            this.maxCriticalRate = statistics.getCriticalRate();
-            this.maxCriticalDamage = statistics.getCriticalDamage();
-            this.maxAccuracy = statistics.getAccuracy();
-            this.maxResistance = statistics.getResistance();
-
-            this.currentAttackPower = maxAttackPower;
-            this.currentCriticalRate = maxCriticalRate;
-            this.currentCriticalDamage = maxCriticalDamage;
-            this.currentAccuracy = maxAccuracy;
-            this.currentResistance = maxResistance;
-
-            this.leftHand = leftHand;
-            this.rightHand = rightHand;
+        public BattleUnitActions() {
         }
 
         public void makeAction() {
@@ -228,20 +214,20 @@ public class BattleCharacter {
         }
 
         public void baseAttack() {
-            Optional<BattleCharacter> enemyToAttack = getRandomEnemyToAttack();
+            Optional<? extends BattleUnit> enemyToAttack = getRandomEnemyToAttack();
             enemyToAttack.ifPresent(this::baseAttack);
         }
 
-        public void baseAttack(BattleCharacter enemy) {
+        public void baseAttack(BattleUnit enemy) {
             var dmg = getValueBetween(getMinBaseDmg(), getMaxBaseDmg());
-            Hit hit = new Hit(dmg, currentCriticalRate, currentCriticalDamage, currentAccuracy);
-            logger.debug("\t\t{} atacking {} with {}", BattleCharacter.this, enemy, hit);
+            Hit hit = new Hit(dmg, status.getCurrentCriticalRate(), status.getCurrentCriticalDamage(), status.getCurrentAccuracy());
+            logger.debug("\t\t{} atacking {} with {}", BattleUnit.this, enemy, hit);
             log.send(new InnerBattleEvent.CharacterAttackedEvent(info.getInnerId(), enemy.getInfo().getInnerId()));
             enemy.getActions().takeHit(hit);
         }
 
         private void takeHit(Hit hit) {
-            logger.debug("\t\t{} take hit", BattleCharacter.this);
+            logger.debug("\t\t{} take hit", BattleUnit.this);
             var isCritical = isCriticalAttack(hit.getCriticalRate());
             var dmg = isCritical ? getCriticalDmg(hit.getDmg(), hit.getCriticalDamage()) : hit.getDmg();
             status.subtractHp(dmg);
@@ -257,37 +243,37 @@ public class BattleCharacter {
             return random.nextFloat() <= (float) criticalRate / 100_000;
         }
 
-        private Optional<BattleCharacter> getRandomEnemyToAttack() {
+        private Optional<? extends BattleUnit> getRandomEnemyToAttack() {
             return enemies.stream().filter(ch -> !ch.getStatus().isDead()).findFirst();
         }
 
         private Long getMaxBaseDmg() {
             long maxBaseDmg = 0;
-            maxBaseDmg += calculateMaxDmgForHand(leftHand);
-            maxBaseDmg += calculateMaxDmgForHand(rightHand);
+            maxBaseDmg += calculateMaxDmgForHand(status.getLeftHand());
+            maxBaseDmg += calculateMaxDmgForHand(status.getRightHand());
             return maxBaseDmg;
         }
 
         private Long getMinBaseDmg() {
             long minBaseDmg = 0;
-            minBaseDmg += calculateMinDmgForHand(leftHand);
-            minBaseDmg += calculateMinDmgForHand(rightHand);
+            minBaseDmg += calculateMinDmgForHand(status.getLeftHand());
+            minBaseDmg += calculateMinDmgForHand(status.getRightHand());
             return minBaseDmg;
         }
 
         private long calculateMinDmgForHand(WeaponDto hand) {
             if (hand == null) {
-                return this.currentAttackPower * info.getLevel() / 3;
+                return status.getCurrentAttackPower() * info.getLevel() / 3;
             } else {
-                return this.currentAttackPower * hand.getMinDmg();
+                return status.getCurrentAttackPower() * hand.getMinDmg();
             }
         }
 
         private long calculateMaxDmgForHand(WeaponDto hand) {
             if (hand == null) {
-                return this.currentAttackPower * info.getLevel() / 3;
+                return status.getCurrentAttackPower() * info.getLevel() / 3;
             } else {
-                return this.currentAttackPower * hand.getMaxDmg();
+                return status.getCurrentAttackPower() * hand.getMaxDmg();
             }
         }
 
@@ -306,7 +292,7 @@ public class BattleCharacter {
     }
 
 
-    public void setTeams(Set<BattleCharacter> allies, Set<BattleCharacter> enemies) {
+    public void setTeams(Set<? extends BattleUnit> allies, Set<? extends BattleUnit> enemies) {
         this.allies = allies;
         this.enemies = enemies;
     }

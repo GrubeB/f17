@@ -11,6 +11,7 @@ import pl.app.common.shared.model.Money;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.god.application.domain.God;
 import pl.app.god.application.domain.GodEvent;
+import pl.app.god.application.domain.GodMoney;
 import pl.app.god.application.port.in.GodCommand;
 import pl.app.god.application.port.in.GodMoneyService;
 import pl.app.god.application.port.out.GodDomainRepository;
@@ -82,7 +83,7 @@ class GodMoneyServiceImpl implements GodMoneyService {
                                 if (e.getValue() == 0) {
                                     return null;
                                 }
-                                domain.getMoney().subtractMoney(e.getKey(), e.getValue());
+                                domain.setMoney(new GodMoney(domain.getMoney().subtractMoney(e.getKey(), e.getValue())));
                                 return new GodEvent.MoneySubtractedEvent(
                                         domain.getId(),
                                         e.getKey(),

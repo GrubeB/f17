@@ -1,14 +1,15 @@
-package pl.app.battle.adapter.out;
+package pl.app.unit.application.port;
 
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import pl.app.character.application.domain.BattleCharacter;
-import pl.app.character.application.domain.BattleCharacterType;
+import pl.app.unit.application.domain.BattleCharacter;
+import pl.app.unit.application.domain.BattleUnitType;
 import pl.app.character.http.CharacterWithGearQueryControllerHttpInterface;
 import pl.app.character.http.GodFamilyWithGearQueryControllerHttpInterface;
 import pl.app.character.query.dto.CharacterWithGearDto;
+import pl.app.unit.application.port.in.CharacterRepository;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
@@ -17,8 +18,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 class CharacterRepositoryImpl implements
-        pl.app.battle.application.port.out.CharacterRepository,
-        pl.app.tower_attack.application.port.out.CharacterRepository
+        CharacterRepository
 {
     private final CharacterWithGearQueryControllerHttpInterface characterWithGearQueryControllerHttpInterface;
     private final GodFamilyWithGearQueryControllerHttpInterface familyWithGearQueryControllerHttpInterface;
@@ -27,7 +27,7 @@ class CharacterRepositoryImpl implements
     public Mono<BattleCharacter> getBattleCharacterById(ObjectId characterId) {
         return characterWithGearQueryControllerHttpInterface.fetchById(characterId)
                 .map(HttpEntity::getBody)
-                .map(dto -> mapToBattleCharacter(dto, null));
+                .map(dto -> new BattleCharacter(dto, null));
     }
 
     @Override
@@ -37,28 +37,8 @@ class CharacterRepositoryImpl implements
                 .map(wrapper ->
                         wrapper.getCharacters().stream()
                                 .filter(ch -> characterIds.contains(ch.getId()))
-                                .map(dto -> mapToBattleCharacter(dto, godId))
+                                .map(dto ->  new BattleCharacter(dto, godId))
                                 .collect(Collectors.toSet())
                 );
-    }
-
-    private BattleCharacter mapToBattleCharacter(CharacterWithGearDto dto, ObjectId godId) {
-        return new BattleCharacter(
-                dto.getId(),
-                godId,
-                BattleCharacterType.PLAYER,
-                dto.getProfession(),
-                dto.getName(),
-                dto.getLevel().getLevel(),
-                dto.getLevel().getExp(),
-                dto.getBase(),
-                dto.getGear(),
-                dto.getStatistics(),
-                dto.getHp(),
-                dto.getDef(),
-                dto.getAttackPower(),
-                dto.getCharacterGear().getLeftHand(),
-                dto.getCharacterGear().getRightHand()
-        );
     }
 }

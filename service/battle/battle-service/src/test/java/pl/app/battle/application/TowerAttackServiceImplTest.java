@@ -12,8 +12,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import pl.app.battle.application.domain.BattleEvent;
 import pl.app.battle.application.domain.BattleResult;
 import pl.app.battle.application.port.in.BattleCommand;
-import pl.app.battle.application.port.out.CharacterRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.unit.application.port.in.CharacterRepository;
 import reactor.test.StepVerifier;
 
 import java.util.Set;

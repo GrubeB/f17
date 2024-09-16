@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.character.application.domain.BattleCharacterType;
+import pl.app.unit.application.domain.BattleUnitType;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -29,7 +29,7 @@ public class BattleResultDto implements Serializable {
     public static class CharacterResultDto implements Serializable {
         private ObjectId characterId;
         private ObjectId godId;
-        private BattleCharacterType type;
+        private BattleUnitType type;
         private ProgressDto progress;
         private LootDto loot;
 
