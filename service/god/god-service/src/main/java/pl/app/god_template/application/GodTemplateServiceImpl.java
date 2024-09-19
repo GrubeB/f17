@@ -9,20 +9,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.common.shared.model.Money;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.god.application.domain.God;
-import pl.app.god.application.domain.GodEvent;
-import pl.app.god.application.domain.GodException;
-import pl.app.god.application.port.in.GodCommand;
 import pl.app.god_template.application.domain.GodTemplate;
 import pl.app.god_template.application.domain.GodTemplateEvent;
 import pl.app.god_template.application.domain.GodTemplateException;
 import pl.app.god_template.application.port.in.GodTemplateCommand;
 import pl.app.god_template.application.port.in.GodTemplateService;
-import pl.app.god_template.application.port.out.GodTemplateDomainRepository;
-import pl.app.item_template.application.domain.ItemTemplateException;
-import pl.app.item_template.application.domain.OutfitTemplate;
+import pl.app.god_template.application.port.in.GodTemplateDomainRepository;
 import reactor.core.publisher.Mono;
 
 
@@ -60,8 +53,8 @@ class GodTemplateServiceImpl implements GodTemplateService {
     public Mono<GodTemplate> update(GodTemplateCommand.UpdateGodTemplateCommand command) {
         logger.debug("updating god template {}", command.getId());
         return godTemplateDomainRepository.fetchById(command.getId())
-                .doOnError(e -> logger.error("exception occurred while updating god template {} , exception: {}",command.getId(), e.getMessage()))
-                .flatMap(domain ->{
+                .doOnError(e -> logger.error("exception occurred while updating god template {} , exception: {}", command.getId(), e.getMessage()))
+                .flatMap(domain -> {
                     domain.setName(command.getName());
                     domain.setDescription(command.getDescription());
                     domain.setImageId(command.getImageId());
@@ -81,8 +74,8 @@ class GodTemplateServiceImpl implements GodTemplateService {
     public Mono<GodTemplate> delete(GodTemplateCommand.DeleteGodTemplateCommand command) {
         logger.debug("deleting god template {}", command.getId());
         return godTemplateDomainRepository.fetchById(command.getId())
-                .doOnError(e -> logger.error("exception occurred while deleting god template {} , exception: {}",command.getId(), e.getMessage()))
-                .flatMap(domain ->{
+                .doOnError(e -> logger.error("exception occurred while deleting god template {} , exception: {}", command.getId(), e.getMessage()))
+                .flatMap(domain -> {
                     var event = new GodTemplateEvent.GodTemplateDeletedEvent(
                             domain.getId()
                     );

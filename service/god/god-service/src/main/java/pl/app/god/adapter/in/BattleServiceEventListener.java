@@ -37,6 +37,7 @@ class BattleServiceEventListener {
                     godMoneyService.addMoney(command).block();
                 });
     }
+
     @KafkaListener(
             id = "tower-attack-ended-event-listener--god",
             groupId = "${app.kafka.consumer.group-id}--god",

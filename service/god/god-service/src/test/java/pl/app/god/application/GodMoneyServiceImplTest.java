@@ -19,8 +19,8 @@ import pl.app.god.application.domain.God;
 import pl.app.god.application.domain.GodEvent;
 import pl.app.god.application.domain.GodException;
 import pl.app.god.application.port.in.GodCommand;
+import pl.app.god.application.port.in.GodDomainRepository;
 import pl.app.god.application.port.in.GodService;
-import pl.app.god.application.port.out.GodDomainRepository;
 import reactor.test.StepVerifier;
 
 import java.util.UUID;
@@ -51,7 +51,7 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
         final var godName = "TEST_NAME_" + UUID.randomUUID();
         final var accountId = ObjectId.get();
         final var amount = 100L;
-        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, godName)).block();
+        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, ObjectId.get(), godName)).block();
 
         Mockito.reset(godDomainRepository, mongoTemplate, kafkaTemplate, topicNames);
         Assumptions.assumeThat(god).isNotNull();
@@ -74,7 +74,7 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
         final var godName = "TEST_NAME_" + UUID.randomUUID();
         final var accountId = ObjectId.get();
         final var amount = 100L;
-        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, godName)).block();
+        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId,  ObjectId.get(), godName)).block();
         godMoneyService.addMoney(new GodCommand.AddMoneyCommand(god.getId(), new Money(Money.Type.BASE, amount))).block();
         Assumptions.assumeThat(god).isNotNull();
         Mockito.reset(godDomainRepository, mongoTemplate, kafkaTemplate, topicNames);
@@ -97,7 +97,7 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
         final var godName = "TEST_NAME_" + UUID.randomUUID();
         final var accountId = ObjectId.get();
         final var amount = 1_000_000L;
-        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, godName)).block();
+        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, ObjectId.get(),  godName)).block();
         Assumptions.assumeThat(god).isNotNull();
         Mockito.reset(godDomainRepository, mongoTemplate, kafkaTemplate, topicNames);
 
@@ -115,7 +115,7 @@ class GodMoneyServiceImplTest extends AbstractIntegrationTest {
         final var godName = "TEST_NAME_" + UUID.randomUUID();
         final var accountId = ObjectId.get();
         final var amount = -1_000L;
-        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, godName)).block();
+        God god = godSerivce.create(new GodCommand.CreateGodCommand(accountId, ObjectId.get(), godName)).block();
         Assumptions.assumeThat(god).isNotNull();
         Mockito.reset(godDomainRepository, mongoTemplate, kafkaTemplate, topicNames);
 

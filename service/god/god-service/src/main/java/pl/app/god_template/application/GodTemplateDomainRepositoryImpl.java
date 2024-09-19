@@ -1,4 +1,4 @@
-package pl.app.god_template.adapter.out;
+package pl.app.god_template.application;
 
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -10,17 +10,14 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.god_template.application.domain.GodTemplate;
 import pl.app.god_template.application.domain.GodTemplateException;
-import pl.app.god_template.application.port.out.GodTemplateDomainRepository;
+import pl.app.god_template.application.port.in.GodTemplateDomainRepository;
 import reactor.core.publisher.Mono;
 
-;
 
 @Component
 @RequiredArgsConstructor
 class GodTemplateDomainRepositoryImpl implements
-        GodTemplateDomainRepository,
-        pl.app.god.application.port.out.GodTemplateRepository
-{
+        GodTemplateDomainRepository {
     private static final Logger logger = LoggerFactory.getLogger(GodTemplateDomainRepositoryImpl.class);
 
     private final ReactiveMongoTemplate mongoTemplate;

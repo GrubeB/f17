@@ -41,6 +41,7 @@ public class WebConfig implements WebFluxConfigurer {
     }
 
     private final Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
+
     @Override
     public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
         ObjectMapper objectMapper = jackson2ObjectMapperBuilder.build();

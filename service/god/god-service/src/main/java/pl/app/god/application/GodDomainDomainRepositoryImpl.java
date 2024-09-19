@@ -1,4 +1,4 @@
-package pl.app.god.adapter.out;
+package pl.app.god.application;
 
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -10,16 +10,16 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.god.application.domain.God;
 import pl.app.god.application.domain.GodException;
+import pl.app.god.application.port.in.GodDomainRepository;
 import reactor.core.publisher.Mono;
 
 ;
 
 @Component
 @RequiredArgsConstructor
-class GodDomainRepositoryImpl implements
-        pl.app.god.application.port.out.GodDomainRepository,
-        pl.app.recruitment.application.port.out.GodRepository {
-    private static final Logger logger = LoggerFactory.getLogger(GodDomainRepositoryImpl.class);
+class GodDomainDomainRepositoryImpl implements
+        GodDomainRepository {
+    private static final Logger logger = LoggerFactory.getLogger(GodDomainDomainRepositoryImpl.class);
 
     private final ReactiveMongoTemplate mongoTemplate;
 

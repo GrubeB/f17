@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
 
 public interface GodTemplateService {
     Mono<GodTemplate> create(GodTemplateCommand.CreateGodTemplateCommand command);
+
     Mono<GodTemplate> update(GodTemplateCommand.UpdateGodTemplateCommand command);
+
     Mono<GodTemplate> delete(GodTemplateCommand.DeleteGodTemplateCommand command);
 }

@@ -16,7 +16,7 @@ import pl.app.god.application.domain.GodEvent;
 import pl.app.god.application.domain.GodException;
 import pl.app.god.application.port.in.GodCommand;
 import pl.app.god.application.port.in.GodService;
-import pl.app.god.application.port.out.GodTemplateRepository;
+import pl.app.god_template.application.port.in.GodTemplateDomainRepository;
 import reactor.core.publisher.Mono;
 
 
@@ -28,7 +28,7 @@ class GodServiceImpl implements GodService {
     private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
-    private final GodTemplateRepository godTemplateRepository;
+    private final GodTemplateDomainRepository godTemplateRepository;
 
     @Override
     public Mono<God> create(GodCommand.CreateGodCommand command) {

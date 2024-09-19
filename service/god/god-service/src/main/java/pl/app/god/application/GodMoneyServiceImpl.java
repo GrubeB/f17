@@ -13,8 +13,8 @@ import pl.app.god.application.domain.God;
 import pl.app.god.application.domain.GodEvent;
 import pl.app.god.application.domain.GodMoney;
 import pl.app.god.application.port.in.GodCommand;
+import pl.app.god.application.port.in.GodDomainRepository;
 import pl.app.god.application.port.in.GodMoneyService;
-import pl.app.god.application.port.out.GodDomainRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

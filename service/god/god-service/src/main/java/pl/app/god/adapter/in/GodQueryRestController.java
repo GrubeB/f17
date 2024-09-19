@@ -29,6 +29,7 @@ class GodQueryRestController {
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.error(GodException.NotFoundGodException.fromId(id.toHexString())));
     }
+
     @GetMapping
     Mono<ResponseEntity<Page<GodDto>>> fetchAllByPageable(Pageable pageable) {
         return queryService.fetchAllByPageable(pageable)

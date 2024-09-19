@@ -15,7 +15,7 @@ import pl.app.recruitment.application.port.in.RecruitmentResponse;
 import pl.app.recruitment.application.port.in.RecruitmentService;
 import pl.app.recruitment.application.port.out.CharacterCreator;
 import pl.app.recruitment.application.port.out.GodApplicantCreator;
-import pl.app.recruitment.application.port.out.GodRepository;
+import pl.app.god.application.port.in.GodDomainRepository;
 import reactor.core.publisher.Mono;
 
 
@@ -26,14 +26,14 @@ class RecruitmentServiceImpl implements RecruitmentService {
 
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
-    private final GodRepository godRepository;
+    private final GodDomainRepository godDomainRepository;
     private final CharacterCreator characterCreator;
     private final GodApplicantCreator godApplicantCreator;
 
     @Override
     public Mono<RecruitmentResponse.RecruitmentAnnouncementPostedResponse> post(RecruitmentCommand.PostRecruitmentAnnouncementCommand command) {
         logger.debug("posting recruitment announcement for god {}", command.getGodId());
-        return godRepository.fetchById(command.getGodId())
+        return godDomainRepository.fetchById(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while posting recruitment announcement for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .zipWith(characterCreator.createRandomCharacter())
                 .flatMap(t -> {

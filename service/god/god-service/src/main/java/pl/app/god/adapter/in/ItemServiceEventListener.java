@@ -26,7 +26,7 @@ class ItemServiceEventListener {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
         var command = new GodCommand.AddMoneyCommand(
-               event.getGodId(), event.getMoney()
+                event.getGodId(), event.getMoney()
         );
         godMoneyService.addMoney(command).block();
     }
