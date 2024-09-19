@@ -14,6 +14,22 @@ public interface ItemCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    class CreateItemCommand implements Serializable {
+        private ObjectId templateId;
+        private Integer level;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class CreateRandomItemCommand implements Serializable {
+        private Integer numberOfItems;
+        private Set<ItemType> itemTypes;
+        private Integer level;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     class CreateOutfitCommand implements Serializable {
         private ObjectId templateId;
         private Integer level;
@@ -24,15 +40,6 @@ public interface ItemCommand {
     @AllArgsConstructor
     class CreateWeaponCommand implements Serializable {
         private ObjectId templateId;
-        private Integer level;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class CreateRandomItemCommand implements Serializable {
-        private Integer numberOfItems;
-        private Set<ItemType> itemTypes;
         private Integer level;
     }
 }

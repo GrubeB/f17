@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.app.equipment.application.port.in.GodEquipmentCommand;
-import pl.app.equipment.application.port.in.GodEquipmentService;
+import pl.app.equipment.application.port.in.EquipmentCommand;
+import pl.app.equipment.application.port.in.EquipmentService;
 import pl.app.equipment.dto.EquipmentDto;
 import pl.app.equipment.query.EquipmentQueryService;
 import reactor.core.publisher.Mono;
@@ -17,14 +17,14 @@ class EquipmentRestController {
     public static final String resourceName = "equipments";
     public static final String resourcePath = "/api/v1/" + resourceName;
 
-    private final GodEquipmentService service;
+    private final EquipmentService service;
     private final EquipmentQueryService queryService;
 
 
     @PostMapping("/{godId}/items")
     Mono<ResponseEntity<EquipmentDto>> addItemToEquipment(
             @PathVariable ObjectId godId,
-            @RequestBody GodEquipmentCommand.AddItemToGodEquipmentCommand command
+            @RequestBody EquipmentCommand.AddItemToGodEquipmentCommand command
     ) {
         command.setGodId(godId);
         return service.addItemToEquipment(command)
@@ -35,7 +35,7 @@ class EquipmentRestController {
     @DeleteMapping("/{godId}/items")
     Mono<ResponseEntity<EquipmentDto>> removeItemFromEquipment(
             @PathVariable ObjectId godId,
-            @RequestBody GodEquipmentCommand.RemoveItemFromGodEquipmentCommand command
+            @RequestBody EquipmentCommand.RemoveItemFromGodEquipmentCommand command
     ) {
         command.setGodId(godId);
         return service.removeItemFromEquipment(command)

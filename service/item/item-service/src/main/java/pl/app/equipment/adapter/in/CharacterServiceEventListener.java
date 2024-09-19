@@ -7,15 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import pl.app.equipment.application.port.in.GodEquipmentCommand;
-import pl.app.equipment.application.port.in.GodEquipmentService;
+import pl.app.equipment.application.port.in.EquipmentCommand;
+import pl.app.equipment.application.port.in.EquipmentService;
 import pl.app.family.application.domain.FamilyEvent;
 
 @Component("pl.app.equipment.adapter.in.CharacterServiceEventListener")
 @RequiredArgsConstructor
 class CharacterServiceEventListener {
     private final Logger logger = LoggerFactory.getLogger(CharacterServiceEventListener.class);
-    private final GodEquipmentService godEquipmentService;
+    private final EquipmentService equipmentService;
 
     @KafkaListener(
             id = "character-added-to-family-event-listener--equipment",
@@ -25,10 +25,10 @@ class CharacterServiceEventListener {
     public void characterAddedToFamilyEvent(ConsumerRecord<ObjectId, FamilyEvent.CharacterAddedToFamilyEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new GodEquipmentCommand.AddCharacterGearToGodEquipmentCommand(
+        var command = new EquipmentCommand.AddCharacterGearToGodEquipmentCommand(
                 event.getGodId(), event.getCharacterId()
         );
-        godEquipmentService.addCharacterGearToGodEquipment(command).block();
+        equipmentService.addCharacterGearToGodEquipment(command).block();
     }
 
     @KafkaListener(
@@ -39,9 +39,9 @@ class CharacterServiceEventListener {
     public void characterRemovedFromFamilyEvent(ConsumerRecord<ObjectId, FamilyEvent.CharacterRemovedFromFamilyEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new GodEquipmentCommand.RemoveCharacterGearFromGodEquipmentCommand(
+        var command = new EquipmentCommand.RemoveCharacterGearFromGodEquipmentCommand(
                 event.getGodId(), event.getCharacterId()
         );
-        godEquipmentService.removeCharacterGearFromGodEquipment(command).block();
+        equipmentService.removeCharacterGearFromGodEquipment(command).block();
     }
 }

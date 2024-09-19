@@ -7,15 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import pl.app.equipment.application.port.in.GodEquipmentCommand;
-import pl.app.equipment.application.port.in.GodEquipmentService;
+import pl.app.equipment.application.port.in.EquipmentCommand;
+import pl.app.equipment.application.port.in.EquipmentService;
 import pl.app.god.application.domain.GodEvent;
 
 @Component("pl.app.god_equipment.adapter.in.GodServiceEventListener")
 @RequiredArgsConstructor
 class GodServiceEventListener {
     private final Logger logger = LoggerFactory.getLogger(GodServiceEventListener.class);
-    private final GodEquipmentService godEquipmentService;
+    private final EquipmentService equipmentService;
 
     @KafkaListener(
             id = "god-created-event-listener--god-equipment",
@@ -25,9 +25,9 @@ class GodServiceEventListener {
     void createGod(ConsumerRecord<ObjectId, GodEvent.GodCreatedEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new GodEquipmentCommand.CreateGodEquipmentCommand(
+        var command = new EquipmentCommand.CreateGodEquipmentCommand(
                 event.getGodId()
         );
-        godEquipmentService.createEquipment(command).block();
+        equipmentService.createEquipment(command).block();
     }
 }

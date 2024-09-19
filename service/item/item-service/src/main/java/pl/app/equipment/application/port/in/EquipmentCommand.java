@@ -8,7 +8,7 @@ import org.bson.types.ObjectId;
 import java.io.Serializable;
 
 
-public interface GodEquipmentCommand {
+public interface EquipmentCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

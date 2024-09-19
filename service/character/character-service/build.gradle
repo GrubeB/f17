@@ -41,6 +41,7 @@ dependencies {
     implementation project(':service:item:item-http-interface')
 
     implementation project(':service:god:god-domain')
+    implementation project(':service:battle:battle-domain')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

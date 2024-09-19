@@ -11,8 +11,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.common.shared.model.ItemType;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.equipment.application.port.in.GodEquipmentCommand;
-import pl.app.equipment.application.port.in.GodEquipmentService;
+import pl.app.equipment.application.port.in.EquipmentCommand;
+import pl.app.equipment.application.port.in.EquipmentService;
 import pl.app.item.application.domain.Item;
 import pl.app.item.application.port.in.ItemDomainRepository;
 import pl.app.trader.application.domain.Trader;
@@ -41,7 +41,7 @@ class TraderServiceImpl implements TraderService {
     private final ItemDomainRepository itemDomainRepository;
     private final TraderDomainRepository traderDomainRepository;
     private final GodMoneyService godMoneyService;
-    private final GodEquipmentService godEquipmentService;
+    private final EquipmentService equipmentService;
 
     @Override
     public Mono<Trader> create(TraderCommand.CrateTraderCommand command) {
@@ -95,7 +95,7 @@ class TraderServiceImpl implements TraderService {
                 .flatMap(domain -> {
                     Item item = domain.takeItem(command.getItemId());
                     return godMoneyService.subtractMoney(domain.getGodId(), item.getMoney())
-                            .then(godEquipmentService.addItemToEquipment(new GodEquipmentCommand.AddItemToGodEquipmentCommand(command.getGodId(), item.getId())))
+                            .then(equipmentService.addItemToEquipment(new EquipmentCommand.AddItemToGodEquipmentCommand(command.getGodId(), item.getId())))
                             .then(Mono.defer(() -> {
                                 var event = new TraderEvent.GodBoughtItemEvent(
                                         domain.getId(), domain.getGodId(), item.getId(), item.getMoney()
@@ -117,7 +117,7 @@ class TraderServiceImpl implements TraderService {
                 .doOnError(e -> logger.error("exception occurred while selling item {} from god: {}, exception: {}", command.getItemId(), command.getGodId(), e.getMessage()))
                 .flatMap(domain -> {
                     return itemDomainRepository.fetchById(command.getItemId())
-                            .flatMap(item -> godEquipmentService.removeItemFromEquipment(new GodEquipmentCommand.RemoveItemFromGodEquipmentCommand(command.getGodId(), command.getItemId())).thenReturn(item))
+                            .flatMap(item -> equipmentService.removeItemFromEquipment(new EquipmentCommand.RemoveItemFromGodEquipmentCommand(command.getGodId(), command.getItemId())).thenReturn(item))
                             .flatMap(item -> {
                                 var event = new TraderEvent.GodSoldItemEvent(
                                         domain.getId(), domain.getGodId(), command.getItemId(), item.getMoney()

@@ -8,13 +8,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.equipment.application.domain.Equipment;
 import pl.app.equipment.application.domain.EquipmentException;
-import pl.app.equipment.application.port.in.GodEquipmentDomainRepository;
+import pl.app.equipment.application.port.in.EquipmentDomainRepository;
 import reactor.core.publisher.Mono;
 
 
 @Component
 @RequiredArgsConstructor
-class GodEquipmentDomainRepositoryImpl implements GodEquipmentDomainRepository {
+class EquipmentDomainRepositoryImpl implements EquipmentDomainRepository {
     private final ReactiveMongoTemplate mongoTemplate;
 
     @Override

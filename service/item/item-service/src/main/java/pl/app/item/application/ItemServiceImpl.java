@@ -33,6 +33,21 @@ class ItemServiceImpl implements ItemService {
     private final ItemTemplateDomainRepository itemTemplateDomainRepository;
 
     @Override
+    public Mono<Item> createItems(ItemCommand.CreateItemCommand command) {
+        logger.debug("creating item, based on template: {}", command.getTemplateId());
+        return itemTemplateDomainRepository.fetchTemplateById(command.getTemplateId())
+                .doOnError(e -> logger.error("exception occurred while creating item, based on template: {}, exception: {}", command.getTemplateId(), e.getMessage()))
+                .flatMap(template -> {
+                    if (ItemType.isWeapon(template.getType())) {
+                        return createWeapon(new ItemCommand.CreateWeaponCommand(command.getTemplateId(), command.getLevel()));
+                    } else if (ItemType.isOutfit(template.getType())) {
+                        return createOutfit(new ItemCommand.CreateOutfitCommand(command.getTemplateId(), command.getLevel()));
+                    }
+                    return Mono.error(new RuntimeException());
+                });
+    }
+
+    @Override
     public Mono<Item> createOutfit(ItemCommand.CreateOutfitCommand command) {
         logger.debug("creating outfit, based on template: {}", command.getTemplateId());
         return itemTemplateDomainRepository.fetchTemplateById(command.getTemplateId())

@@ -4,6 +4,6 @@ import org.bson.types.ObjectId;
 import pl.app.equipment.application.domain.Equipment;
 import reactor.core.publisher.Mono;
 
-public interface GodEquipmentDomainRepository {
+public interface EquipmentDomainRepository {
     Mono<Equipment> fetchByGodId(ObjectId godId);
 }
