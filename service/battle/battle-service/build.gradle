@@ -36,6 +36,9 @@ dependencies {
     // SUBPROJECTS
     implementation project(':common:shared')
     implementation project(':common:mapper')
+    implementation project(':service:battle:battle-domain')
+    implementation project(':service:battle:battle-dto')
+
     implementation project(':service:character:character-http-interface')
     implementation project(':service:item:item-http-interface')
     implementation project(':service:monster:monster-http-interface')

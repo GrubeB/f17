@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.common.shared.model.Money;
 import pl.app.loot.aplication.domain.Loot;
 
 import java.io.Serializable;
@@ -44,5 +45,14 @@ public interface LootCommand {
         private ObjectId domainObjectId;
         private Loot.LootDomainObjectType domainObjectType;
         private ObjectId itemTemplateId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class SetMoneyCommand implements Serializable {
+        private ObjectId domainObjectId;
+        private Loot.LootDomainObjectType domainObjectType;
+        private Money money;
     }
 }

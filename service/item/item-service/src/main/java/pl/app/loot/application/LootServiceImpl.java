@@ -126,4 +126,25 @@ class LootServiceImpl implements LootService {
                             });
                 });
     }
+
+    @Override
+    public Mono<Loot> setMoney(LootCommand.SetMoneyCommand command) {
+        logger.debug("setting money to loot for: {} - {}", command.getDomainObjectType(), command.getDomainObjectId());
+        return lootDomainRepository.fetchByDomainObject(command.getDomainObjectId(), command.getDomainObjectType())
+                .doOnError(e -> logger.error("exception occurred while setting money to loot for: {} - {}, exception: {}", command.getDomainObjectType(), command.getDomainObjectId(), e.getMessage()))
+                .flatMap(domain -> {
+                    domain.setMoney(command.getMoney());
+                    var event = new LootEvent.LootMoneySetEvent(
+                            domain.getId(),
+                            domain.getDomainObjectId(),
+                            domain.getDomainObjectType()
+                    );
+                    return mongoTemplate.save(domain)
+                            .flatMap(unused -> Mono.fromFuture(kafkaTemplate.send(topicNames.getLootMoneySet().getName(), domain.getId(), event)).thenReturn(domain))
+                            .doOnSuccess(saved -> {
+                                logger.debug("set money to loot for: {} - {}", command.getDomainObjectType(), command.getDomainObjectId());
+                                logger.debug("send {} - {}", event.getClass().getSimpleName(), event);
+                            });
+                });
+    }
 }

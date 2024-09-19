@@ -76,13 +76,11 @@ public class BattleResult {
             getCharacterResultById(id).ifPresent(chr -> chr.setExp(exp));
         });
     }
-
-    public void setMoney(Map<ObjectId, Money> map) {
-        map.forEach((id, money) -> {
-            getCharacterResultById(id).ifPresent(chr -> chr.setMoney(money));
+    public void setLoot(Map<ObjectId, CharacterResult.Loot> map) {
+        map.forEach((id, loot) -> {
+            getCharacterResultById(id).ifPresent(chr -> chr.setLoot(loot));
         });
     }
-
     private Optional<CharacterResult> getCharacterResultById(ObjectId objectId) {
         return characterResults.stream().filter(ch -> ch.getCharacterId().equals(objectId)).findAny();
     }

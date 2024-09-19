@@ -11,4 +11,6 @@ public interface LootService {
     Mono<Loot> setItem(LootCommand.SetItemCommand command);
 
     Mono<Loot> removeItem(LootCommand.RemoveItemCommand command);
+
+    Mono<Loot> setMoney(LootCommand.SetMoneyCommand command);
 }

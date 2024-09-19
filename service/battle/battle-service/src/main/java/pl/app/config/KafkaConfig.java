@@ -53,7 +53,9 @@ public class KafkaConfig {
         @Bean
         KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
             NewTopic[] array = Stream.of(
-                    createTopicFromConfig(topicNames.getBattleEnded()).stream()
+                    createTopicFromConfig(topicNames.getBattleEnded()).stream(),
+                    createTopicFromConfig(topicNames.getTowerAttackStarted()).stream(),
+                    createTopicFromConfig(topicNames.getTowerAttackEnded()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

@@ -1,6 +1,7 @@
 package pl.app.loot.aplication.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -17,10 +18,12 @@ public class Loot {
     private ObjectId id;
     private ObjectId domainObjectId;
     private LootDomainObjectType domainObjectType;
+
     public enum LootDomainObjectType {
         MONSTER,
     }
     private Set<LootItem> items;
+    @Setter
     private Money money;
 
     public Loot() {

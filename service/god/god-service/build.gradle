@@ -42,7 +42,11 @@ dependencies {
     implementation project(':service:account:account-domain')
 
     implementation project(':service:item:item-domain')
+
     implementation project(':service:character:character-http-interface')
+    implementation project(':service:monster:monster-http-interface')
+
+    implementation project(':service:battle:battle-domain')
 
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

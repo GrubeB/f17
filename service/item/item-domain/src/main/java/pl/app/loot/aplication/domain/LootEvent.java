@@ -43,4 +43,12 @@ public interface LootEvent {
         private Loot.LootDomainObjectType domainObjectType;
         private ObjectId itemTemplateId;
     }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class LootMoneySetEvent implements Serializable {
+        private ObjectId id;
+        private ObjectId domainObjectId;
+        private Loot.LootDomainObjectType domainObjectType;
+    }
 }

@@ -46,6 +46,7 @@ public class KafkaTopicConfigurationProperties {
     private Topic lootRemoved;
     private Topic lootItemSet;
     private Topic lootItemRemoved;
+    private Topic lootMoneySet;
 
     @Setter
     @Getter

@@ -10,8 +10,8 @@ import pl.app.unit.application.domain.BattleMonster;
 import pl.app.unit.application.domain.BattleUnit;
 
 import java.time.Instant;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -131,7 +131,7 @@ public class Battle {
     @Getter
     public class BattleTeamsManager {
         private Set<? extends BattleUnit> team1;
-        private  Set<? extends BattleUnit> team2;
+        private Set<? extends BattleUnit> team2;
 
         public BattleTeamsManager(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
             this.team1 = team1;
@@ -142,6 +142,7 @@ public class Battle {
     @Getter
     public class BattleFinishManager {
         private BattleResult battleResult;
+        Random random = new Random();
 
         public BattleFinishManager() {
             this.battleResult = new BattleResult(info.getBattleId(), teamsManager.getTeam1(), teamsManager.getTeam2());
@@ -151,7 +152,7 @@ public class Battle {
             battleResult.setIsTeam1Win(true);
             log.send(new InnerBattleEvent.BattleEndedEvent(true));
             battleResult.setProgress(calculateExpForWinningTeam(teamsManager.getTeam1(), teamsManager.getTeam2()));
-            battleResult.setMoney(calculateMoneyForWinningTeam(teamsManager.getTeam1(), teamsManager.getTeam2()));
+            battleResult.setLoot(calculateLootForWinningTeam(teamsManager.getTeam1(), teamsManager.getTeam2()));
             finishBattle();
         }
 
@@ -159,7 +160,7 @@ public class Battle {
             battleResult.setIsTeam1Win(false);
             log.send(new InnerBattleEvent.BattleEndedEvent(false));
             battleResult.setProgress(calculateExpForWinningTeam(teamsManager.getTeam2(), teamsManager.getTeam1()));
-            battleResult.setMoney(calculateMoneyForWinningTeam(teamsManager.getTeam2(), teamsManager.getTeam1()));
+            battleResult.setLoot(calculateLootForWinningTeam(teamsManager.getTeam2(), teamsManager.getTeam1()));
             finishBattle();
         }
 
@@ -177,8 +178,7 @@ public class Battle {
             logLog();
         }
 
-        // TODO exp and money should be calculated based on members in team1 and team2
-        private Map<ObjectId, Long> calculateExpForWinningTeam( Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
+        private Map<ObjectId, Long> calculateExpForWinningTeam(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
             Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
             Long exp = team2.stream().map(e -> {
                 if (e instanceof BattleMonster unit) {
@@ -191,15 +191,58 @@ public class Battle {
             return characters.stream().collect(Collectors.toMap(BattleCharacter::getUnitId, ch -> exp / characters.size()));
         }
 
-        private Map<ObjectId, Money> calculateMoneyForWinningTeam( Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
+        private Map<ObjectId, CharacterResult.Loot> calculateLootForWinningTeam(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
             Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
-            Money money = team2.stream().map(e -> {
-                if (e instanceof BattleMonster unit) {
-                    return unit.getLoot().getMoney();
+            Set<BattleMonster> monsters = team2.stream().filter(e -> e instanceof BattleMonster).map(e -> (BattleMonster) e).collect(Collectors.toSet());
+            Money money = monsters.stream().map(e -> e.getLoot().getMoney()).reduce(new Money(), new BinaryOperator<Money>() {
+                @Override
+                public Money apply(Money money, Money money2) {
+                    return money.addMoney(money2);
                 }
-                return new Money();
-            }).reduce(new Money(), Money::addMoney);
-            return characters.stream().collect(Collectors.toMap(BattleCharacter::getUnitId, ch -> money.divideMoney((long) characters.size())));
+            });
+            Money moneyForEach = money.divideMoney((long) characters.size());
+            Set<CharacterResult.Loot.LootItem> items = monsters.stream().map(e -> e.getLoot().getItems())
+                    .flatMap(Set::stream)
+                    .map(e -> new CharacterResult.Loot.LootItem(e.getItemTemplateId(), getNumberOfItems(e.getAmount(), e.getChance())))
+                    .filter(e -> e.getAmount() > 0)
+                    .collect(Collectors.groupingBy(CharacterResult.Loot.LootItem::getItemTemplateId))
+                    .values()
+                    .stream().map(list -> list.stream().reduce((item, item2) -> item.addAmount(item2.getAmount())).orElse(null)).filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            Map<BattleCharacter, Set<CharacterResult.Loot.LootItem>> battleCharacterSetMap = assignLootToCharacters(items, characters);
+            return characters.stream().collect(Collectors.toMap(BattleCharacter::getUnitId, ch -> new CharacterResult.Loot(
+                    moneyForEach,
+                    Optional.ofNullable(battleCharacterSetMap.get(ch)).orElse(new HashSet<>())
+            )));
+        }
+
+        private Map<BattleCharacter, Set<CharacterResult.Loot.LootItem>> assignLootToCharacters(Set<CharacterResult.Loot.LootItem> items, Set<BattleCharacter> characters) {
+            Random random = new Random();
+            Map<BattleCharacter, Set<CharacterResult.Loot.LootItem>> characterLootMap = new HashMap<>();
+            if(items.isEmpty()){
+                return characterLootMap;
+            }
+            for (BattleCharacter character : characters) {
+                Set<CharacterResult.Loot.LootItem> assignedItems = new HashSet<>();
+                int lootCount = random.nextInt(items.size()) + 1;
+                CharacterResult.Loot.LootItem[] itemsArray = items.toArray(new CharacterResult.Loot.LootItem[0]);
+                for (int i = 0; i < lootCount; i++) {
+                    CharacterResult.Loot.LootItem randomItem = itemsArray[random.nextInt(itemsArray.length)];
+                    assignedItems.add(randomItem);
+                }
+                characterLootMap.put(character, assignedItems);
+            }
+            return characterLootMap;
+        }
+
+        private int getNumberOfItems(int totalItems, double probability) {
+            int count = 0;
+            for (int i = 0; i < totalItems; i++) {
+                if (random.nextDouble() <= probability) {
+                    count++;
+                }
+            }
+            return count;
         }
     }
 

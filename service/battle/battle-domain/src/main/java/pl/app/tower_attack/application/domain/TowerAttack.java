@@ -38,11 +38,13 @@ public class TowerAttack {
 
         private void setTeamWin() {
             log.send(new InnerTowerAttackEvent.AttackEndedEvent(true, battleManager.getCurrentNumberOfSeconds()));
+            result.setIsWin(true);
             finishTowerAttack();
         }
 
         private void setTeamLost() {
             log.send(new InnerTowerAttackEvent.AttackEndedEvent(false, battleManager.getCurrentNumberOfSeconds()));
+            result.setIsWin(false);
             finishTowerAttack();
         }
 
@@ -53,7 +55,7 @@ public class TowerAttack {
 
         private void finishTowerAttack() {
             logger.debug("--ended tower attack--");
-            this.result.setTowerAttackEnded(true);
+            result.setTowerAttackEnded(true);
             result.setBattleResults(battleManager.getBattles().stream().map(e -> e.getFinishManager().getBattleResult()).collect(Collectors.toSet()));
             result.setLog(log);
             result.setStart(info.getStart());
@@ -120,7 +122,7 @@ public class TowerAttack {
         public TowerAttaackCharacterManager(Set<BattleCharacter> team, TowerLevelDto towerLevel) {
             this.team = team;
             this.towerLevel = towerLevel;
-            this.monsterList = towerLevel.getMonsters().stream().map(e ->new BattleMonster(e)).collect(Collectors.toSet());
+            this.monsterList = towerLevel.getMonsters().stream().map(BattleMonster::new).collect(Collectors.toSet());
         }
 
         private Set<? extends BattleUnit> getMonstersForNewBattle() {

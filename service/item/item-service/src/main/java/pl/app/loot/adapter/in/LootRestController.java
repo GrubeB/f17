@@ -42,4 +42,14 @@ class LootRestController {
         return service.removeItem(command)
                 .map(unused -> ResponseEntity.accepted().build());
     }
+    @PutMapping("/{domainObjectId}/monies")
+    Mono<ResponseEntity<LootDto>> setMoney(
+            @PathVariable ObjectId domainObjectId,
+            @PathVariable Loot.LootDomainObjectType domainObjectType,
+            @RequestBody LootCommand.SetMoneyCommand command
+    ) {
+        return service.setMoney(command)
+                .flatMap(domain -> queryService.fetchByDomainObject(domain.getDomainObjectId(), domain.getDomainObjectType()))
+                .map(ResponseEntity::ok);
+    }
 }

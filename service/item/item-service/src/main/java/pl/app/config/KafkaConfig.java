@@ -84,7 +84,8 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getLootCreated()).stream(),
                     createTopicFromConfig(topicNames.getLootRemoved()).stream(),
                     createTopicFromConfig(topicNames.getLootItemSet()).stream(),
-                    createTopicFromConfig(topicNames.getLootRemoved()).stream()
+                    createTopicFromConfig(topicNames.getLootRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getLootMoneySet()).stream()
 
 
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);

@@ -21,7 +21,7 @@ public class Money {
     }
 
     public Money(Money money) {
-        this.monies = money.getMonies();
+        this.monies = new EnumMap<>(money.getMonies());
     }
 
     public Money(Type type, Long amount) {

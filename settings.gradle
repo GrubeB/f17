@@ -9,6 +9,9 @@ include "service:account:account-dto"
 include "service:account:account-http-interface"
 include "service:account:account-service"
 
+include "service:battle:battle-domain"
+include "service:battle:battle-dto"
+include "service:battle:battle-http-interface"
 include "service:battle:battle-service"
 
 include "service:character:character-domain"
