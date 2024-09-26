@@ -12,13 +12,13 @@ public interface FamilyCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class CreateGodFamilyCommand implements Serializable {
+    class CreateFamilyCommand implements Serializable {
         private ObjectId godId;
     }
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class AddCharacterToGodFamilyCommand implements Serializable {
+    class AddCharacterToFamilyCommand implements Serializable {
         private ObjectId godId;
         private ObjectId characterId;
     }
@@ -26,7 +26,7 @@ public interface FamilyCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class RemoveCharacterFromGodFamilyCommand implements Serializable {
+    class RemoveCharacterFromFamilyCommand implements Serializable {
         private ObjectId godId;
         private ObjectId characterId;
     }

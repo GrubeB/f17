@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @HttpExchange(
-        url = "god-families",
+        url = "families",
         accept = MediaType.APPLICATION_JSON_VALUE,
         contentType = MediaType.APPLICATION_JSON_VALUE
 )

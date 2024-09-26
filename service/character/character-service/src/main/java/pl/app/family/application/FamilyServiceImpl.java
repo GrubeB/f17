@@ -33,14 +33,14 @@ class FamilyServiceImpl implements FamilyService {
     private final FamilyDomainRepository familyDomainRepository;
 
     @Override
-    public Mono<Family> create(FamilyCommand.CreateGodFamilyCommand command) {
+    public Mono<Family> create(FamilyCommand.CreateFamilyCommand command) {
         logger.debug("creating god family for god: {}", command.getGodId());
         return mongoTemplate.exists(Query.query(Criteria.where("godId").is(command.getGodId())), Family.class)
                 .flatMap(exist -> exist ? Mono.error(FamilyException.DuplicatedGodsException.fromGodId(command.getGodId().toHexString())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while creating god family for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .then(Mono.defer(() -> {
                     Family domain = new Family(command.getGodId());
-                    var event = new FamilyEvent.GodFamilyCreatedEvent(
+                    var event = new FamilyEvent.FamilyCreatedEvent(
                             domain.getId(),
                             domain.getGodId()
                     );
@@ -54,7 +54,7 @@ class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    public Mono<Family> add(FamilyCommand.AddCharacterToGodFamilyCommand command) {
+    public Mono<Family> add(FamilyCommand.AddCharacterToFamilyCommand command) {
         logger.debug("adding to god family of god: {}, character {}", command.getGodId(), command.getCharacterId());
         return mongoTemplate.exists(Query.query(Criteria.where("characters._id").is(command.getCharacterId())), Family.class)
                 .flatMap(exist -> exist ? Mono.error(FamilyException.CharacterBelongsToFamilyException.fromId(command.getCharacterId().toHexString())) : Mono.empty())
@@ -80,7 +80,7 @@ class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    public Mono<Family> remove(FamilyCommand.RemoveCharacterFromGodFamilyCommand command) {
+    public Mono<Family> remove(FamilyCommand.RemoveCharacterFromFamilyCommand command) {
         logger.debug("removing from god family of god: {}, character {}", command.getGodId(), command.getCharacterId());
         return familyDomainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while removing from god family of god: {}, character {}, exception: {}", command.getGodId(), command.getCharacterId(), e.getMessage()))

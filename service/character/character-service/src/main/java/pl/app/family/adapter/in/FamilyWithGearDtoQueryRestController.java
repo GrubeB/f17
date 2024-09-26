@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping(FamilyWithGearDtoQueryRestController.resourcePath)
 @RequiredArgsConstructor
 class FamilyWithGearDtoQueryRestController {
-    public static final String resourceName = "god-families-with-gears";
+    public static final String resourceName = "families-with-gears";
     public static final String resourcePath = "/api/v1/" + resourceName;
 
     private final FamilyWithGearDtoQueryService queryService;

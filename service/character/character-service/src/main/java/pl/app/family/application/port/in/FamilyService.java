@@ -4,7 +4,7 @@ import pl.app.family.application.domain.Family;
 import reactor.core.publisher.Mono;
 
 public interface FamilyService {
-    Mono<Family> create(FamilyCommand.CreateGodFamilyCommand command);
-    Mono<Family> add(FamilyCommand.AddCharacterToGodFamilyCommand command);
-    Mono<Family> remove(FamilyCommand.RemoveCharacterFromGodFamilyCommand command);
+    Mono<Family> create(FamilyCommand.CreateFamilyCommand command);
+    Mono<Family> add(FamilyCommand.AddCharacterToFamilyCommand command);
+    Mono<Family> remove(FamilyCommand.RemoveCharacterFromFamilyCommand command);
 }

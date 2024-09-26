@@ -25,7 +25,7 @@ class ApplicantCollectionEventListener {
     public void create(ConsumerRecord<ObjectId, GodApplicantCollectionEvent.GodApplicantAcceptedEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new FamilyCommand.AddCharacterToGodFamilyCommand(
+        var command = new FamilyCommand.AddCharacterToFamilyCommand(
                 event.getGodId(),
                 event.getCharacterId()
         );

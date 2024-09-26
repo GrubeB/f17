@@ -13,19 +13,19 @@ import pl.app.family.query.dto.FamilyDto;
 import reactor.core.publisher.Mono;
 
 @HttpExchange(
-        url = "god-families",
+        url = "families",
         accept = MediaType.APPLICATION_JSON_VALUE,
         contentType = MediaType.APPLICATION_JSON_VALUE
 )
 public interface GodFamilyControllerHttpInterface {
     @PostExchange
-    Mono<ResponseEntity<FamilyDto>> create(@RequestBody FamilyCommand.CreateGodFamilyCommand command);
+    Mono<ResponseEntity<FamilyDto>> create(@RequestBody FamilyCommand.CreateFamilyCommand command);
 
     @PostExchange("/{godId}/characters")
     Mono<ResponseEntity<FamilyDto>> add(@PathVariable ObjectId godId,
-                                        @RequestBody FamilyCommand.AddCharacterToGodFamilyCommand command);
+                                        @RequestBody FamilyCommand.AddCharacterToFamilyCommand command);
 
     @DeleteExchange("/{godId}/characters")
     Mono<ResponseEntity<FamilyDto>> remove(@PathVariable ObjectId godId,
-                                           @RequestBody FamilyCommand.RemoveCharacterFromGodFamilyCommand command);
+                                           @RequestBody FamilyCommand.RemoveCharacterFromFamilyCommand command);
 }

@@ -11,8 +11,8 @@ public interface FamilyEvent {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    class GodFamilyCreatedEvent implements Serializable {
-        private ObjectId godFamilyId;
+    class FamilyCreatedEvent implements Serializable {
+        private ObjectId familyId;
         private ObjectId godId;
     }
 
@@ -20,7 +20,7 @@ public interface FamilyEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     class CharacterAddedToFamilyEvent implements Serializable {
-        private ObjectId godFamilyId;
+        private ObjectId familyId;
         private ObjectId godId;
         private ObjectId characterId;
     }
@@ -30,7 +30,7 @@ public interface FamilyEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     class CharacterRemovedFromFamilyEvent implements Serializable {
-        private ObjectId godFamilyId;
+        private ObjectId familyId;
         private ObjectId godId;
         private ObjectId characterId;
     }

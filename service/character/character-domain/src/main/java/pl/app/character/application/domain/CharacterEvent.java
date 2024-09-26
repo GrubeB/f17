@@ -32,8 +32,6 @@ public interface CharacterEvent {
         private Long statisticQuantity;
     }
 
-
-
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

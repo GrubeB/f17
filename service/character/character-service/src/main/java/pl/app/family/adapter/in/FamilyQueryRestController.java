@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping(FamilyQueryRestController.resourcePath)
 @RequiredArgsConstructor
 class FamilyQueryRestController {
-    public static final String resourceName = "god-families";
+    public static final String resourceName = "families";
     public static final String resourcePath = "/api/v1/" + resourceName;
 
     private final FamilyQueryService queryService;

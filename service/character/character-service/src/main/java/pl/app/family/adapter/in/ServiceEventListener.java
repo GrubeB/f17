@@ -25,7 +25,7 @@ class ServiceEventListener {
     public void create(ConsumerRecord<ObjectId, GodEvent.GodCreatedEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new FamilyCommand.CreateGodFamilyCommand(
+        var command = new FamilyCommand.CreateFamilyCommand(
                 event.getGodId()
         );
         familyService.create(command).block();
