@@ -55,7 +55,7 @@ public class JacksonConfig {
         @Override
         public ObjectId deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
             String value = jsonParser.getValueAsString();
-            if (Objects.isNull(value)) {
+            if (Objects.isNull(value) || value.length() != 24) {
                 return null;
             } else {
                 return new ObjectId(value);
