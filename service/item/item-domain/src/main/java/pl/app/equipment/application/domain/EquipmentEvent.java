@@ -12,7 +12,7 @@ public interface EquipmentEvent {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    class GodEquipmentCreatedEvent implements Serializable {
+    class EquipmentCreatedEvent implements Serializable {
         private ObjectId godEquipmentId;
         private ObjectId godId;
     }
@@ -20,22 +20,7 @@ public interface EquipmentEvent {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class CharacterGearCreatedEvent implements Serializable {
-        private ObjectId characterGearId;
-        private ObjectId characterId;
-    }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class CharacterGearRemovedEvent implements Serializable {
-        private ObjectId characterGearId;
-        private ObjectId characterId;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class CharacterGearAddedToGodEquipmentEvent implements Serializable {
+    class CharacterGearAddedToEquipmentEvent implements Serializable {
         private ObjectId godEquipmentId;
         private ObjectId godId;
         private ObjectId characterGearId;
@@ -44,7 +29,7 @@ public interface EquipmentEvent {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class CharacterGearRemovedFromGodEquipmentEvent implements Serializable {
+    class CharacterGearRemovedFromEquipmentEvent implements Serializable {
         private ObjectId godEquipmentId;
         private ObjectId godId;
         private ObjectId characterGearId;
@@ -54,7 +39,7 @@ public interface EquipmentEvent {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    class GodEquipmentItemAddedEvent implements Serializable {
+    class EquipmentItemAddedEvent implements Serializable {
         private ObjectId godEquipmentId;
         private ObjectId godId;
         private ObjectId itemId;
@@ -64,7 +49,7 @@ public interface EquipmentEvent {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    class GodEquipmentItemRemovedEvent implements Serializable {
+    class EquipmentItemRemovedEvent implements Serializable {
         private ObjectId godEquipmentId;
         private ObjectId godId;
         private ObjectId itemId;

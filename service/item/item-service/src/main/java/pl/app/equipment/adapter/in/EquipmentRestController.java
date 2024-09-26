@@ -24,7 +24,7 @@ class EquipmentRestController {
     @PostMapping("/{godId}/items")
     Mono<ResponseEntity<EquipmentDto>> addItemToEquipment(
             @PathVariable ObjectId godId,
-            @RequestBody EquipmentCommand.AddItemToGodEquipmentCommand command
+            @RequestBody EquipmentCommand.AddItemToEquipmentCommand command
     ) {
         command.setGodId(godId);
         return service.addItemToEquipment(command)
@@ -35,7 +35,7 @@ class EquipmentRestController {
     @DeleteMapping("/{godId}/items")
     Mono<ResponseEntity<EquipmentDto>> removeItemFromEquipment(
             @PathVariable ObjectId godId,
-            @RequestBody EquipmentCommand.RemoveItemFromGodEquipmentCommand command
+            @RequestBody EquipmentCommand.RemoveItemFromEquipmentCommand command
     ) {
         command.setGodId(godId);
         return service.removeItemFromEquipment(command)

@@ -12,22 +12,14 @@ public interface EquipmentCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class CreateGodEquipmentCommand implements Serializable {
+    class CreateEquipmentCommand implements Serializable {
         private ObjectId godId;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class AddCharacterGearToGodEquipmentCommand implements Serializable {
-        private ObjectId godId;
-        private ObjectId characterId;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class RemoveCharacterGearFromGodEquipmentCommand implements Serializable {
+    class AddCharacterGearToEquipmentCommand implements Serializable {
         private ObjectId godId;
         private ObjectId characterId;
     }
@@ -35,7 +27,15 @@ public interface EquipmentCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class AddItemToGodEquipmentCommand implements Serializable {
+    class RemoveCharacterGearFromEquipmentCommand implements Serializable {
+        private ObjectId godId;
+        private ObjectId characterId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class AddItemToEquipmentCommand implements Serializable {
         private ObjectId godId;
         private ObjectId itemId;
     }
@@ -43,7 +43,7 @@ public interface EquipmentCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class RemoveItemFromGodEquipmentCommand implements Serializable {
+    class RemoveItemFromEquipmentCommand implements Serializable {
         private ObjectId godId;
         private ObjectId itemId;
     }

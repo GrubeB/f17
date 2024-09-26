@@ -25,7 +25,7 @@ class GodServiceEventListener {
     void createGod(ConsumerRecord<ObjectId, GodEvent.GodCreatedEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new EquipmentCommand.CreateGodEquipmentCommand(
+        var command = new EquipmentCommand.CreateEquipmentCommand(
                 event.getGodId()
         );
         equipmentService.createEquipment(command).block();

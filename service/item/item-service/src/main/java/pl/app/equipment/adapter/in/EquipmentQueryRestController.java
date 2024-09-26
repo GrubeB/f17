@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping(EquipmentQueryRestController.resourcePath)
 @RequiredArgsConstructor
 class EquipmentQueryRestController {
-    public static final String resourceName = "god-equipments";
+    public static final String resourceName = "equipments";
     public static final String resourcePath = "/api/v1/" + resourceName;
 
     private final EquipmentQueryService queryService;

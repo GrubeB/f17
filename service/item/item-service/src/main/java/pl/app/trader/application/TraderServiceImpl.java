@@ -95,7 +95,7 @@ class TraderServiceImpl implements TraderService {
                 .flatMap(domain -> {
                     Item item = domain.takeItem(command.getItemId());
                     return godMoneyService.subtractMoney(domain.getGodId(), item.getMoney())
-                            .then(equipmentService.addItemToEquipment(new EquipmentCommand.AddItemToGodEquipmentCommand(command.getGodId(), item.getId())))
+                            .then(equipmentService.addItemToEquipment(new EquipmentCommand.AddItemToEquipmentCommand(command.getGodId(), item.getId())))
                             .then(Mono.defer(() -> {
                                 var event = new TraderEvent.GodBoughtItemEvent(
                                         domain.getId(), domain.getGodId(), item.getId(), item.getMoney()
@@ -117,7 +117,7 @@ class TraderServiceImpl implements TraderService {
                 .doOnError(e -> logger.error("exception occurred while selling item {} from god: {}, exception: {}", command.getItemId(), command.getGodId(), e.getMessage()))
                 .flatMap(domain -> {
                     return itemDomainRepository.fetchById(command.getItemId())
-                            .flatMap(item -> equipmentService.removeItemFromEquipment(new EquipmentCommand.RemoveItemFromGodEquipmentCommand(command.getGodId(), command.getItemId())).thenReturn(item))
+                            .flatMap(item -> equipmentService.removeItemFromEquipment(new EquipmentCommand.RemoveItemFromEquipmentCommand(command.getGodId(), command.getItemId())).thenReturn(item))
                             .flatMap(item -> {
                                 var event = new TraderEvent.GodSoldItemEvent(
                                         domain.getId(), domain.getGodId(), command.getItemId(), item.getMoney()

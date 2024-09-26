@@ -38,14 +38,14 @@ class EquipmentServiceImpl implements EquipmentService {
     private final GearDomainRepository gearDomainRepository;
 
     @Override
-    public Mono<Equipment> createEquipment(EquipmentCommand.CreateGodEquipmentCommand command) {
+    public Mono<Equipment> createEquipment(EquipmentCommand.CreateEquipmentCommand command) {
         logger.debug("creating god equipment, for god: {}", command.getGodId());
         return mongoTemplate.exists(Query.query(Criteria.where("godId").is(command.getGodId())), Equipment.class)
                 .flatMap(exist -> exist ? Mono.error(EquipmentException.DuplicatedGodEquipmentException.fromId(command.getGodId().toHexString())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while creating god equipment, for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .then(Mono.defer(() -> {
                     Equipment equipment = new Equipment(command.getGodId(), new LinkedHashSet<>());
-                    var event = new EquipmentEvent.GodEquipmentCreatedEvent(
+                    var event = new EquipmentEvent.EquipmentCreatedEvent(
                             equipment.getId(),
                             equipment.getGodId()
                     );
@@ -59,7 +59,7 @@ class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Mono<Equipment> addCharacterGearToGodEquipment(EquipmentCommand.AddCharacterGearToGodEquipmentCommand command) {
+    public Mono<Equipment> addCharacterGearToEquipment(EquipmentCommand.AddCharacterGearToEquipmentCommand command) {
         logger.debug("adding character {} gear to equipment of god: {}", command.getCharacterId(), command.getGodId());
         return domainRepository.fetchByGodId(command.getGodId())
                 .zipWith(gearDomainRepository.fetchByDomainObject(command.getCharacterId(), Gear.LootDomainObjectType.CHARACTER))
@@ -68,7 +68,7 @@ class EquipmentServiceImpl implements EquipmentService {
                     Equipment domain = t.getT1();
                     Gear characterGear = t.getT2();
                     domain.addCharacterGear(characterGear);
-                    var event = new EquipmentEvent.CharacterGearAddedToGodEquipmentEvent(
+                    var event = new EquipmentEvent.CharacterGearAddedToEquipmentEvent(
                             domain.getId(),
                             domain.getGodId(),
                             characterGear.getId(),
@@ -85,13 +85,13 @@ class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Mono<Equipment> removeCharacterGearFromGodEquipment(EquipmentCommand.RemoveCharacterGearFromGodEquipmentCommand command) {
+    public Mono<Equipment> removeCharacterGearFromEquipment(EquipmentCommand.RemoveCharacterGearFromEquipmentCommand command) {
         logger.debug("removing character {} gear from equipment of god: {}", command.getCharacterId(), command.getGodId());
         return domainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while removing character {} gear from equipment of god: {}, exception: {}", command.getCharacterId(), command.getGodId(), e.getMessage()))
                 .flatMap(domain -> {
                     Gear characterGear = domain.removeCharacterGearByCharacterId(command.getCharacterId());
-                    var event = new EquipmentEvent.CharacterGearRemovedFromGodEquipmentEvent(
+                    var event = new EquipmentEvent.CharacterGearRemovedFromEquipmentEvent(
                             domain.getId(),
                             domain.getGodId(),
                             characterGear.getId(),
@@ -107,7 +107,7 @@ class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Mono<Equipment> addItemToEquipment(EquipmentCommand.AddItemToGodEquipmentCommand command) {
+    public Mono<Equipment> addItemToEquipment(EquipmentCommand.AddItemToEquipmentCommand command) {
         logger.debug("adding item to equipment for god: {}", command.getGodId());
         return domainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while adding item to equipment for god: {}, exception: {}", command.getGodId(), e.getMessage()))
@@ -116,7 +116,7 @@ class EquipmentServiceImpl implements EquipmentService {
                     Equipment domain = tuple2.getT1();
                     Item item = tuple2.getT2();
                     domain.addItem(item);
-                    var event = new EquipmentEvent.GodEquipmentItemAddedEvent(
+                    var event = new EquipmentEvent.EquipmentItemAddedEvent(
                             domain.getId(),
                             domain.getGodId(),
                             item.getId(),
@@ -132,13 +132,13 @@ class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Mono<Equipment> removeItemFromEquipment(EquipmentCommand.RemoveItemFromGodEquipmentCommand command) {
+    public Mono<Equipment> removeItemFromEquipment(EquipmentCommand.RemoveItemFromEquipmentCommand command) {
         logger.debug("removing item from equipment for god: {}", command.getGodId());
         return domainRepository.fetchByGodId(command.getGodId())
                 .doOnError(e -> logger.error("exception occurred while removing item from equipment for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .flatMap(domain -> {
                     Item item = domain.removeItemById(command.getItemId());
-                    var event = new EquipmentEvent.GodEquipmentItemRemovedEvent(
+                    var event = new EquipmentEvent.EquipmentItemRemovedEvent(
                             domain.getId(),
                             domain.getGodId(),
                             item.getId(),

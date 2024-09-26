@@ -37,7 +37,7 @@ class BattleServiceEventListener {
                                 1 //TODO
                         );
                         itemService.createItems(createItemCommand).flatMap(createdItem -> {
-                            var addItemToGodEquipmentCommand = new EquipmentCommand.AddItemToGodEquipmentCommand(
+                            var addItemToGodEquipmentCommand = new EquipmentCommand.AddItemToEquipmentCommand(
                                     characterResult.getGodId(),
                                     createdItem.getId()
                             );
@@ -63,7 +63,7 @@ class BattleServiceEventListener {
                                 1 //TODO
                         );
                         itemService.createItems(createItemCommand).flatMap(createdItem -> {
-                            var addItemToGodEquipmentCommand = new EquipmentCommand.AddItemToGodEquipmentCommand(
+                            var addItemToGodEquipmentCommand = new EquipmentCommand.AddItemToEquipmentCommand(
                                     characterResult.getGodId(),
                                     createdItem.getId()
                             );

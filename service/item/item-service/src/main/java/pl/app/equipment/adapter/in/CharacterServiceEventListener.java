@@ -25,10 +25,10 @@ class CharacterServiceEventListener {
     public void characterAddedToFamilyEvent(ConsumerRecord<ObjectId, FamilyEvent.CharacterAddedToFamilyEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new EquipmentCommand.AddCharacterGearToGodEquipmentCommand(
+        var command = new EquipmentCommand.AddCharacterGearToEquipmentCommand(
                 event.getGodId(), event.getCharacterId()
         );
-        equipmentService.addCharacterGearToGodEquipment(command).block();
+        equipmentService.addCharacterGearToEquipment(command).block();
     }
 
     @KafkaListener(
@@ -39,9 +39,9 @@ class CharacterServiceEventListener {
     public void characterRemovedFromFamilyEvent(ConsumerRecord<ObjectId, FamilyEvent.CharacterRemovedFromFamilyEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        var command = new EquipmentCommand.RemoveCharacterGearFromGodEquipmentCommand(
+        var command = new EquipmentCommand.RemoveCharacterGearFromEquipmentCommand(
                 event.getGodId(), event.getCharacterId()
         );
-        equipmentService.removeCharacterGearFromGodEquipment(command).block();
+        equipmentService.removeCharacterGearFromEquipment(command).block();
     }
 }

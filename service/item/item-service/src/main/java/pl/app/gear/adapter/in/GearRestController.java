@@ -9,7 +9,6 @@ import pl.app.gear.application.port.in.GearCommand;
 import pl.app.gear.application.port.in.GearService;
 import pl.app.gear.dto.GearDto;
 import pl.app.gear.query.GearDtoQueryService;
-import pl.app.loot.aplication.domain.Loot;
 import reactor.core.publisher.Mono;
 
 @RestController
