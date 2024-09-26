@@ -17,5 +17,6 @@ public interface TowerAttackCommand {
         private ObjectId godId;
         private Set<ObjectId> characterIds;
         private Integer level;
+        private Integer numberOfSeconds;
     }
 }

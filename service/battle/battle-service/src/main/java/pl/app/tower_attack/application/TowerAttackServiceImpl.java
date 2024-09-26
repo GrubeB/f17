@@ -49,7 +49,7 @@ class TowerAttackServiceImpl implements TowerAttackService {
                 .flatMap(t -> {
                     Set<BattleCharacter> characters = t.getT1();
                     TowerLevelDto towerLevel = t.getT2();
-                    TowerAttack domain = new TowerAttack(command.getGodId(), characters, towerLevel);
+                    TowerAttack domain = new TowerAttack(command.getGodId(), characters, towerLevel, command.getNumberOfSeconds());
                     towerAttackDomainRepository.save(domain);
                     var event = new TowerAttackEvent.TowerAttackStartedEvent(domain.getInfo().getTowerAttackId());
                     return Mono.when(

@@ -180,6 +180,9 @@ public class Battle {
 
         private Map<ObjectId, Long> calculateExpForWinningTeam(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
             Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
+            if(characters.isEmpty()){
+                return new HashMap<>();
+            }
             Long exp = team2.stream().map(e -> {
                 if (e instanceof BattleMonster unit) {
                     return unit.getProgress().getExp();
@@ -193,6 +196,9 @@ public class Battle {
 
         private Map<ObjectId, CharacterResult.Loot> calculateLootForWinningTeam(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
             Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
+            if(characters.isEmpty()){
+                return new HashMap<>();
+            }
             Set<BattleMonster> monsters = team2.stream().filter(e -> e instanceof BattleMonster).map(e -> (BattleMonster) e).collect(Collectors.toSet());
             Money money = monsters.stream().map(e -> e.getLoot().getMoney()).reduce(new Money(), new BinaryOperator<Money>() {
                 @Override
