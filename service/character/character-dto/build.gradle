@@ -23,6 +23,7 @@ dependencies {
     // SUBPROJECTS
     api project(':common:shared')
     api project(':service:item:item-dto')
+    api project(':service:character:character-domain')
 
     // DATABASE
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'

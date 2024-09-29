@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.character_status.application.domain.CharacterStatusType;
+import pl.app.character_status.query.dto.CharacterStatusDto;
 import pl.app.common.shared.model.CharacterProfession;
 import pl.app.common.shared.model.CharacterRace;
 import pl.app.common.shared.model.Statistics;
@@ -32,4 +34,5 @@ public class CharacterWithGearDto implements Serializable {
     private Long attackPower;
 
     private GearDto characterGear;
+    private CharacterStatusType type;
 }

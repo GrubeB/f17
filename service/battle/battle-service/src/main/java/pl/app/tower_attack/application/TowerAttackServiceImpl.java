@@ -51,7 +51,10 @@ class TowerAttackServiceImpl implements TowerAttackService {
                     TowerLevelDto towerLevel = t.getT2();
                     TowerAttack domain = new TowerAttack(command.getGodId(), characters, towerLevel, command.getNumberOfSeconds());
                     towerAttackDomainRepository.save(domain);
-                    var event = new TowerAttackEvent.TowerAttackStartedEvent(domain.getInfo().getTowerAttackId());
+                    var event = new TowerAttackEvent.TowerAttackStartedEvent(
+                            domain.getInfo().getTowerAttackId(),
+                            command.getCharacterIds().stream().toList()
+                    );
                     return Mono.when(
                             mongoTemplate.insert(domain.getFinishManager().getResult()),
                             Mono.fromFuture(kafkaTemplate.send(topicNames.getTowerAttackStarted().getName(), domain.getInfo().getTowerAttackId(), event))

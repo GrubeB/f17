@@ -9,6 +9,7 @@ import pl.app.battle.application.domain.CharacterResult;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 public interface TowerAttackEvent {
     @Getter
@@ -17,6 +18,7 @@ public interface TowerAttackEvent {
     @ToString
     class TowerAttackStartedEvent implements Serializable {
         private ObjectId towerAttackId;
+        private List<ObjectId> characterIds;
     }
 
     @Getter

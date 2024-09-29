@@ -31,6 +31,8 @@ public class KafkaTopicConfigurationProperties {
     private Topic characterTemplateCreated;
     private Topic characterTemplateUpdated;
     private Topic characterTemplateDeleted;
+
+    private Topic characterStatusChanged;
     @Setter
     @Getter
     public static class Topic {

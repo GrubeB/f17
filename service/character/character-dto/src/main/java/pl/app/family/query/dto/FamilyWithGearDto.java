@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import pl.app.character.query.dto.CharacterWithGearDto;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -14,5 +15,5 @@ import java.util.Set;
 @NoArgsConstructor
 public class FamilyWithGearDto implements Serializable {
     private ObjectId godId;
-    private Set<CharacterWithGearDto> characters;
+    private List<CharacterWithGearDto> characters;
 }

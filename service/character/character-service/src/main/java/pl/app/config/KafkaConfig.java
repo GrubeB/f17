@@ -67,7 +67,8 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getGodApplicantCreated()).stream(),
                     createTopicFromConfig(topicNames.getGodApplicantRemoved()).stream(),
                     createTopicFromConfig(topicNames.getGodApplicantAccepted()).stream(),
-                    createTopicFromConfig(topicNames.getGodApplicantRejected()).stream()
+                    createTopicFromConfig(topicNames.getGodApplicantRejected()).stream(),
+                    createTopicFromConfig(topicNames.getCharacterStatusChanged()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }
