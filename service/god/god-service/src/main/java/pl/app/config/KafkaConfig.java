@@ -55,7 +55,17 @@ public class KafkaConfig {
             NewTopic[] array = Stream.of(
                     createTopicFromConfig(topicNames.getGodCreated()).stream(),
                     createTopicFromConfig(topicNames.getMoneyAdded()).stream(),
-                    createTopicFromConfig(topicNames.getMoneySubtracted()).stream()
+                    createTopicFromConfig(topicNames.getMoneySubtracted()).stream(),
+
+                    createTopicFromConfig(topicNames.getRecruitmentAnnouncementPosted()).stream(),
+
+                    createTopicFromConfig(topicNames.getGodTemplateCreated()).stream(),
+                    createTopicFromConfig(topicNames.getGodTemplateUpdated()).stream(),
+                    createTopicFromConfig(topicNames.getGodTemplateDeleted()).stream(),
+
+                    createTopicFromConfig(topicNames.getEnergyCreated()).stream(),
+                    createTopicFromConfig(topicNames.getEnergyAdded()).stream(),
+                    createTopicFromConfig(topicNames.getEnergySubtracted()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

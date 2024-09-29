@@ -8,16 +8,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
+import pl.app.energy.application.domain.Energy;
 import pl.app.god.application.domain.God;
 import pl.app.god.query.dto.GodDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 class GodQueryServiceImpl implements GodQueryService {
@@ -34,6 +38,20 @@ class GodQueryServiceImpl implements GodQueryService {
     public Mono<GodDto> fetchById(@NonNull ObjectId id) {
         return repository.findById(id)
                 .map(e -> mapper.map(e, GodDto.class));
+    }
+
+    @Override
+    public Mono<List<GodDto>> fetchAll() {
+        return repository.findAll()
+                .map(e -> mapper.map(e, GodDto.class))
+                .collectList();
+    }
+
+    @Override
+    public Mono<List<GodDto>> fetchAllByIds(List<ObjectId> godIds) {
+        return repository.findAllByGodIds(godIds)
+                .map(e -> mapper.map(e, GodDto.class))
+                .collectList();
     }
 
     @Override
@@ -70,5 +88,7 @@ class GodQueryServiceImpl implements GodQueryService {
 
     interface Repository extends ReactiveMongoRepository<God, ObjectId> {
         Flux<God> findAllBy(Pageable pageable);
+        @Query("{ 'godId': { $in: ?0 } }")
+        Flux<God> findAllByGodIds(List<ObjectId> ids);
     }
 }

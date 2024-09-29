@@ -1,4 +1,4 @@
-package pl.app.account.http;
+package pl.app.god.http;
 
 import org.bson.types.ObjectId;
 import org.springframework.http.MediaType;

@@ -1,4 +1,4 @@
-package pl.app.account.http;
+package pl.app.god.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,9 +11,6 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class GodHttpInterfaceConfig {
 
@@ -40,11 +37,6 @@ public class GodHttpInterfaceConfig {
         WebClientAdapter adapter = WebClientAdapter.create(webClient);
         return HttpServiceProxyFactory.builderFor(adapter)
                 .build();
-    }
-
-    @Bean
-    GodControllerHttpInterface godControllerHttpInterface() {
-        return factory().createClient(GodControllerHttpInterface.class);
     }
     @Bean
     GodQueryControllerHttpInterface godQueryControllerHttpInterface() {

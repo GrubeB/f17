@@ -1,4 +1,4 @@
-package pl.app.account.http;
+package pl.app.god.http;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
+import pl.app.god.query.dto.GodAggregateDto;
 import pl.app.god.query.dto.GodDto;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +19,7 @@ import reactor.core.publisher.Mono;
 )
 public interface GodQueryControllerHttpInterface {
     @GetExchange("/{id}")
-    Mono<ResponseEntity<GodDto>> fetchById(@PathVariable ObjectId id);
+    Mono<ResponseEntity<GodAggregateDto>> fetchById(@PathVariable ObjectId id);
     @GetExchange
-    Mono<ResponseEntity<Page<GodDto>>> fetchAllByPageable(Pageable pageable);
+    Mono<ResponseEntity<Page<GodAggregateDto>>> fetchAllByPageable(Pageable pageable);
 }

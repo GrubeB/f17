@@ -3,7 +3,7 @@ package pl.app.trader.adapter.out;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
-import pl.app.account.http.GodMoneyControllerHttpInterface;
+import pl.app.god.http.GodMoneyControllerHttpInterface;
 import pl.app.common.shared.model.Money;
 import pl.app.god.application.port.in.GodCommand;
 import pl.app.trader.application.port.out.GodMoneyService;

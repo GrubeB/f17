@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class GodMoneyServiceImplTest extends AbstractIntegrationTest {
+class EnergyServiceImplTest extends AbstractIntegrationTest {
     @Autowired
     private GodService godSerivce;
     @Autowired
