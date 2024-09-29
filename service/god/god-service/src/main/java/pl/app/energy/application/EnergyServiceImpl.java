@@ -57,6 +57,9 @@ class EnergyServiceImpl implements EnergyService {
                 .doOnError(e -> logger.error("exception occurred while refreshing energy for god: {}, exception: {}", command.getGodId(), e.getMessage()))
                 .flatMap(domain -> {
                     long amount = domain.regenerateEnergy();
+                    if (amount == 0) {
+                        return mongoTemplate.save(domain);
+                    }
                     var event = new EnergyEvent.EnergyAddedEvent(
                             domain.getGodId(),
                             amount

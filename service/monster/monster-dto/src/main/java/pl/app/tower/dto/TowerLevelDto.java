@@ -21,4 +21,5 @@ public class TowerLevelDto implements Serializable {
     private Set<MonsterWithGearDto> monsters;
     private Integer minNumberOfMonstersInBattle;
     private Integer maxNumberOfMonstersInBattle;
+    private Integer energyCost;
 }

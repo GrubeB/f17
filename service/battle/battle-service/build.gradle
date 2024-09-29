@@ -40,6 +40,7 @@ dependencies {
     implementation project(':service:battle:battle-dto')
 
     implementation project(':service:character:character-http-interface')
+    implementation project(':service:god:god-http-interface')
     implementation project(':service:item:item-http-interface')
     implementation project(':service:monster:monster-http-interface')
 

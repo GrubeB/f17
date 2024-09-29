@@ -98,7 +98,8 @@ class TowerLevelQueryServiceImpl implements TowerLevelQueryService {
                             domain.getLevel(),
                             monsters,
                             domain.getMinNumberOfMonstersInBattle(),
-                            domain.getMaxNumberOfMonstersInBattle()
+                            domain.getMaxNumberOfMonstersInBattle(),
+                            domain.getEnergyCost()
                     )).block();
         }
     }

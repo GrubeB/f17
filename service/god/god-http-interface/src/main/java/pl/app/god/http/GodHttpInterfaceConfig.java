@@ -39,6 +39,14 @@ public class GodHttpInterfaceConfig {
                 .build();
     }
     @Bean
+    EnergyControllerHttpInterface energyControllerHttpInterface() {
+        return factory().createClient(EnergyControllerHttpInterface.class);
+    }
+    @Bean
+    EnergyQueryControllerHttpInterface energyQueryControllerHttpInterface() {
+        return factory().createClient(EnergyQueryControllerHttpInterface.class);
+    }
+    @Bean
     GodQueryControllerHttpInterface godQueryControllerHttpInterface() {
         return factory().createClient(GodQueryControllerHttpInterface.class);
     }

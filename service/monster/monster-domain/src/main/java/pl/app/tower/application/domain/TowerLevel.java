@@ -1,6 +1,7 @@
 package pl.app.tower.application.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,10 +17,13 @@ public class TowerLevel {
     @Id
     private ObjectId id;
     private Integer level;
+    @Setter
     @DocumentReference
     private Set<Monster> monsters;
     private Integer minNumberOfMonstersInBattle;
     private Integer maxNumberOfMonstersInBattle;
+    @Setter
+    private Integer energyCost;
 
     public TowerLevel(Integer level, Set<Monster> monsters) {
         this.id = ObjectId.get();
@@ -36,9 +40,5 @@ public class TowerLevel {
         if (Objects.nonNull(max) && max > 0) {
             this.maxNumberOfMonstersInBattle = max;
         }
-    }
-
-    public void setMonsters(Set<Monster> monsters) {
-        this.monsters = monsters;
     }
 }

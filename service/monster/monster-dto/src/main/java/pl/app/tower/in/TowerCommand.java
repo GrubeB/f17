@@ -18,6 +18,7 @@ public interface TowerCommand {
         private Set<ObjectId> monsterIds;
         private Integer minNumberOfMonstersInBattle;
         private Integer maxNumberOfMonstersInBattle;
+        private Integer energyCost;
     }
     @Data
     @NoArgsConstructor
@@ -27,6 +28,7 @@ public interface TowerCommand {
         private Set<ObjectId> monsterIds;
         private Integer minNumberOfMonstersInBattle;
         private Integer maxNumberOfMonstersInBattle;
+        private Integer energyCost;
 
     }
     @Data

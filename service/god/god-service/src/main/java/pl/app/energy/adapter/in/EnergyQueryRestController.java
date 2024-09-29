@@ -19,21 +19,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 class EnergyQueryRestController {
     public static final String resourceName = "energies";
-    public static final String resourcePath = "/api/v1/" + resourceName;
+    public static final String resourcePath = "/api/v1/gods/{godId}/" + resourceName;
 
     private final EnergyQueryService queryService;
 
-    @GetMapping("/{godId}")
+    @GetMapping
     Mono<ResponseEntity<EnergyDto>> fetchByGodId(@PathVariable ObjectId godId) {
         return queryService.fetchByGodId(godId)
                 .map(ResponseEntity::ok)
                 .switchIfEmpty(Mono.error(EnergyException.NotFoundEnergyException.fromGodId(godId.toHexString())));
     }
-
-    @GetMapping
-    Mono<ResponseEntity<Page<EnergyDto>>> fetchAllByPageable(Pageable pageable) {
-        return queryService.fetchAllByPageable(pageable)
-                .map(ResponseEntity::ok);
-    }
-
 }

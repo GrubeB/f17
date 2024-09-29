@@ -38,7 +38,7 @@ class CharacterStatusServiceImpl implements CharacterStatusService {
                             domain.getCharacterId(),
                             domain.getType()
                     );
-                    return mongoTemplate.insert(domain)
+                    return mongoTemplate.save(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getCharacterStatusChanged().getName(), saved.getCharacterId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 logger.debug("changed character:{} status", saved.getCharacterId());

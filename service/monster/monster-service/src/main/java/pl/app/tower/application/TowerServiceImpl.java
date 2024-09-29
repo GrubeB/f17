@@ -41,6 +41,7 @@ class TowerServiceImpl implements TowerService {
                 .flatMap(monsters -> {
                     var domain = new TowerLevel(command.getLevel(), monsters);
                     domain.setNumberOfMonsters(command.getMinNumberOfMonstersInBattle(), command.getMaxNumberOfMonstersInBattle());
+                    domain.setEnergyCost(command.getEnergyCost());
                     var event = new TowerEvent.TowerLevelCreatedEvent(
                             domain.getId(),
                             domain.getLevel()
@@ -65,6 +66,7 @@ class TowerServiceImpl implements TowerService {
                     var monsters = t.getT2();
                     domain.setMonsters(monsters);
                     domain.setNumberOfMonsters(command.getMinNumberOfMonstersInBattle(), command.getMaxNumberOfMonstersInBattle());
+                    domain.setEnergyCost(command.getEnergyCost());
                     var event = new TowerEvent.TowerLevelUpdatedEvent(
                             domain.getId(),
                             domain.getLevel()

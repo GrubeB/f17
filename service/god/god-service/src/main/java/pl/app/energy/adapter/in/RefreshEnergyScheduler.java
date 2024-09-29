@@ -22,7 +22,7 @@ class RefreshEnergyScheduler {
     public void refreshEnergy() {
         logger.debug("refreshing energy for gods");
         godQueryService.fetchAll().flatMapMany(Flux::fromIterable)
-                .map(god -> {
+                .flatMap(god -> {
                     var command = new EnergyCommand.RefreshEnergyCommand(
                             god.getId()
                     );
