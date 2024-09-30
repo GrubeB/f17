@@ -8,11 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import pl.app.battle.application.domain.BattleEvent;
+import pl.app.battle.application.domain.CharacterResult;
+import pl.app.equipment.application.domain.Equipment;
 import pl.app.equipment.application.port.in.EquipmentCommand;
 import pl.app.equipment.application.port.in.EquipmentService;
 import pl.app.item.application.port.in.ItemCommand;
 import pl.app.item.application.port.in.ItemService;
 import pl.app.tower_attack.application.domain.TowerAttackEvent;
+import reactor.core.publisher.Flux;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +40,7 @@ class BattleServiceEventListener {
                     characterResult.getLoot().getItems().forEach(item -> {
                         var createItemCommand = new ItemCommand.CreateItemCommand(
                                 item.getItemTemplateId(),
-                                1 //TODO
+                                item.getLevel()
                         );
                         itemService.createItems(createItemCommand).flatMap(createdItem -> {
                             var addItemToGodEquipmentCommand = new EquipmentCommand.AddItemToEquipmentCommand(
@@ -45,6 +51,8 @@ class BattleServiceEventListener {
                         }).block();
                     });
                 });
+        Flux<Equipment> flux = addItemsToEquipment(event.getCharacterResults());
+        flux.subscribe();
     }
 
     @KafkaListener(
@@ -55,21 +63,28 @@ class BattleServiceEventListener {
     void addMoney2(ConsumerRecord<ObjectId, TowerAttackEvent.TowerAttackEndedEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
-        event.getCharacterResults()
-                .forEach(characterResult -> {
-                    characterResult.getLoot().getItems().forEach(item -> {
-                        var createItemCommand = new ItemCommand.CreateItemCommand(
-                                item.getItemTemplateId(),
-                                1 //TODO
-                        );
-                        itemService.createItems(createItemCommand).flatMap(createdItem -> {
-                            var addItemToGodEquipmentCommand = new EquipmentCommand.AddItemToEquipmentCommand(
-                                    characterResult.getGodId(),
-                                    createdItem.getId()
-                            );
-                            return equipmentService.addItemToEquipment(addItemToGodEquipmentCommand);
-                        }).block();
-                    });
-                });
+        Flux<Equipment> flux = addItemsToEquipment(event.getCharacterResults());
+        flux.subscribe();
+    }
+
+    private Flux<Equipment> addItemsToEquipment(List<CharacterResult> characterResults) {
+        return Flux.concat(Flux.fromStream(characterResults.stream().flatMap(characterResult ->
+                characterResult.getLoot().getItems().stream().map(item -> {
+                    var createItemCommand = new ItemCommand.CreateItemCommand(
+                            item.getItemTemplateId(),
+                            item.getLevel()
+                    );
+                    return Flux.concat(
+                            Stream.generate(() -> itemService.createItems(createItemCommand).flatMap(createdItem -> {
+                                        var addItemToGodEquipmentCommand = new EquipmentCommand.AddItemToEquipmentCommand(
+                                                characterResult.getGodId(),
+                                                createdItem.getId()
+                                        );
+                                        return equipmentService.addItemToEquipment(addItemToGodEquipmentCommand);
+                                    }))
+                                    .limit(item.getAmount()).toList()
+                    );
+                })
+        )));
     }
 }

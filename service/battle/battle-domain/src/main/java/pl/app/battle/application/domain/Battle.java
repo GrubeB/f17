@@ -11,7 +11,6 @@ import pl.app.unit.application.domain.BattleUnit;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -180,7 +179,7 @@ public class Battle {
 
         private Map<ObjectId, Long> calculateExpForWinningTeam(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
             Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
-            if(characters.isEmpty()){
+            if (characters.isEmpty()) {
                 return new HashMap<>();
             }
             Long exp = team2.stream().map(e -> {
@@ -195,37 +194,42 @@ public class Battle {
         }
 
         private Map<ObjectId, CharacterResult.Loot> calculateLootForWinningTeam(Set<? extends BattleUnit> team1, Set<? extends BattleUnit> team2) {
-            Set<BattleCharacter> characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
-            if(characters.isEmpty()){
+            var characters = team1.stream().filter(e -> e instanceof BattleCharacter).map(e -> (BattleCharacter) e).collect(Collectors.toSet());
+            if (characters.isEmpty()) {
                 return new HashMap<>();
             }
-            Set<BattleMonster> monsters = team2.stream().filter(e -> e instanceof BattleMonster).map(e -> (BattleMonster) e).collect(Collectors.toSet());
-            Money money = monsters.stream().map(e -> e.getLoot().getMoney()).reduce(new Money(), new BinaryOperator<Money>() {
-                @Override
-                public Money apply(Money money, Money money2) {
-                    return money.addMoney(money2);
-                }
-            });
+            var monsters = team2.stream().filter(e -> e instanceof BattleMonster).map(e -> (BattleMonster) e).collect(Collectors.toSet());
+            var moneyForCharacters = getMoneyForCharacters(characters, monsters);
+            var lootForCharacters = getLootForCharacters(characters, monsters);
+            return characters.stream().collect(Collectors.toMap(BattleCharacter::getUnitId, ch -> new CharacterResult.Loot(
+                    Optional.ofNullable(moneyForCharacters.get(ch)).orElse(new Money()),
+                    Optional.ofNullable(lootForCharacters.get(ch)).orElse(new HashSet<>())
+            )));
+        }
+
+        private Map<BattleCharacter, Money> getMoneyForCharacters(Set<BattleCharacter> characters, Set<BattleMonster> monsters) {
+            Money money = monsters.stream().map(e -> e.getLoot().getMoney()).reduce(new Money(), (money1, money2) -> money1.addMoney(money2));
             Money moneyForEach = money.divideMoney((long) characters.size());
-            Set<CharacterResult.Loot.LootItem> items = monsters.stream().map(e -> e.getLoot().getItems())
-                    .flatMap(Set::stream)
-                    .map(e -> new CharacterResult.Loot.LootItem(e.getItemTemplateId(), getNumberOfItems(e.getAmount(), e.getChance())))
+            return characters.stream().collect(Collectors.toMap(ch -> ch, ch -> moneyForEach));
+        }
+
+        private Map<BattleCharacter, Set<CharacterResult.Loot.LootItem>> getLootForCharacters(Set<BattleCharacter> characters, Set<BattleMonster> monsters) {
+            Set<CharacterResult.Loot.LootItem> items = monsters.stream()
+                    .flatMap(m -> m.getLoot().getItems().stream()
+                            .map(i -> new CharacterResult.Loot.LootItem(i.getItemTemplateId(), getNumberOfItems(i.getAmount(), i.getChance()), m.getInfo().getLevel()))
+                    )
                     .filter(e -> e.getAmount() > 0)
                     .collect(Collectors.groupingBy(CharacterResult.Loot.LootItem::getItemTemplateId))
                     .values()
                     .stream().map(list -> list.stream().reduce((item, item2) -> item.addAmount(item2.getAmount())).orElse(null)).filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-            Map<BattleCharacter, Set<CharacterResult.Loot.LootItem>> battleCharacterSetMap = assignLootToCharacters(items, characters);
-            return characters.stream().collect(Collectors.toMap(BattleCharacter::getUnitId, ch -> new CharacterResult.Loot(
-                    moneyForEach,
-                    Optional.ofNullable(battleCharacterSetMap.get(ch)).orElse(new HashSet<>())
-            )));
+            return assignLootToCharacters(items, characters);
         }
 
         private Map<BattleCharacter, Set<CharacterResult.Loot.LootItem>> assignLootToCharacters(Set<CharacterResult.Loot.LootItem> items, Set<BattleCharacter> characters) {
             Random random = new Random();
             Map<BattleCharacter, Set<CharacterResult.Loot.LootItem>> characterLootMap = new HashMap<>();
-            if(items.isEmpty()){
+            if (items.isEmpty()) {
                 return characterLootMap;
             }
             for (BattleCharacter character : characters) {
@@ -241,10 +245,10 @@ public class Battle {
             return characterLootMap;
         }
 
-        private int getNumberOfItems(int totalItems, double probability) {
+        private int getNumberOfItems(int totalItems, int probability) {
             int count = 0;
             for (int i = 0; i < totalItems; i++) {
-                if (random.nextDouble() <= probability) {
+                if (random.nextDouble() <= (double) probability / 100_000) {
                     count++;
                 }
             }

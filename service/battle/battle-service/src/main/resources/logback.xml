@@ -29,4 +29,10 @@
     <logger name="pl.app.battle.application.domain" level="ERROR" additivity="false">
         <appender-ref ref="CUSTOM_CONSOLE"/>
     </logger>
+    <logger name="pl.app.tower_attack.application.domain" level="ERROR" additivity="false">
+        <appender-ref ref="CUSTOM_CONSOLE"/>
+    </logger>
+    <logger name="pl.app.unit.application.domain" level="ERROR" additivity="false">
+        <appender-ref ref="CUSTOM_CONSOLE"/>
+    </logger>
 </configuration>

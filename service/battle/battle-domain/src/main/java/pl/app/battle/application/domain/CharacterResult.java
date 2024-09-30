@@ -110,14 +110,16 @@ public class CharacterResult {
         public static class LootItem implements Serializable {
             private final ObjectId itemTemplateId;
             private final Integer amount;
+            private final Integer level;
 
-            public LootItem(ObjectId itemTemplateId, Integer amount) {
+            public LootItem(ObjectId itemTemplateId, Integer amount, Integer level) {
                 this.itemTemplateId = itemTemplateId;
                 this.amount = amount;
+                this.level = level;
             }
 
             public LootItem addAmount(int amountToAdd) {
-                return new LootItem(this.itemTemplateId, this.amount + amountToAdd);
+                return new LootItem(this.itemTemplateId, this.amount + amountToAdd, this.level);
             }
         }
     }
