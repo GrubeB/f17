@@ -1,44 +1,9 @@
-rootProject.name = 'f14'
+rootProject.name = 'f17'
+
 // COMMON
 include "common:shared"
 include "common:mapper"
 
 // SERVICES
-include "service:account:account-domain"
-include "service:account:account-dto"
-include "service:account:account-http-interface"
-include "service:account:account-service"
-
-include "service:battle:battle-domain"
-include "service:battle:battle-dto"
-include "service:battle:battle-http-interface"
-include "service:battle:battle-service"
-
-include "service:character:character-domain"
-include "service:character:character-dto"
-include "service:character:character-http-interface"
-include "service:character:character-service"
-
-include "service:comment:comment-service"
-
-include "service:god:god-domain"
-include "service:god:god-dto"
-include "service:god:god-http-interface"
-include "service:god:god-service"
-
-include "service:item:item-domain"
-include "service:item:item-dto"
-include "service:item:item-http-interface"
-include "service:item:item-service"
-
-include "service:voting:voting-domain"
-include "service:voting:voting-dto"
-include "service:voting:voting-service"
-include "service:voting:voting-http-interface"
-
-include "service:monster:monster-domain"
-include "service:monster:monster-dto"
-include "service:monster:monster-service"
-include "service:monster:monster-http-interface"
-
+include "service:game:game"
 
