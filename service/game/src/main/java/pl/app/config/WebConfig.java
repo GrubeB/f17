@@ -29,13 +29,13 @@ import pl.app.common.shared.config.ModelMapperConfig;
 public class WebConfig implements WebFluxConfigurer {
 
 
+    private final Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
+
     @Override
     public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
         WebFluxConfigurer.super.configureArgumentResolvers(configurer);
         configurer.addCustomResolver(new CustomArgumentResolver.PageableHandlerMethodArgumentResolver());
     }
-
-    private final Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
 
     @Override
     public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
