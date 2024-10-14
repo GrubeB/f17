@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 public class KafkaTopicConfigurationProperties {
     private Topic test;
 
+    // resource
+    private Topic villageResourceCreated;
+    private Topic resourceAdded;
+    private Topic resourceSubtracted;
+
     @Setter
     @Getter
     public static class Topic {
