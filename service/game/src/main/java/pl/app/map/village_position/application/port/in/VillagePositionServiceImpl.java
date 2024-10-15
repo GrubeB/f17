@@ -34,9 +34,8 @@ class VillagePositionServiceImpl implements VillagePositionService {
         return mongoTemplate.exists(Query.query(Criteria.where("villageId").in(command.getVillageId().toHexString())), VillagePosition.class)
                 .flatMap(exist -> exist ? Mono.error(VillagePositionException.DuplicatedVillagePositionException.fromId(command.getVillageId().toHexString())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while crating village position: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .then(mapDomainRepository.fetch())
-                .flatMap(map -> {
-                    var newVillagePosition = villagePositionProvider.getNewVillagePosition();
+                .then(villagePositionProvider.getNewVillagePosition())
+                .flatMap(newVillagePosition -> {
                     var domain = new VillagePosition(newVillagePosition, command.getVillageId());
                     return mongoTemplate.insert(domain)
                             .doOnSuccess(saved -> logger.debug("created village position: {}", saved.getVillageId()));

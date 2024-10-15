@@ -19,6 +19,9 @@ public class KafkaTopicConfigurationProperties {
     private Topic resourceAdded;
     private Topic resourceSubtracted;
 
+    // village
+    private Topic villageCreated;
+
     @Setter
     @Getter
     public static class Topic {

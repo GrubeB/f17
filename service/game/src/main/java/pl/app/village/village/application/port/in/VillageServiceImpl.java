@@ -1,0 +1,49 @@
+package pl.app.village.village.application.port.in;
+
+import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.map.village_position.application.port.in.VillagePositionCommand;
+import pl.app.map.village_position.application.port.in.VillagePositionService;
+import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
+import pl.app.resource.village_resource.application.port.in.VillageResourceService;
+import pl.app.village.village.application.domain.Village;
+import pl.app.village.village.application.domain.VillageEvent;
+import pl.app.village.village.application.domain.VillageType;
+import reactor.core.publisher.Mono;
+
+
+@Service
+@RequiredArgsConstructor
+class VillageServiceImpl implements VillageService {
+    private static final Logger logger = LoggerFactory.getLogger(VillageServiceImpl.class);
+
+    private final ReactiveMongoTemplate mongoTemplate;
+    private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
+    private final KafkaTopicConfigurationProperties topicNames;
+    private final VillageResourceService villageResourceService;
+    private final VillagePositionService villagePositionService;
+
+    @Override
+    public Mono<Village> crate(VillageCommand.CreatePlayerVillageCommand command) {
+        logger.debug("crating village: {}", command.getPlayerId());
+        return Mono.defer(() -> {
+                    var domain = new Village(VillageType.PLAYER, command.getPlayerId());
+                    return Mono.zip(
+                            villageResourceService.crate(new VillageResourceCommand.CreateVillageResourceCommand(domain.getId())),
+                            villagePositionService.crate(new VillagePositionCommand.CreateVillagePositionCommand(domain.getId()))
+                    ).flatMap(t -> {
+                        var event = new VillageEvent.VillageCreatedEvent(domain.getId(), domain.getType(), domain.getOwnerId());
+                        return mongoTemplate.insert(domain)
+                                .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageCreated().getName(), saved.getId(), event)).thenReturn(saved))
+                                .doOnSuccess(saved -> logger.debug("created village: {}", saved.getId()));
+                    });
+                })
+                .doOnError(e -> logger.error("exception occurred while crating village: {}, exception: {}", command.getPlayerId(), e.getMessage()));
+    }
+}
