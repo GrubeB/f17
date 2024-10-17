@@ -6,6 +6,9 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerInterceptor;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
@@ -152,7 +155,30 @@ public class KafkaConfig {
                 Serializer<ObjectId> objectIdSerializer,
                 JsonSerializer<Object> jsonSerializer
         ) {
-            return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs(), () -> objectIdSerializer, () -> jsonSerializer));
+            var kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs(), () -> objectIdSerializer, () -> jsonSerializer));
+            kafkaTemplate.setProducerInterceptor(new ProducerInterceptor<ObjectId, Object>() {
+                @Override
+                public ProducerRecord<ObjectId, Object> onSend(ProducerRecord<ObjectId, Object> producerRecord) {
+                    logger.debug("send: {}", producerRecord.value());
+                    return producerRecord;
+                }
+
+                @Override
+                public void onAcknowledgement(RecordMetadata recordMetadata, Exception e) {
+
+                }
+
+                @Override
+                public void close() {
+
+                }
+
+                @Override
+                public void configure(Map<String, ?> map) {
+
+                }
+            });
+            return kafkaTemplate;
         }
 
         @Bean
