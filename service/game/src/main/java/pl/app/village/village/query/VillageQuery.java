@@ -23,10 +23,10 @@ public class VillageQuery {
     private ObjectId ownerId;
 
     @ReadOnlyProperty
-    @DocumentReference(lookup="{'_id':?#{#self._id} }")
+    @DocumentReference(lookup = "{'_id':?#{#self._id} }")
     private VillagePosition villagePosition;
 
     @ReadOnlyProperty
-    @DocumentReference(lookup="{'_id':?#{#self._id} }")
+    @DocumentReference(lookup = "{'_id':?#{#self._id} }")
     private VillageResource villageResource;
 }

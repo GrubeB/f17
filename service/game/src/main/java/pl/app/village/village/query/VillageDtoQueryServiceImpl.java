@@ -38,6 +38,9 @@ class VillageDtoQueryServiceImpl implements VillageDtoQueryService {
                 .map(e -> mapper.map(e, VillageDto.class));
     }
 
+    interface Repository extends ReactiveMongoRepository<VillageQuery, ObjectId> {
+    }
+
     @Component
     @RequiredArgsConstructor
     static class Mapper extends BaseMapper {
@@ -57,8 +60,5 @@ class VillageDtoQueryServiceImpl implements VillageDtoQueryService {
                     .villageResource(map(domain.getVillageResource(), VillageResourceDto.class))
                     .build();
         }
-    }
-
-    interface Repository extends ReactiveMongoRepository<VillageQuery, ObjectId> {
     }
 }

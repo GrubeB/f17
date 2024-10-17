@@ -45,6 +45,7 @@ public interface VillageResourceException {
             super(message);
         }
     }
+
     class InvalidAmountException extends IllegalArgumentException {
         public InvalidAmountException() {
             super("invalid amount");

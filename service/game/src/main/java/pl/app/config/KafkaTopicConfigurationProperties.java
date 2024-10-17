@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 public class KafkaTopicConfigurationProperties {
     private Topic test;
 
+    // building
+    private Topic villageInfrastructureCreated;
+    private Topic villageInfrastructureBuildingLevelUp;
+    private Topic villageInfrastructureBuildingLevelDown;
+
     // resource
     private Topic villageResourceCreated;
     private Topic resourceAdded;

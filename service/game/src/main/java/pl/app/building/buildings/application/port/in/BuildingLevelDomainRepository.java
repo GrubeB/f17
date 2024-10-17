@@ -4,10 +4,10 @@ import pl.app.building.buildings.application.domain.BuildingLevel;
 import pl.app.building.buildings.application.domain.BuildingType;
 import reactor.core.publisher.Mono;
 
-import java.util.Set;
+import java.util.Map;
 
 public interface BuildingLevelDomainRepository {
-    Mono<Set<? extends BuildingLevel>> fetchAll(BuildingType type);
+    Mono<Map<Integer, ? extends BuildingLevel>> fetchAll(BuildingType type);
 
     Mono<? extends BuildingLevel> fetch(BuildingType type, Integer level);
 }

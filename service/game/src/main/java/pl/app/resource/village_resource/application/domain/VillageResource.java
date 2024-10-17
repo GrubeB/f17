@@ -26,6 +26,7 @@ public class VillageResource {
         this.resource = resource;
         this.resourceMax = resourceMax;
     }
+
     public void addResource(Resource resourceToAdd) {
         if (Objects.isNull(resourceToAdd)) {
             return;
@@ -41,6 +42,7 @@ public class VillageResource {
 
         this.resource = new Resource(newWood, newClay, newIron, newProvision);
     }
+
     public void subtractResource(Resource resourceToSubtract) throws IllegalArgumentException {
         if (Objects.isNull(resourceToSubtract)) {
             return;

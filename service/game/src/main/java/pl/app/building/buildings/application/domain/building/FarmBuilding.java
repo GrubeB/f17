@@ -1,18 +1,24 @@
 package pl.app.building.buildings.application.domain.building;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import pl.app.building.buildings.application.domain.Building;
+import pl.app.building.buildings.application.domain.BuildingLevel;
 import pl.app.building.buildings.application.domain.BuildingType;
 import pl.app.building.buildings.application.domain.building_level.FarmLevel;
 
+import java.util.Map;
+
 @Getter
-@NoArgsConstructor
 public class FarmBuilding extends Building {
     private Integer provisions;
 
-    public FarmBuilding(Integer level, BuildingType type, Integer provisions) {
-        super(level, type);
+    public FarmBuilding() {
+        super(0, BuildingType.FARM);
+        this.provisions = 0;
+    }
+
+    public FarmBuilding(Integer level, Integer provisions) {
+        super(level, BuildingType.FARM);
         this.provisions = provisions;
     }
 
@@ -21,8 +27,20 @@ public class FarmBuilding extends Building {
         provisions = buildingLevel.getProvisions();
     }
 
+    public void levelUp(Map<Integer, ? extends BuildingLevel> buildingLevels, Integer numberOfLevels) {
+        super.levelUp(buildingLevels, numberOfLevels);
+        var buildingLevel = buildingLevels.get(getLevel());
+        provisions = ((FarmLevel) buildingLevel).getProvisions();
+    }
+
     public void levelDown(FarmLevel buildingLevel) {
         super.levelDown(buildingLevel);
         provisions = buildingLevel.getProvisions();
+    }
+
+    public void levelDown(Map<Integer, ? extends BuildingLevel> buildingLevels, Integer numberOfLevels) {
+        super.levelDown(buildingLevels, numberOfLevels);
+        var buildingLevel = buildingLevels.get(getLevel());
+        provisions = ((FarmLevel) buildingLevel).getProvisions();
     }
 }

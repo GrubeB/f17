@@ -16,6 +16,7 @@ public interface VillageResourceEvent {
     class VillageResourceCreatedEvent implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -23,6 +24,7 @@ public interface VillageResourceEvent {
         private ObjectId villageId;
         private Resource resource;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

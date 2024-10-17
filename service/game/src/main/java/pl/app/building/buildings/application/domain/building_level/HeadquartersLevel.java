@@ -1,6 +1,5 @@
 package pl.app.building.buildings.application.domain.building_level;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pl.app.building.buildings.application.domain.BuildingLevel;

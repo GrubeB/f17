@@ -1,4 +1,4 @@
-package pl.app.village.village.application.port.in;
+package pl.app.building.village_infrastructure.application.port.in;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
@@ -9,24 +9,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import pl.app.building.buildings.application.port.in.BuildingLevelDomainRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.map.village_position.application.port.in.VillagePositionService;
-import pl.app.resource.village_resource.application.port.in.VillageResourceService;
-import pl.app.village.village.application.domain.Village;
-import pl.app.village.village.application.domain.VillageEvent;
 import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillageServiceImplTest {
+class VillageInfrastructureServiceImplTest {
     @Autowired
-    private VillageServiceImpl service;
+    private VillageInfrastructureServiceImpl service;
     @SpyBean
     private ReactiveMongoTemplate mongoTemplate;
     @SpyBean
@@ -34,23 +27,18 @@ class VillageServiceImplTest {
     @SpyBean
     private KafkaTopicConfigurationProperties topicNames;
     @SpyBean
-    private VillageResourceService villageResourceService;
+    private VillageInfrastructureDomainRepository villageInfrastructureDomainRepository;
     @SpyBean
-    private VillagePositionService villagePositionService;
+    private BuildingLevelDomainRepository buildingLevelDomainRepository;
 
     @Test
-    void crate_shouldCreateVillage_whenCommandIsValid() {
-        var playerId = ObjectId.get();
-        var command = new VillageCommand.CreatePlayerVillageCommand(playerId);
+    void crate() {
+        var villageId = ObjectId.get();
+        var command = new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId);
 
         StepVerifier.create(service.crate(command))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
                 }).verifyComplete();
-
-        verify(mongoTemplate, times(1)).insert(any(Village.class));
-        verify(kafkaTemplate, times(1))
-                .send(eq(topicNames.getVillageCreated().getName()), any(), any(VillageEvent.VillageCreatedEvent.class));
-
     }
 }

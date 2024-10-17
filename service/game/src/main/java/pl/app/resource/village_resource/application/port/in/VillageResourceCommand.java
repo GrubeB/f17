@@ -15,6 +15,7 @@ public interface VillageResourceCommand {
     class CreateVillageResourceCommand implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -22,6 +23,7 @@ public interface VillageResourceCommand {
         private ObjectId villageId;
         private Resource resource;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -29,6 +31,7 @@ public interface VillageResourceCommand {
         private ObjectId villageId;
         private Resource resource;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

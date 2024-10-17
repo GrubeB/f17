@@ -1,5 +1,7 @@
 package pl.app.building.buildings.application.port.in;
 
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import pl.app.building.buildings.application.domain.BuildingLevel;
 import pl.app.building.buildings.application.domain.BuildingType;
 import pl.app.building.buildings.application.domain.building_level.*;
@@ -8,14 +10,16 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.*;
 import static pl.app.building.buildings.application.domain.BuildingLevel.Requirement;
 import static pl.app.building.buildings.application.domain.BuildingType.HEADQUARTERS;
 
+@Component
+@NoArgsConstructor
 public class BuildingLevelDomainRepositoryImpl implements BuildingLevelDomainRepository {
     private final Set<AcademyLevel> academyLevels = Set.of(
             new AcademyLevel(1, new Resource(60_000, 60_000, 60_000, 80), Duration.of(10, HOURS), Set.of(new Requirement(HEADQUARTERS, 20)))
@@ -321,57 +325,57 @@ public class BuildingLevelDomainRepositoryImpl implements BuildingLevelDomainRep
     );
     private final Set<WallLevel> wallLevels = Set.of(
             new WallLevel(1, new Resource(30, 50, 40, 1), Duration.of(30, SECONDS), Set.of(new Requirement(HEADQUARTERS, 3)), 5000),
-            new WallLevel(2, new Resource(40, 70, 60, 1), Duration.of(1, MINUTES),Set.of(new Requirement(HEADQUARTERS, 3)), 10000),
+            new WallLevel(2, new Resource(40, 70, 60, 1), Duration.of(1, MINUTES), Set.of(new Requirement(HEADQUARTERS, 3)), 10000),
             new WallLevel(3, new Resource(50, 90, 70, 1), Duration.of(1, MINUTES).plus(30, SECONDS), Set.of(new Requirement(HEADQUARTERS, 3)), 15000),
             new WallLevel(4, new Resource(60, 110, 80, 1), Duration.of(2, MINUTES), Set.of(new Requirement(HEADQUARTERS, 3)), 20000),
-            new WallLevel(5, new Resource(80, 150, 90, 1), Duration.of(2, MINUTES).plus(30, SECONDS),Set.of(new Requirement(HEADQUARTERS, 3)), 25000),
+            new WallLevel(5, new Resource(80, 150, 90, 1), Duration.of(2, MINUTES).plus(30, SECONDS), Set.of(new Requirement(HEADQUARTERS, 3)), 25000),
 
             new WallLevel(6, new Resource(200, 200, 100, 1), Duration.of(5, MINUTES), Set.of(new Requirement(HEADQUARTERS, 3)), 30000),
             new WallLevel(7, new Resource(200, 200, 100, 2), Duration.of(10, MINUTES), Set.of(new Requirement(HEADQUARTERS, 3)), 35000),
             new WallLevel(8, new Resource(200, 300, 200, 2), Duration.of(15, MINUTES), Set.of(new Requirement(HEADQUARTERS, 3)), 40000),
             new WallLevel(9, new Resource(600, 500, 300, 4), Duration.of(30, MINUTES), Set.of(new Requirement(HEADQUARTERS, 3)), 45000),
-            new WallLevel(10, new Resource(900, 1000, 700, 5), Duration.of(60, MINUTES),Set.of(new Requirement(HEADQUARTERS, 3)), 50000),
+            new WallLevel(10, new Resource(900, 1000, 700, 5), Duration.of(60, MINUTES), Set.of(new Requirement(HEADQUARTERS, 3)), 50000),
 
-            new WallLevel(11, new Resource(1000, 2000, 1000, 6), Duration.of(2, HOURS),Set.of(new Requirement(HEADQUARTERS, 3)), 55000),
-            new WallLevel(12, new Resource(2000, 3000, 2000, 7), Duration.of(4, HOURS),Set.of(new Requirement(HEADQUARTERS, 3)), 60000),
-            new WallLevel(13, new Resource(3000, 3000, 2000, 8), Duration.of(5, HOURS),Set.of(new Requirement(HEADQUARTERS, 3)), 65000),
+            new WallLevel(11, new Resource(1000, 2000, 1000, 6), Duration.of(2, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 55000),
+            new WallLevel(12, new Resource(2000, 3000, 2000, 7), Duration.of(4, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 60000),
+            new WallLevel(13, new Resource(3000, 3000, 2000, 8), Duration.of(5, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 65000),
             new WallLevel(14, new Resource(4000, 5000, 3000, 10), Duration.of(7, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 70000),
             new WallLevel(15, new Resource(6000, 8000, 5000, 14), Duration.of(9, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 78000),
 
-            new WallLevel(16, new Resource(8000, 10000, 6000, 16), Duration.of(10, HOURS),Set.of(new Requirement(HEADQUARTERS, 3)), 80000),
+            new WallLevel(16, new Resource(8000, 10000, 6000, 16), Duration.of(10, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 80000),
             new WallLevel(17, new Resource(12000, 16000, 9000, 20), Duration.of(14, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 85000),
-            new WallLevel(18, new Resource(16000, 19000, 12000, 22), Duration.of(16, HOURS),Set.of(new Requirement(HEADQUARTERS, 3)), 90000),
-            new WallLevel(19, new Resource(19000, 24000, 15000, 24), Duration.of(18, HOURS),Set.of(new Requirement(HEADQUARTERS, 3)), 95000),
+            new WallLevel(18, new Resource(16000, 19000, 12000, 22), Duration.of(16, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 90000),
+            new WallLevel(19, new Resource(19000, 24000, 15000, 24), Duration.of(18, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 95000),
             new WallLevel(20, new Resource(24000, 30000, 18000, 26), Duration.of(20, HOURS), Set.of(new Requirement(HEADQUARTERS, 3)), 100000)
     );
     private final Set<WarehouseLevel> warehouseLevels = Set.of(
-            new WarehouseLevel(1, new Resource(30, 50, 40, 1), Duration.of(30, SECONDS),new HashSet<>(), 1000),
-            new WarehouseLevel(2, new Resource(40, 70, 60, 1), Duration.of(1, MINUTES),new HashSet<>(), 2000),
-            new WarehouseLevel(3, new Resource(50, 90, 70, 1), Duration.of(1, MINUTES).plus(30, SECONDS), new HashSet<>(),3000),
+            new WarehouseLevel(1, new Resource(30, 50, 40, 1), Duration.of(30, SECONDS), new HashSet<>(), 1000),
+            new WarehouseLevel(2, new Resource(40, 70, 60, 1), Duration.of(1, MINUTES), new HashSet<>(), 2000),
+            new WarehouseLevel(3, new Resource(50, 90, 70, 1), Duration.of(1, MINUTES).plus(30, SECONDS), new HashSet<>(), 3000),
             new WarehouseLevel(4, new Resource(60, 110, 80, 1), Duration.of(2, MINUTES), new HashSet<>(), 4000),
-            new WarehouseLevel(5, new Resource(80, 150, 90, 1), Duration.of(2, MINUTES).plus(30, SECONDS),new HashSet<>(),5000),
+            new WarehouseLevel(5, new Resource(80, 150, 90, 1), Duration.of(2, MINUTES).plus(30, SECONDS), new HashSet<>(), 5000),
 
             new WarehouseLevel(6, new Resource(200, 200, 100, 1), Duration.of(5, MINUTES), new HashSet<>(), 6000),
-            new WarehouseLevel(7, new Resource(200, 200, 100, 2), Duration.of(10, MINUTES),new HashSet<>(), 7000),
-            new WarehouseLevel(8, new Resource(200, 300, 200, 2), Duration.of(15, MINUTES),new HashSet<>(), 8000),
-            new WarehouseLevel(9, new Resource(600, 500, 300, 4), Duration.of(30, MINUTES),new HashSet<>(), 9000),
-            new WarehouseLevel(10, new Resource(900, 1000, 700, 5), Duration.of(60, MINUTES),new HashSet<>(), 10000),
+            new WarehouseLevel(7, new Resource(200, 200, 100, 2), Duration.of(10, MINUTES), new HashSet<>(), 7000),
+            new WarehouseLevel(8, new Resource(200, 300, 200, 2), Duration.of(15, MINUTES), new HashSet<>(), 8000),
+            new WarehouseLevel(9, new Resource(600, 500, 300, 4), Duration.of(30, MINUTES), new HashSet<>(), 9000),
+            new WarehouseLevel(10, new Resource(900, 1000, 700, 5), Duration.of(60, MINUTES), new HashSet<>(), 10000),
 
-            new WarehouseLevel(11, new Resource(1000, 2000, 1000, 6), Duration.of(2, HOURS),new HashSet<>(), 12000),
-            new WarehouseLevel(12, new Resource(2000, 3000, 2000, 7), Duration.of(4, HOURS),new HashSet<>(), 20000),
-            new WarehouseLevel(13, new Resource(3000, 3000, 2000, 8), Duration.of(5, HOURS),new HashSet<>(), 30000),
+            new WarehouseLevel(11, new Resource(1000, 2000, 1000, 6), Duration.of(2, HOURS), new HashSet<>(), 12000),
+            new WarehouseLevel(12, new Resource(2000, 3000, 2000, 7), Duration.of(4, HOURS), new HashSet<>(), 20000),
+            new WarehouseLevel(13, new Resource(3000, 3000, 2000, 8), Duration.of(5, HOURS), new HashSet<>(), 30000),
             new WarehouseLevel(14, new Resource(4000, 5000, 3000, 10), Duration.of(7, HOURS), new HashSet<>(), 50000),
             new WarehouseLevel(15, new Resource(6000, 8000, 5000, 14), Duration.of(9, HOURS), new HashSet<>(), 80000),
 
-            new WarehouseLevel(16, new Resource(8000, 10000, 6000, 16), Duration.of(10, HOURS),new HashSet<>(), 130000),
+            new WarehouseLevel(16, new Resource(8000, 10000, 6000, 16), Duration.of(10, HOURS), new HashSet<>(), 130000),
             new WarehouseLevel(17, new Resource(12000, 16000, 9000, 20), Duration.of(14, HOURS), new HashSet<>(), 210000),
-            new WarehouseLevel(18, new Resource(16000, 19000, 12000, 22), Duration.of(16, HOURS),new HashSet<>(), 270000),
-            new WarehouseLevel(19, new Resource(19000, 24000, 15000, 24), Duration.of(18, HOURS),new HashSet<>(), 320000),
+            new WarehouseLevel(18, new Resource(16000, 19000, 12000, 22), Duration.of(16, HOURS), new HashSet<>(), 270000),
+            new WarehouseLevel(19, new Resource(19000, 24000, 15000, 24), Duration.of(18, HOURS), new HashSet<>(), 320000),
             new WarehouseLevel(20, new Resource(24000, 30000, 18000, 26), Duration.of(20, HOURS), new HashSet<>(), 400000)
     );
 
     @Override
-    public Mono<Set<? extends BuildingLevel>> fetchAll(BuildingType type) {
+    public Mono<Map<Integer, ? extends BuildingLevel>> fetchAll(BuildingType type) {
         var levels = switch (type) {
             case HEADQUARTERS -> headquartersLevels;
             case TIMBER_CAMP -> timberCampLevels;
@@ -390,14 +394,11 @@ public class BuildingLevelDomainRepositoryImpl implements BuildingLevelDomainRep
             case TAVERN -> tavernLevels;
             case ACADEMY -> academyLevels;
         };
-        return Mono.just(levels);
+        return Mono.just(levels.stream().collect(Collectors.toMap(BuildingLevel::getLevel, e -> e)));
     }
 
     @Override
     public Mono<? extends BuildingLevel> fetch(BuildingType type, Integer level) {
-        return fetchAll(type)
-                .map(levels -> levels.stream().filter(l -> Objects.equals(l.getLevel(), level)).findAny())
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+        return fetchAll(type).map(levels -> levels.get(level));
     }
 }
