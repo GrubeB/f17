@@ -10,5 +10,5 @@ public interface VillageResourceService {
 
     Mono<VillageResource> subtract(VillageResourceCommand.SubtractResourceCommand command);
 
-    Mono<VillageResource> change(VillageResourceCommand.ChangeMaxResourceCommand command);
+    Mono<VillageResource> refresh(VillageResourceCommand.RefreshResourceCommand command);
 }

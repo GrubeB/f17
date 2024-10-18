@@ -2,11 +2,13 @@ package pl.app.resource.resource.application.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Objects;
 
 @Getter
 @Setter
+@ToString
 public class Resource {
     private Integer wood;
     private Integer clay;
@@ -29,6 +31,10 @@ public class Resource {
 
     public static Resource zero() {
         return new Resource(0, 0, 0, 0);
+    }
+
+    public static Resource of(Integer warehouseCapacity) {
+        return new Resource(warehouseCapacity, warehouseCapacity, warehouseCapacity, warehouseCapacity);
     }
 
     public Resource add(Integer resourceQuantity, ResourceType resourceType) {

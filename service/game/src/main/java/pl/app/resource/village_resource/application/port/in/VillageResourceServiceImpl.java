@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pl.app.building.village_infrastructure.query.VillageInfrastructureDtoQueryService;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.domain.VillageResource;
@@ -25,7 +26,9 @@ class VillageResourceServiceImpl implements VillageResourceService {
     private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
+
     private final VillageResourceDomainRepository villageResourceDomainRepository;
+    private final VillageInfrastructureDtoQueryService villageInfrastructureDtoQueryService;
 
     @Override
     public Mono<VillageResource> crate(VillageResourceCommand.CreateVillageResourceCommand command) {
@@ -34,7 +37,7 @@ class VillageResourceServiceImpl implements VillageResourceService {
                 .flatMap(exist -> exist ? Mono.error(VillageResourceException.DuplicatedVillageResourceException.fromId(command.getVillageId().toHexString())) : Mono.empty())
                 .doOnError(e -> logger.error("exception occurred while crating resource position: {}, exception: {}", command.getVillageId(), e.getMessage()))
                 .then(Mono.defer(() -> {
-                    var domain = new VillageResource(command.getVillageId(), Resource.zero(), new Resource(1_000, 1_000, 1_000, 1_000));
+                    var domain = new VillageResource(command.getVillageId(), Resource.of(1_000));
                     var event = new VillageResourceEvent.VillageResourceCreatedEvent(domain.getVillageId());
                     return mongoTemplate.insert(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageResourceCreated().getName(), saved.getVillageId(), event)).thenReturn(saved))
@@ -45,14 +48,45 @@ class VillageResourceServiceImpl implements VillageResourceService {
     @Override
     public Mono<VillageResource> add(VillageResourceCommand.AddResourceCommand command) {
         logger.debug("adding resource to village: {}", command.getVillageId());
-        return villageResourceDomainRepository.fetchByVillageId(command.getVillageId())
+        return Mono.zip(
+                        villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
+                        villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId())
+                )
                 .doOnError(e -> logger.error("exception occurred while adding resource to village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> {
-                    domain.addResource(command.getResource());
+                .flatMap(t -> {
+                    var domain = t.getT1();
+                    var infrastructure = t.getT2();
+                    var warehouseCapacity = infrastructure.getWarehouse().getCapacity();
+                    domain.addResource(command.getResource(), Resource.of(warehouseCapacity));
                     var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), command.getResource());
                     return mongoTemplate.save(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> logger.debug("added resource: {}", saved.getVillageId()));
+                });
+    }
+
+    @Override
+    public Mono<VillageResource> refresh(VillageResourceCommand.RefreshResourceCommand command) {
+        logger.debug("refreshing resources in village: {}", command.getVillageId());
+        return Mono.zip(
+                        villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
+                        villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId())
+                )
+                .doOnError(e -> logger.error("exception occurred while refreshing resources in village: {}, exception: {}", command.getVillageId(), e.getMessage()))
+                .flatMap(t -> {
+                    var domain = t.getT1();
+                    var infrastructure = t.getT2();
+                    var warehouseCapacity = infrastructure.getWarehouse().getCapacity();
+                    Resource resourceAdded = domain.refreshResource(new Resource(
+                            infrastructure.getTimberCamp().getProduction(),
+                            infrastructure.getClayPit().getProduction(),
+                            infrastructure.getIronMine().getProduction(),
+                            0
+                    ), Resource.of(warehouseCapacity));
+                    var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), resourceAdded);
+                    return mongoTemplate.save(domain)
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
+                            .doOnSuccess(saved -> logger.debug("refreshed resource in village: {}", saved.getVillageId()));
                 });
     }
 
@@ -67,18 +101,6 @@ class VillageResourceServiceImpl implements VillageResourceService {
                     return mongoTemplate.save(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceSubtracted().getName(), saved.getVillageId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> logger.debug("subtracted resource: {}", saved.getVillageId()));
-                });
-    }
-
-    @Override
-    public Mono<VillageResource> change(VillageResourceCommand.ChangeMaxResourceCommand command) {
-        logger.debug("changing max resource in village: {}", command.getVillageId());
-        return villageResourceDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while changing max resource in village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> {
-                    domain.setResourceMax(command.getResourceMax());
-                    return mongoTemplate.save(domain)
-                            .doOnSuccess(saved -> logger.debug("changed max resource in village: {}", saved.getVillageId()));
                 });
     }
 }

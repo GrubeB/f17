@@ -15,20 +15,10 @@ import java.util.Map;
 @NoArgsConstructor
 public class ResourceBuilding extends Building {
     private Integer production;
-    private Instant lastRefresh;
 
     public ResourceBuilding(Integer level, BuildingType type, Integer production) {
         super(level, type);
         this.production = production;
-        this.lastRefresh = Instant.now();
-    }
-
-    public int refreshResource() {
-        Duration timeElapsed = Duration.between(lastRefresh, Instant.now());
-        double secondsElapsed = timeElapsed.toSeconds();
-        double totalProduction = (double) production / 3_600 * secondsElapsed;
-        lastRefresh = Instant.now();
-        return (int) totalProduction;
     }
 
     public void levelUp(ResourceLevel buildingLevel) {

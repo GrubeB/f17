@@ -35,8 +35,7 @@ public interface VillageResourceCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class ChangeMaxResourceCommand implements Serializable {
+    class RefreshResourceCommand implements Serializable {
         private ObjectId villageId;
-        private Resource resourceMax;
     }
 }

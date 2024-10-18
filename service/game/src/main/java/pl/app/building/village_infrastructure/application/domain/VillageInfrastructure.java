@@ -20,8 +20,8 @@ public class VillageInfrastructure {
     private ClayPitBuilding clayPit;
     private FarmBuilding farm;
     private HeadquartersBuilding headquarters;
-    private HospitalBuilding hospitalBuilding;
-    private IronMineBuilding ironMineBuilding;
+    private HospitalBuilding hospital;
+    private IronMineBuilding ironMine;
     private MarketBuilding market;
     private RallyPointBuilding rallyPoint;
     private StatueBuilding statue;
@@ -40,8 +40,8 @@ public class VillageInfrastructure {
         this.clayPit = new ClayPitBuilding();
         this.farm = new FarmBuilding();
         this.headquarters = new HeadquartersBuilding();
-        this.hospitalBuilding = new HospitalBuilding();
-        this.ironMineBuilding = new IronMineBuilding();
+        this.hospital = new HospitalBuilding();
+        this.ironMine = new IronMineBuilding();
         this.market = new MarketBuilding();
         this.rallyPoint = new RallyPointBuilding();
         this.statue = new StatueBuilding();

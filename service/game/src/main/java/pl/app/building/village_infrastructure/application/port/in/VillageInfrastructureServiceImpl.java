@@ -100,13 +100,13 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
                             yield new VillageInfrastructureEvent.VillageInfrastructureHeadquartersBuildingLevelUpEvent(domain.getVillageId(), HEADQUARTERS, numberOfLevels, currentFinishBuildingDuration);
                         }
                         case HOSPITAL -> {
-                            var building = domain.getHospitalBuilding();
+                            var building = domain.getHospital();
                             building.levelUp(levels, numberOfLevels);
                             var currentBeds = building.getBeds();
                             yield new VillageInfrastructureEvent.VillageInfrastructureHospitalBuildingLevelUpEvent(domain.getVillageId(), HOSPITAL, numberOfLevels, currentBeds);
                         }
                         case IRON_MINE -> {
-                            var building = domain.getIronMineBuilding();
+                            var building = domain.getIronMine();
                             building.levelUp(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelUpEvent(domain.getVillageId(), IRON_MINE, numberOfLevels, currentProduction);
@@ -213,13 +213,13 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
                             yield new VillageInfrastructureEvent.VillageInfrastructureHeadquartersBuildingLevelDownEvent(domain.getVillageId(), HEADQUARTERS, numberOfLevels, currentFinishBuildingDuration);
                         }
                         case HOSPITAL -> {
-                            var building = domain.getHospitalBuilding();
+                            var building = domain.getHospital();
                             building.levelDown(levels, numberOfLevels);
                             var currentBeds = building.getBeds();
                             yield new VillageInfrastructureEvent.VillageInfrastructureHospitalBuildingLevelDownEvent(domain.getVillageId(), HOSPITAL, numberOfLevels, currentBeds);
                         }
                         case IRON_MINE -> {
-                            var building = domain.getIronMineBuilding();
+                            var building = domain.getIronMine();
                             building.levelDown(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelDownEvent(domain.getVillageId(), IRON_MINE, numberOfLevels, currentProduction);
