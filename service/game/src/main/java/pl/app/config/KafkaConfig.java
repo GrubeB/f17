@@ -1,6 +1,7 @@
 package pl.app.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -31,7 +32,9 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
+import reactor.core.publisher.Flux;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
@@ -39,10 +42,12 @@ import java.util.stream.Stream;
 @Configuration
 @EnableKafka
 @PropertySource("classpath:kafka.properties")
+@RequiredArgsConstructor
 public class KafkaConfig {
     private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
-    @Value("${app.kafka.bootstrap-servers}")
+    @Value("${app.kafka.bootstrap.servers}")
     private String bootstrapServers;
+    private final KafkaTopicConfigurationProperties topicNames;
 
     @Configuration
     class TopicConfiguration {
@@ -54,9 +59,19 @@ public class KafkaConfig {
         }
 
         @Bean
-        KafkaAdmin.NewTopics createTopics(KafkaTopicConfigurationProperties topicNames) {
+        KafkaAdmin.NewTopics createTopics() {
             NewTopic[] array = Stream.of(
-                    createTopicFromConfig(topicNames.getTest()).stream()
+                    createTopicFromConfig(topicNames.getTest()).stream(),
+
+                    createTopicFromConfig(topicNames.getVillageInfrastructureCreated()).stream(),
+                    createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelUp()).stream(),
+                    createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelDown()).stream(),
+
+                    createTopicFromConfig(topicNames.getVillageResourceCreated()).stream(),
+                    createTopicFromConfig(topicNames.getResourceAdded()).stream(),
+                    createTopicFromConfig(topicNames.getResourceSubtracted()).stream(),
+
+                    createTopicFromConfig(topicNames.getVillageCreated()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }
@@ -145,9 +160,11 @@ public class KafkaConfig {
     }
 
     @Configuration
+    @RequiredArgsConstructor
     class ProducerConfiguration {
         @Value("${app.kafka.producer.client-id}")
         private String producerClientId;
+        private final KafkaAdmin kafkaAdmin;
 
 
         @Bean
@@ -155,8 +172,27 @@ public class KafkaConfig {
                 Serializer<ObjectId> objectIdSerializer,
                 JsonSerializer<Object> jsonSerializer
         ) {
-            var kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs(), () -> objectIdSerializer, () -> jsonSerializer));
-            kafkaTemplate.setProducerInterceptor(new ProducerInterceptor<ObjectId, Object>() {
+            var kafkaFactory = new DefaultKafkaProducerFactory<>(producerConfigs(), () -> objectIdSerializer, () -> jsonSerializer);
+            var kafkaTemplate = new KafkaTemplate<>(kafkaFactory);
+            kafkaTemplate.setProducerInterceptor(producerInterceptor());
+            kafkaTemplate.setKafkaAdmin(kafkaAdmin);
+            refreshTopicPublisher(kafkaTemplate).subscribe();
+            return kafkaTemplate;
+        }
+
+        // method that refresh metadata, bc of a bug
+        private Flux<Long> refreshTopicPublisher(KafkaTemplate<ObjectId, Object> kafkaTemplate) {
+            logger.debug("Refreshing topic metadata");
+            topicNames.getAllTopicNames().forEach(kafkaTemplate::partitionsFor);
+            return Flux.interval(Duration.ofMinutes(9))
+                    .doOnNext(tick -> {
+                        logger.debug("Refreshing topic metadata");
+                        topicNames.getAllTopicNames().forEach(kafkaTemplate::partitionsFor);
+                    });
+        }
+
+        ProducerInterceptor<ObjectId, Object> producerInterceptor() {
+            return new ProducerInterceptor<ObjectId, Object>() {
                 @Override
                 public ProducerRecord<ObjectId, Object> onSend(ProducerRecord<ObjectId, Object> producerRecord) {
                     logger.debug("send: {}", producerRecord.value());
@@ -177,8 +213,7 @@ public class KafkaConfig {
                 public void configure(Map<String, ?> map) {
 
                 }
-            });
-            return kafkaTemplate;
+            };
         }
 
         @Bean
@@ -204,6 +239,9 @@ public class KafkaConfig {
             Map<String, Object> props = new HashMap<>();
             props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             props.put(ProducerConfig.CLIENT_ID_CONFIG, producerClientId);
+            props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 300_000);
+            props.put(ProducerConfig.METADATA_MAX_IDLE_CONFIG, 600_000);
+            props.put(ProducerConfig.METADATA_MAX_AGE_CONFIG, 600_000);
             return props;
         }
     }

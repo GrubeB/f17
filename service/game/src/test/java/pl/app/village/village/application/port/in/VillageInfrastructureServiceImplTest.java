@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.map.village_position.application.port.in.VillagePositionService;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class VillageInfrastructureServiceImplTest {
+    //extends AbstractIntegrationTest {
     @Autowired
     private VillageServiceImpl service;
     @SpyBean
@@ -37,6 +40,8 @@ class VillageInfrastructureServiceImplTest {
     private VillageResourceService villageResourceService;
     @SpyBean
     private VillagePositionService villagePositionService;
+    @SpyBean
+    private VillageInfrastructureService villageInfrastructureService;
 
     @Test
     void crate_shouldCreateVillage_whenCommandIsValid() {

@@ -40,7 +40,7 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
                             .flatMap(d -> innerLevelUp(d, WAREHOUSE, 1))
                             .flatMap(d -> innerLevelUp(d, FARM, 1))
                             .flatMap(d -> mongoTemplate.insert(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageInfrastructureCreated().getName(), saved.getVillageId(), event)).thenReturn(saved))
+                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageInfrastructureCreated().getName(), saved.getVillageId(), event)).thenReturn(domain))
                             .doOnSuccess(saved -> logger.debug("created village infrastructure: {}", saved.getVillageId()));
                 })
                 .doOnError(e -> logger.error("exception occurred while crating village infrastructure: {}, exception: {}", command.getVillageId(), e.getMessage()));

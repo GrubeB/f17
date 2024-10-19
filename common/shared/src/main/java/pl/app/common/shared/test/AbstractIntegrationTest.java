@@ -23,7 +23,6 @@ public abstract class AbstractIntegrationTest {
 
     static {
         logger.info("Starting docker environment");
-//        environment.start();
         Startables.deepStart(environment).join();
         logger.info("Started docker environment");
     }

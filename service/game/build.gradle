@@ -1,6 +1,7 @@
 plugins {
-    id 'org.springframework.boot' version '3.3.2'
-    id 'io.spring.dependency-management' version '1.1.5'
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'pl.app.game'
@@ -48,11 +49,7 @@ dependencies {
 
     // KAFKA
     implementation 'org.apache.kafka:kafka-streams'
-    implementation 'org.springframework.cloud:spring-cloud-stream'
-    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
-    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
     implementation 'org.springframework.kafka:spring-kafka'
-    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
 
     // FAKER
@@ -86,6 +83,10 @@ dependencies {
     testImplementation "org.testcontainers:testcontainers:1.20.1"
     testImplementation "org.testcontainers:junit-jupiter:1.20.1"
     testImplementation "org.testcontainers:mongodb:1.20.1"
+
+    // BUGFIX
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.0'
 }
 
 tasks.named('test') {

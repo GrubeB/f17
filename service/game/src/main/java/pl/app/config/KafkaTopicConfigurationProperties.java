@@ -6,6 +6,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @ConfigurationProperties(prefix = "app.kafka.topic")
 @Setter
@@ -39,5 +42,25 @@ public class KafkaTopicConfigurationProperties {
             this.partitions = 1;
             this.dtlTopic = true;
         }
+    }
+
+    public List<String> getAllTopicNames() {
+        return getAllTopics().stream()
+                .map(t -> t.getDtlTopic() ? List.of(t.getName(), t.getName() + ".DTL") : List.of(t.getName()))
+                .flatMap(List::stream)
+                .toList();
+    }
+
+    public List<Topic> getAllTopics() {
+        return List.of(
+                test,
+                villageInfrastructureCreated,
+                villageInfrastructureBuildingLevelUp,
+                villageInfrastructureBuildingLevelDown,
+                villageResourceCreated,
+                resourceAdded,
+                resourceSubtracted,
+                villageCreated
+        );
     }
 }
