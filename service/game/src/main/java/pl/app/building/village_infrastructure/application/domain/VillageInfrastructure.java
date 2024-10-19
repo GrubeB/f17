@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import pl.app.building.buildings.application.domain.Building;
+import pl.app.building.buildings.application.domain.BuildingType;
 import pl.app.building.buildings.application.domain.building.*;
 
 @Getter
@@ -49,5 +51,26 @@ public class VillageInfrastructure {
         this.timberCamp = new TimberCampBuilding();
         this.wall = new WallBuilding();
         this.warehouse = new WarehouseBuilding();
+    }
+
+    public Building getBuildingByType(BuildingType type) {
+        return switch (type) {
+            case ACADEMY -> academy;
+            case BARRACKS -> barracks;
+            case CHAPEL -> chapel;
+            case CHURCH -> church;
+            case CLAY_PIT -> clayPit;
+            case FARM -> farm;
+            case HEADQUARTERS -> headquarters;
+            case HOSPITAL -> hospital;
+            case IRON_MINE -> ironMine;
+            case MARKET -> market;
+            case RALLY_POINT -> rallyPoint;
+            case STATUE -> statue;
+            case TAVERN -> tavern;
+            case TIMBER_CAMP -> timberCamp;
+            case WALL -> wall;
+            case WAREHOUSE -> warehouse;
+        };
     }
 }

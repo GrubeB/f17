@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pl.app.building.builder.application.port.in.BuilderCommand;
+import pl.app.building.builder.application.port.in.BuilderService;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.config.KafkaTopicConfigurationProperties;
@@ -31,6 +33,7 @@ class VillageServiceImpl implements VillageService {
     private final VillageResourceService villageResourceService;
     private final VillagePositionService villagePositionService;
     private final VillageInfrastructureService villageInfrastructureService;
+    private final BuilderService builderService;
 
     @Override
     public Mono<Village> crate(VillageCommand.CreatePlayerVillageCommand command) {
@@ -40,6 +43,7 @@ class VillageServiceImpl implements VillageService {
                     return villagePositionService.crate(new VillagePositionCommand.CreateVillagePositionCommand(domain.getId()))
                             .flatMap(unused -> villageResourceService.crate(new VillageResourceCommand.CreateVillageResourceCommand(domain.getId())))
                             .flatMap(unused -> villageInfrastructureService.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(domain.getId())))
+                            .flatMap(unused -> builderService.crate(new BuilderCommand.CreateBuilderCommand(domain.getId())))
                             .flatMap(unused -> {
                                 var event = new VillageEvent.VillageCreatedEvent(domain.getId(), domain.getType(), domain.getOwnerId());
                                 return mongoTemplate.insert(domain)

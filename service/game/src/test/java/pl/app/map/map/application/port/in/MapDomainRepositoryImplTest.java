@@ -25,7 +25,7 @@ class MapDomainRepositoryImplTest {
     @Test
     void fetch() {
         StepVerifier.create(service.fetch())
-                .assertNext(next ->{
+                .assertNext(next -> {
                     assertThat(next).isNotNull();
                 })
                 .verifyComplete();

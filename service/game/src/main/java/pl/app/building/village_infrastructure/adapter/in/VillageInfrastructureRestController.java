@@ -10,10 +10,6 @@ import pl.app.building.village_infrastructure.application.port.in.VillageInfrast
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.building.village_infrastructure.query.VillageInfrastructureDtoQueryService;
 import pl.app.building.village_infrastructure.query.dto.VillageInfrastructureDto;
-import pl.app.village.village.application.port.in.VillageCommand;
-import pl.app.village.village.application.port.in.VillageService;
-import pl.app.village.village.query.VillageDtoQueryService;
-import pl.app.village.village.query.dto.VillageDto;
 import reactor.core.publisher.Mono;
 
 @RestController

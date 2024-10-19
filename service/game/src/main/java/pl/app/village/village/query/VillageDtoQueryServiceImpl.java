@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import pl.app.building.village_infrastructure.query.dto.VillageInfrastructureDto;
 import pl.app.common.mapper.BaseMapper;
 import pl.app.map.village_position.query.dto.VillagePositionDto;
 import pl.app.resource.village_resource.query.dto.VillageResourceDto;
@@ -58,6 +59,7 @@ class VillageDtoQueryServiceImpl implements VillageDtoQueryService {
                     .ownerId(domain.getOwnerId())
                     .villagePosition(map(domain.getVillagePosition(), VillagePositionDto.class))
                     .villageResource(map(domain.getVillageResource(), VillageResourceDto.class))
+                    .villageInfrastructure(map(domain.getVillageInfrastructure(), VillageInfrastructureDto.class))
                     .build();
         }
     }

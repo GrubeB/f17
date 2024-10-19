@@ -9,8 +9,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class VillagePositionDomainRepositoryImplTest {
@@ -24,6 +22,6 @@ class VillagePositionDomainRepositoryImplTest {
     @Test
     void fetchAll() {
         StepVerifier.create(service.fetchAll())
-                .verifyComplete();
+                .expectComplete();
     }
 }

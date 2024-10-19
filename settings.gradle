@@ -5,5 +5,5 @@ include "common:shared"
 include "common:mapper"
 
 // SERVICES
-include "service:game:game"
+include "service:game"
 

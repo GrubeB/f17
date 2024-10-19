@@ -45,9 +45,9 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class KafkaConfig {
     private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
+    private final KafkaTopicConfigurationProperties topicNames;
     @Value("${app.kafka.bootstrap.servers}")
     private String bootstrapServers;
-    private final KafkaTopicConfigurationProperties topicNames;
 
     @Configuration
     class TopicConfiguration {
@@ -66,6 +66,9 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getVillageInfrastructureCreated()).stream(),
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelUp()).stream(),
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelDown()).stream(),
+                    createTopicFromConfig(topicNames.getBuilderCreated()).stream(),
+                    createTopicFromConfig(topicNames.getConstructAdded()).stream(),
+                    createTopicFromConfig(topicNames.getConstructRemoved()).stream(),
 
                     createTopicFromConfig(topicNames.getVillageResourceCreated()).stream(),
                     createTopicFromConfig(topicNames.getResourceAdded()).stream(),
@@ -162,10 +165,9 @@ public class KafkaConfig {
     @Configuration
     @RequiredArgsConstructor
     class ProducerConfiguration {
+        private final KafkaAdmin kafkaAdmin;
         @Value("${app.kafka.producer.client-id}")
         private String producerClientId;
-        private final KafkaAdmin kafkaAdmin;
-
 
         @Bean
         KafkaTemplate<ObjectId, Object> objectIdTemplate(

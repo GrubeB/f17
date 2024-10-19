@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @ConfigurationProperties(prefix = "app.kafka.topic")
@@ -21,6 +20,10 @@ public class KafkaTopicConfigurationProperties {
     private Topic villageInfrastructureCreated;
     private Topic villageInfrastructureBuildingLevelUp;
     private Topic villageInfrastructureBuildingLevelDown;
+    private Topic builderCreated;
+    private Topic constructAdded;
+    private Topic constructRemoved;
+
 
     // resource
     private Topic villageResourceCreated;
@@ -29,20 +32,6 @@ public class KafkaTopicConfigurationProperties {
 
     // village
     private Topic villageCreated;
-
-    @Setter
-    @Getter
-    public static class Topic {
-        private String name;
-        private Integer partitions;
-        private Boolean dtlTopic;
-
-        public Topic() {
-            this.name = "NAME_NOT_CONFIGURED";
-            this.partitions = 1;
-            this.dtlTopic = true;
-        }
-    }
 
     public List<String> getAllTopicNames() {
         return getAllTopics().stream()
@@ -62,5 +51,19 @@ public class KafkaTopicConfigurationProperties {
                 resourceSubtracted,
                 villageCreated
         );
+    }
+
+    @Setter
+    @Getter
+    public static class Topic {
+        private String name;
+        private Integer partitions;
+        private Boolean dtlTopic;
+
+        public Topic() {
+            this.name = "NAME_NOT_CONFIGURED";
+            this.partitions = 1;
+            this.dtlTopic = true;
+        }
     }
 }

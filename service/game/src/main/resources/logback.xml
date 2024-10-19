@@ -24,7 +24,7 @@
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <logger name="pl.app" additivity="false">
+    <logger name="pl.app" level="DEBUG" additivity="false">
         <appender-ref ref="CUSTOM_CONSOLE"/>
     </logger>
 
