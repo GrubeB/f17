@@ -51,6 +51,10 @@ public class VillageResource {
     }
 
     private int refreshResource(Integer production, ResourceType type) {
+        if (production <= 0) {
+            lastRefresh.put(type, Instant.now());
+            return 0;
+        }
         Instant last = lastRefresh.get(type);
         Instant now = Instant.now();
         Duration timeElapsed = Duration.between(last, now);
