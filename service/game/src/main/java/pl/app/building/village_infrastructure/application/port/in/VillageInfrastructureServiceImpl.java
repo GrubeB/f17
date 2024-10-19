@@ -7,14 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.building.buildings.application.domain.BuildingType;
-import pl.app.building.buildings.application.port.in.BuildingLevelDomainRepository;
+import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.application.port.in.BuildingLevelDomainRepository;
 import pl.app.building.village_infrastructure.application.domain.VillageInfrastructure;
 import pl.app.building.village_infrastructure.application.domain.VillageInfrastructureEvent;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.core.publisher.Mono;
 
-import static pl.app.building.buildings.application.domain.BuildingType.*;
+import static pl.app.building.building.application.domain.BuildingType.*;
 
 
 @Service

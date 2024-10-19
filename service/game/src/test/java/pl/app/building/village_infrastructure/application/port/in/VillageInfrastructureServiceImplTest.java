@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-import pl.app.building.buildings.application.port.in.BuildingLevelDomainRepository;
+import pl.app.building.building.application.port.in.BuildingLevelDomainRepository;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.test.StepVerifier;
 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import pl.app.building.builder.application.domain.Builder;
 import pl.app.building.builder.application.domain.BuilderEvent;
 import pl.app.building.builder.application.domain.BuilderException;
-import pl.app.building.buildings.application.port.in.BuildingLevelDomainRepository;
+import pl.app.building.building.application.port.in.BuildingLevelDomainRepository;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureDomainRepository;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;

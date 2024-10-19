@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.building.buildings.application.domain.building.*;
+import pl.app.building.building.application.domain.building.*;
 
 import java.io.Serializable;
 

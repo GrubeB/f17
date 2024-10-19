@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.app.building.buildings.application.domain.BuildingLevel;
-import pl.app.building.buildings.application.domain.BuildingType;
+import pl.app.building.building.application.domain.BuildingLevel;
+import pl.app.building.building.application.domain.BuildingType;
 import pl.app.resource.resource.application.domain.Resource;
 
 import java.time.Instant;
