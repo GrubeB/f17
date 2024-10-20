@@ -31,6 +31,9 @@ public class KafkaTopicConfigurationProperties {
     private Topic resourceSubtracted;
 
     // unit
+    private Topic recruiterCreated;
+    private Topic recruitRequestAdded;
+    private Topic recruitRequestRemoved;
     private Topic villageArmyCreated;
     private Topic unitsAdded;
     private Topic unitsSubtracted;

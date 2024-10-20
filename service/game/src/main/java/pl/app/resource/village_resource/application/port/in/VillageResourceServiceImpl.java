@@ -67,7 +67,7 @@ class VillageResourceServiceImpl implements VillageResourceService {
 
     @Override
     public Mono<VillageResource> refresh(VillageResourceCommand.RefreshResourceCommand command) {
-        logger.debug("refreshing resources in village: {}", command.getVillageId());
+        logger.trace("refreshing resources in village: {}", command.getVillageId());
         return Mono.zip(
                         villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
                         villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId())
@@ -86,7 +86,7 @@ class VillageResourceServiceImpl implements VillageResourceService {
                     var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), resourceAdded);
                     return mongoTemplate.save(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("refreshed resource in village: {}", saved.getVillageId()));
+                            .doOnSuccess(saved -> logger.trace("refreshed resource in village: {}", saved.getVillageId()));
                 });
     }
 

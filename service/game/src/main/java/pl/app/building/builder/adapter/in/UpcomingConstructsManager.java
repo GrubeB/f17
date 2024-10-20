@@ -16,14 +16,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-class UpcomingConstructs {
+class UpcomingConstructsManager {
     private final BuilderService builderService;
     private final Sinks.Many<Builder> sink = Sinks.many().multicast().onBackpressureBuffer();
     private final Flux<Builder> flux = sink.asFlux();
 
     private final Set<ObjectId> builderIds = ConcurrentHashMap.newKeySet();
 
-    public UpcomingConstructs(BuilderService builderService) {
+    public UpcomingConstructsManager(BuilderService builderService) {
         this.builderService = builderService;
 
         flux

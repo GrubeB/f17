@@ -50,11 +50,11 @@ public class UnitDomainRepositoryImpl implements UnitDomainRepository {
 
     @Override
     public Mono<Map<UnitType, Unit>> fetchAll() {
-        return null;
+        return Mono.just(units);
     }
 
     @Override
     public Mono<Unit> fetch(UnitType type) {
-        return null;
+        return Mono.just(units.get(type));
     }
 }

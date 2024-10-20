@@ -16,6 +16,8 @@ import pl.app.map.village_position.application.port.in.VillagePositionCommand;
 import pl.app.map.village_position.application.port.in.VillagePositionService;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
+import pl.app.unit.recruiter.application.port.in.RecruiterCommand;
+import pl.app.unit.recruiter.application.port.in.RecruiterService;
 import pl.app.unit.village_army.application.port.in.VillageArmyCommand;
 import pl.app.unit.village_army.application.port.in.VillageArmyService;
 import pl.app.village.village.application.domain.Village;
@@ -38,6 +40,7 @@ class VillageServiceImpl implements VillageService {
     private final VillageArmyService villageArmyService;
     private final VillageInfrastructureService villageInfrastructureService;
     private final BuilderService builderService;
+    private final RecruiterService recruiterService;
 
     @Override
     public Mono<Village> crate(VillageCommand.CreatePlayerVillageCommand command) {
@@ -49,6 +52,7 @@ class VillageServiceImpl implements VillageService {
                             .flatMap(unused -> villageInfrastructureService.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(domain.getId())))
                             .flatMap(unused -> villageArmyService.crate(new VillageArmyCommand.CreateVillageArmyCommand(domain.getId())))
                             .flatMap(unused -> builderService.crate(new BuilderCommand.CreateBuilderCommand(domain.getId())))
+                            .flatMap(unused -> recruiterService.crate(new RecruiterCommand.CreateRecruiterCommand(domain.getId())))
                             .flatMap(unused -> {
                                 var event = new VillageEvent.VillageCreatedEvent(domain.getId(), domain.getType(), domain.getOwnerId());
                                 return mongoTemplate.insert(domain)

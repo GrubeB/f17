@@ -21,7 +21,7 @@ class VillageResourceRefresher {
     private final VillageResourceService villageResourceService;
 
     @Scheduled(cron = "*/30 * * ? * *")
-    public void refreshEnergy() {
+    public void refresh() {
         logger.trace("refreshing village resources");
         var startTime = Instant.now();
         villageResourceDomainRepository.fetchAll()

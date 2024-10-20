@@ -11,17 +11,17 @@ import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
-class UpcomingConstructsDataPuller {
-    private static final Logger logger = LoggerFactory.getLogger(UpcomingConstructsDataPuller.class);
+class UpcomingConstructsManagerDataPuller {
+    private static final Logger logger = LoggerFactory.getLogger(UpcomingConstructsManagerDataPuller.class);
 
-    private final UpcomingConstructs upcomingConstructs;
+    private final UpcomingConstructsManager upcomingConstructsManager;
     private final BuilderDomainRepository builderDomainRepository;
 
     @Scheduled(cron = "*/30 * * ? * *")
-    public void refreshEnergy() {
+    public void addBuilder() {
         logger.trace("adding upcoming constructs");
         builderDomainRepository.fetchBuildersWithConstructEnding(Duration.ofSeconds(31))
-                .doOnNext(upcomingConstructs::addBuilder)
+                .doOnNext(upcomingConstructsManager::addBuilder)
                 .doOnComplete(() -> logger.trace("added upcoming constructs"))
                 .subscribe();
     }
