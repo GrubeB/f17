@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 
 public interface VillageResourceDomainRepository {
     Mono<VillageResource> fetchByVillageId(ObjectId villageId);
+
     Flux<VillageResource> fetchAll();
 }

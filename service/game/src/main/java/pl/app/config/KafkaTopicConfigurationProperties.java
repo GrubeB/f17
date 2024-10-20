@@ -30,6 +30,11 @@ public class KafkaTopicConfigurationProperties {
     private Topic resourceAdded;
     private Topic resourceSubtracted;
 
+    // unit
+    private Topic villageArmyCreated;
+    private Topic unitsAdded;
+    private Topic unitsSubtracted;
+
     // village
     private Topic villageCreated;
 
@@ -49,6 +54,9 @@ public class KafkaTopicConfigurationProperties {
                 villageResourceCreated,
                 resourceAdded,
                 resourceSubtracted,
+                villageArmyCreated,
+                unitsAdded,
+                unitsSubtracted,
                 villageCreated
         );
     }
