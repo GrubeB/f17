@@ -27,6 +27,8 @@ public class KafkaTopicConfigurationProperties {
     private Topic constructAdded;
     private Topic constructRemoved;
 
+    // player
+    private Topic playerCreated;
 
     // resource
     private Topic villageResourceCreated;
@@ -54,15 +56,27 @@ public class KafkaTopicConfigurationProperties {
     public List<Topic> getAllTopics() {
         return List.of(
                 test,
+                // building
                 villageInfrastructureCreated,
                 villageInfrastructureBuildingLevelUp,
                 villageInfrastructureBuildingLevelDown,
+                builderCreated,
+                constructAdded,
+                constructRemoved,
+                // player
+                playerCreated,
+                // resource
                 villageResourceCreated,
                 resourceAdded,
                 resourceSubtracted,
+                // unit
+                recruiterCreated,
+                recruitRequestAdded,
+                recruitRequestRemoved,
                 villageArmyCreated,
                 unitsAdded,
                 unitsSubtracted,
+                // village
                 villageCreated
         );
     }

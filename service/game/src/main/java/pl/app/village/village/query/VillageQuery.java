@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.building.village_infrastructure.application.domain.VillageInfrastructure;
 import pl.app.map.village_position.application.domain.VillagePosition;
+import pl.app.player.player.application.domain.Player;
 import pl.app.resource.village_resource.application.domain.VillageResource;
 import pl.app.unit.village_army.application.domain.VillageArmy;
 import pl.app.village.village.application.domain.VillageType;
@@ -23,6 +24,10 @@ public class VillageQuery {
     private ObjectId id;
     private VillageType type;
     private ObjectId ownerId;
+
+    @ReadOnlyProperty
+    @DocumentReference(lookup = "{'_id':?#{#self.ownerId} }")
+    private Player player;
 
     @ReadOnlyProperty
     @DocumentReference(lookup = "{'_id':?#{#self._id} }")
