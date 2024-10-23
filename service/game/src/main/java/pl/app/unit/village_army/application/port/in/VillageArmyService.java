@@ -9,4 +9,8 @@ public interface VillageArmyService {
     Mono<VillageArmy> add(VillageArmyCommand.AddUnitsCommand command);
 
     Mono<VillageArmy> subtract(VillageArmyCommand.SubtractUnitsCommand command);
+
+    Mono<VillageArmy> block(VillageArmyCommand.BlockUnitsCommand command);
+
+    Mono<VillageArmy> unblock(VillageArmyCommand.UnblockUnitsCommand command);
 }

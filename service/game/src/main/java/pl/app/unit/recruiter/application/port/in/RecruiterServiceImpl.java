@@ -17,12 +17,14 @@ import pl.app.resource.village_resource.application.port.in.VillageResourceServi
 import pl.app.unit.recruiter.application.domain.Recruiter;
 import pl.app.unit.recruiter.application.domain.RecruiterEvent;
 import pl.app.unit.recruiter.application.domain.RecruiterException;
+import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
 import pl.app.unit.unit.application.port.in.UnitDomainRepository;
 import pl.app.unit.village_army.application.port.in.VillageArmyCommand;
 import pl.app.unit.village_army.application.port.in.VillageArmyService;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.Set;
 
 
@@ -115,7 +117,7 @@ class RecruiterServiceImpl implements RecruiterService {
                     if (recruitRequest.isEmpty()) {
                         return Mono.just(domain);
                     }
-                    return villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(domain.getVillageId(), recruitRequest.get().getUnit().getType(), recruitRequest.get().getAmount()))
+                    return villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(domain.getVillageId(), Army.of(Map.of(recruitRequest.get().getUnit().getType(), recruitRequest.get().getAmount()))))
                             .flatMap(unused -> mongoTemplate.save(domain))
                             .doOnSuccess(saved -> logger.debug("finished recruit request in village: {}", saved.getVillageId()));
                 });

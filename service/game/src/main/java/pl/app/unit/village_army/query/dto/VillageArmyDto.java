@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.unit.unit.application.domain.Army;
 
 import java.io.Serializable;
 
@@ -14,17 +15,7 @@ import java.io.Serializable;
 @Builder
 public class VillageArmyDto implements Serializable {
     private ObjectId villageId;
-    private Integer spearmanNumber;
-    private Integer swordsmanNumber;
-    private Integer archerNumber;
-    private Integer heavyCavalryNumber;
-    private Integer axeFighterNumber;
-    private Integer lightCavalryNumber;
-    private Integer mountedArcherNumber;
-    private Integer ramNumber;
-    private Integer catapultNumber;
-    private Integer paladinNumber;
-    private Integer noblemanNumber;
-    private Integer berserkerNumber;
-    private Integer trebuchetNumber;
+    private Army villageArmy;
+    private Army supportArmy;
+    private Army blockedArmy;
 }

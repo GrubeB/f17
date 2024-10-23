@@ -37,6 +37,10 @@ public class Resource {
         return new Resource(warehouseCapacity, warehouseCapacity, warehouseCapacity, warehouseCapacity);
     }
 
+    public static Resource of(Integer wood, Integer clay, Integer iron, Integer provision) {
+        return new Resource(wood, clay, iron, provision);
+    }
+
     public Resource add(Integer resourceQuantity, ResourceType resourceType) {
         return switch (resourceType) {
             case WOOD ->
@@ -70,6 +74,30 @@ public class Resource {
         }
         if (Objects.nonNull(resource.getProvision())) {
             provision = this.provision + resource.provision;
+        }
+
+        return new Resource(wood, clay, iron, provision);
+    }
+    public Resource subtract(Resource resource) {
+        if (Objects.isNull(resource)) {
+            return this;
+        }
+        Integer wood = this.wood;
+        Integer clay = this.clay;
+        Integer iron = this.iron;
+        Integer provision = this.provision;
+
+        if (Objects.nonNull(resource.getWood())) {
+            wood = this.wood - resource.wood;
+        }
+        if (Objects.nonNull(resource.getClay())) {
+            clay = this.clay - resource.clay;
+        }
+        if (Objects.nonNull(resource.getIron())) {
+            iron = this.iron - resource.iron;
+        }
+        if (Objects.nonNull(resource.getProvision())) {
+            provision = this.provision - resource.provision;
         }
 
         return new Resource(wood, clay, iron, provision);

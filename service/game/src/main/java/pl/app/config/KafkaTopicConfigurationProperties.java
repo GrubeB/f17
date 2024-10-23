@@ -16,6 +16,9 @@ import java.util.List;
 public class KafkaTopicConfigurationProperties {
     private Topic test;
 
+    // attack
+    private Topic attackStarted;
+
     // building
     private Topic villageInfrastructureCreated;
     private Topic villageInfrastructureBuildingLevelUp;

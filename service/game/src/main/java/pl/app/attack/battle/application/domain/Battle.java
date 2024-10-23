@@ -1,9 +1,12 @@
-package pl.app.battle.application.domain;
+package pl.app.attack.battle.application.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
 import pl.app.unit.unit.application.domain.UnitType;
 
@@ -24,16 +27,20 @@ import static pl.app.unit.unit.application.domain.UnitType.TREBUCHET;
 public class Battle {
     private static final Logger logger = LoggerFactory.getLogger(Battle.class);
     private ObjectId battleId;
+    private BattleArmy originalAttackerArmy;
     private BattleArmy attackerArmy;
+    private BattleArmy originalDefenderArmy;
     private BattleArmy defenderArmy;
     private Map<UnitType, Unit> units;
     private Wall wall;
     private BattleModifier battleModifier;
+    private BattleResult battleResult;
 
-
-    public Battle(Map<UnitType, Integer> attackerArmy, Map<UnitType, Integer> defenderArmy, Map<UnitType, Unit> units, Integer inputWallLevel) {
+    public Battle(Army attackerArmy, Army defenderArmy, Map<UnitType, Unit> units, Integer inputWallLevel) {
         this.battleId = ObjectId.get();
+        this.originalAttackerArmy = new BattleArmy(attackerArmy);
         this.attackerArmy = new BattleArmy(attackerArmy);
+        this.originalDefenderArmy = new BattleArmy(attackerArmy);
         this.defenderArmy = new BattleArmy(defenderArmy);
         this.units = units;
         this.wall = new Wall(inputWallLevel);
@@ -45,12 +52,167 @@ public class Battle {
         battleModifier = new BattleModifier(attackerFaithBonus, defenderFaithBonus, moraleBonus, luckBonus, grandmasterBuff, nightBuf);
     }
 
+    private static final Integer MAX_NUMBER_OF_TURNS = 10;
+    private Integer turnCounter = 0;
+
+    public BattleResult startBattle() {
+        logger.debug("starting battle");
+        trebuchetTurn();
+        wall.init();
+        do {
+            startTurn();
+        } while (this.attackerArmy.getArmyProvisions() > 0 && this.defenderArmy.getArmyProvisions() > 0
+                || turnCounter >= MAX_NUMBER_OF_TURNS);
+        wall.finish();
+        return endBattle();
+    }
+
+    private BattleResult endBattle() {
+        this.battleResult = new BattleResult(
+                battleId,
+                attackerArmy.getArmyProvisions() > 0,
+                originalAttackerArmy,
+                attackerArmy,
+                originalDefenderArmy,
+                defenderArmy,
+                wall.getStartWallLevel(),
+                wall.getResultingWallLevel()
+        );
+        return battleResult;
+    }
+
+    private void startTurn() {
+        logger.debug("starting turn");
+        BattleArmy infTurnAtcArmy = attackerArmy.getInfArmy();
+        double infAtcArmyPercentage = (double) infTurnAtcArmy.getArmyProvisions() / attackerArmy.getArmyProvisions();
+        BattleArmy cavTurnAtcArmy = attackerArmy.getCavArmy();
+        double cavAtcArmyPercentage = (double) cavTurnAtcArmy.getArmyProvisions() / attackerArmy.getArmyProvisions();
+        BattleArmy arcTurnAtcArmy = attackerArmy.getArcArmy();
+        double arcAtcArmyPercentage = (double) arcTurnAtcArmy.getArmyProvisions() / attackerArmy.getArmyProvisions();
+
+        BattleArmy infTurnDefArmy = defenderArmy.getPercentageOfArmy(infAtcArmyPercentage);
+        BattleArmy cavTurnDefArmy = defenderArmy.getPercentageOfArmy(cavAtcArmyPercentage);
+        BattleArmy arcTurnDefArmy = defenderArmy.getPercentageOfArmy(arcAtcArmyPercentage);
+
+        startInfTurn(infTurnAtcArmy, infTurnDefArmy);
+        startCavTurn(cavTurnAtcArmy, cavTurnDefArmy);
+        startArcTurn(arcTurnAtcArmy, arcTurnDefArmy);
+
+        BattleArmy newAtcArmy = new BattleArmy();
+        newAtcArmy.add(infTurnAtcArmy);
+        newAtcArmy.add(cavTurnAtcArmy);
+        newAtcArmy.add(arcTurnAtcArmy);
+        BattleArmy newDefArmy = new BattleArmy();
+        newDefArmy.add(infTurnDefArmy);
+        newDefArmy.add(cavTurnDefArmy);
+        newDefArmy.add(arcTurnDefArmy);
+        this.attackerArmy = newAtcArmy;
+        this.defenderArmy = newDefArmy;
+
+        turnCounter++;
+        logger.debug("ended turn");
+    }
+
+    private void startInfTurn(BattleArmy infTurnAtcArmy, BattleArmy infTurnDefArmy) {
+        int atcArmyAttackPower = (int) (infTurnAtcArmy.getTotalAtcPower() * battleModifier.getAttackerModifier());
+        int defArmyDefPower = (int) (infTurnDefArmy.getTotalInfDefPower() * battleModifier.getDefenderModifier() + (wall.getWallDefenseBonus()));
+
+        if (atcArmyAttackPower == defArmyDefPower) {
+            infTurnDefArmy.toZero();
+            infTurnAtcArmy.toZero();
+        } else if (atcArmyAttackPower > defArmyDefPower) { // attacker win
+            infTurnDefArmy.toZero();
+            double powerToSubtract = Math.sqrt((double) defArmyDefPower / atcArmyAttackPower) * defArmyDefPower;
+            infTurnAtcArmy.subtractBasedOnDefPower(powerToSubtract);
+        } else { // def win
+            infTurnAtcArmy.toZero();
+            double powerToSubtract = Math.sqrt((double) atcArmyAttackPower / defArmyDefPower) * atcArmyAttackPower;
+            infTurnDefArmy.subtractBasedOnInfAtcPower(powerToSubtract);
+        }
+    }
+
+    private void startCavTurn(BattleArmy infTurnAtcArmy, BattleArmy infTurnDefArmy) {
+        int atcArmyAttackPower = (int) (infTurnAtcArmy.getTotalAtcPower() * battleModifier.getAttackerModifier());
+        int defArmyDefPower = (int) (infTurnDefArmy.getTotalCavDefPower() * battleModifier.getDefenderModifier() + (wall.getWallDefenseBonus() * battleModifier.getDefenderModifier()));
+
+        if (atcArmyAttackPower == defArmyDefPower) {
+            infTurnDefArmy.toZero();
+            infTurnAtcArmy.toZero();
+        } else if (atcArmyAttackPower > defArmyDefPower) { // attacker win
+            infTurnDefArmy.toZero();
+            double powerToSubtract = Math.sqrt((double) defArmyDefPower / atcArmyAttackPower) * defArmyDefPower;
+            infTurnAtcArmy.subtractBasedOnDefPower(powerToSubtract);
+        } else { // def win
+            infTurnAtcArmy.toZero();
+            double powerToSubtract = Math.sqrt((double) atcArmyAttackPower / defArmyDefPower) * atcArmyAttackPower;
+            infTurnDefArmy.subtractBasedOnCavAtcPower(powerToSubtract);
+        }
+    }
+
+    private void startArcTurn(BattleArmy infTurnAtcArmy, BattleArmy infTurnDefArmy) {
+        int atcArmyAttackPower = (int) (infTurnAtcArmy.getTotalAtcPower() * battleModifier.getAttackerModifier());
+        int defArmyDefPower = (int) (infTurnDefArmy.getTotalArcDefPower() * battleModifier.getDefenderModifier() + (wall.getWallDefenseBonus() * battleModifier.getDefenderModifier()));
+
+        if (atcArmyAttackPower == defArmyDefPower) {
+            infTurnDefArmy.toZero();
+            infTurnAtcArmy.toZero();
+        } else if (atcArmyAttackPower > defArmyDefPower) { // attacker win
+            infTurnDefArmy.toZero();
+            double powerToSubtract = Math.sqrt((double) defArmyDefPower / atcArmyAttackPower) * defArmyDefPower;
+            infTurnAtcArmy.subtractBasedOnDefPower(powerToSubtract);
+        } else { // def win
+            infTurnAtcArmy.toZero();
+            double powerToSubtract = Math.sqrt((double) atcArmyAttackPower / defArmyDefPower) * atcArmyAttackPower;
+            infTurnDefArmy.subtractBasedOnArcAtcPower(powerToSubtract);
+        }
+    }
+
+    private void trebuchetTurn() {
+        if (attackerArmy.get(RAM) > 0) {
+            var startRamNumber = attackerArmy.get(RAM);
+            var ramNumberToDestroy = defenderArmy.get(TREBUCHET);
+            if (ramNumberToDestroy > startRamNumber) {
+                ramNumberToDestroy = startRamNumber;
+            }
+            attackerArmy.subtract(Army.of(Map.of(RAM, ramNumberToDestroy)));
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class BattleResult {
+        private ObjectId battleId;
+        private boolean attackerWin;
+        private Army originalAttackerArmy;
+        private Army finalAttackerArmy;
+        private Army originalDefenderArmy;
+        private Army finalDefenderArmy;
+        private Integer originalWallLevel;
+        private Integer finishWallLevel;
+
+        public Army getAttackerArmyLosses() {
+            Army losses = Army.of(originalAttackerArmy);
+            losses.subtract(finalAttackerArmy);
+            return losses;
+        }
+
+        public Army getDefenderArmyLosses() {
+            Army losses = Army.of(originalDefenderArmy);
+            losses.subtract(finalDefenderArmy);
+            return losses;
+        }
+
+        public Integer getNumberOfWallLevelDestroyed() {
+            return originalWallLevel - finishWallLevel;
+        }
+    }
+
     @Getter
     public class BattleModifier {
         private boolean attackerFaithBuff;
         private boolean defenderFaithBuff;
         private int moraleBonus;
-        private int luckBonus;
+        private int luckBonus; // -15% and +15%
         private boolean grandmasterBuff;
         private boolean nightBuff;
 
@@ -93,25 +255,32 @@ public class Battle {
     }
 
     @Getter
-    public class BattleArmy {
-        private Map<UnitType, Integer> army;
-
+    public class BattleArmy extends Army {
         public BattleArmy() {
-            army = EnumSet.allOf(UnitType.class).stream()
-                    .collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
+            super();
         }
 
-        public BattleArmy(Map<UnitType, Integer> army) {
-            this.army = army;
+        public BattleArmy(Integer spearmanNumber, Integer swordsmanNumber, Integer archerNumber, Integer heavyCavalryNumber, Integer axeFighterNumber, Integer lightCavalryNumber, Integer mountedArcherNumber, Integer ramNumber, Integer catapultNumber, Integer paladinNumber, Integer noblemanNumber, Integer berserkerNumber, Integer trebuchetNumber) {
+            super(spearmanNumber, swordsmanNumber, archerNumber, heavyCavalryNumber, axeFighterNumber, lightCavalryNumber, mountedArcherNumber, ramNumber, catapultNumber, paladinNumber, noblemanNumber, berserkerNumber, trebuchetNumber);
+        }
+
+        public BattleArmy(Army army) {
+            super(army);
+        }
+
+        public BattleArmy(Map<UnitType, Integer> units) {
+            super(units);
         }
 
         public BattleArmy getPercentageOfArmy(double percentage) {
+            var army = army();
             HashMap<UnitType, Integer> newArmy = EnumSet.allOf(UnitType.class).stream()
                     .collect(Collectors.toMap(t -> t, t -> (int) (army.get(t) * percentage), (o, n) -> n, HashMap::new));
             return new BattleArmy(newArmy);
         }
 
         public BattleArmy getInfArmy() {
+            var army = army();
             HashMap<UnitType, Integer> newArmy = EnumSet.allOf(UnitType.class).stream()
                     .collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
             army.entrySet().stream()
@@ -121,6 +290,7 @@ public class Battle {
         }
 
         public BattleArmy getCavArmy() {
+            var army = army();
             HashMap<UnitType, Integer> newArmy = EnumSet.allOf(UnitType.class).stream()
                     .collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
             army.entrySet().stream()
@@ -130,6 +300,7 @@ public class Battle {
         }
 
         public BattleArmy getArcArmy() {
+            var army = army();
             HashMap<UnitType, Integer> newArmy = EnumSet.allOf(UnitType.class).stream()
                     .collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
             army.entrySet().stream()
@@ -137,17 +308,17 @@ public class Battle {
                     .forEach(e -> newArmy.put(e.getKey(), army.get(e.getKey())));
             return new BattleArmy(newArmy);
         }
-        // DEF
 
+        // DEF
         public int getTotalInfDefPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .mapToInt(type -> army.get(type) * units.get(type).getInfantryDef())
+                    .mapToInt(type -> get(type) * units.get(type).getInfantryDef())
                     .sum();
         }
 
         public Map<UnitType, Integer> getInfDefPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .collect(Collectors.toMap(t -> t, t -> army.get(t) * units.get(t).getInfantryDef(), (o, n) -> n, HashMap::new));
+                    .collect(Collectors.toMap(t -> t, t -> get(t) * units.get(t).getInfantryDef(), (o, n) -> n, HashMap::new));
         }
 
         public Map<UnitType, Double> getInfPerDefPower() {
@@ -161,13 +332,13 @@ public class Battle {
 
         public int getTotalCavDefPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .mapToInt(type -> army.get(type) * units.get(type).getCavalryDef())
+                    .mapToInt(type -> get(type) * units.get(type).getCavalryDef())
                     .sum();
         }
 
         public Map<UnitType, Integer> getCavDefPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .collect(Collectors.toMap(t -> t, t -> army.get(t) * units.get(t).getCavalryDef(), (o, n) -> n, HashMap::new));
+                    .collect(Collectors.toMap(t -> t, t -> get(t) * units.get(t).getCavalryDef(), (o, n) -> n, HashMap::new));
         }
 
         public Map<UnitType, Double> getCavPerDefPower() {
@@ -181,13 +352,13 @@ public class Battle {
 
         public int getTotalArcDefPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .mapToInt(type -> army.get(type) * units.get(type).getArcherDef())
+                    .mapToInt(type -> get(type) * units.get(type).getArcherDef())
                     .sum();
         }
 
         public Map<UnitType, Integer> getArcDefPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .collect(Collectors.toMap(t -> t, t -> army.get(t) * units.get(t).getArcherDef(), (o, n) -> n, HashMap::new));
+                    .collect(Collectors.toMap(t -> t, t -> get(t) * units.get(t).getArcherDef(), (o, n) -> n, HashMap::new));
         }
 
         public Map<UnitType, Double> getArcPerDefPower() {
@@ -202,13 +373,13 @@ public class Battle {
         // ATC
         public int getTotalAtcPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .mapToInt(type -> army.get(type) * units.get(type).getAttack())
+                    .mapToInt(type -> get(type) * units.get(type).getAttack())
                     .sum();
         }
 
         public Map<UnitType, Integer> getAtcPower() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .collect(Collectors.toMap(t -> t, t -> army.get(t) * units.get(t).getAttack(), (o, n) -> n, HashMap::new));
+                    .collect(Collectors.toMap(t -> t, t -> get(t) * units.get(t).getAttack(), (o, n) -> n, HashMap::new));
         }
 
         public Map<UnitType, Double> getPerAtcPower() {
@@ -222,24 +393,6 @@ public class Battle {
         }
 
         // SUBTRACT
-        private void add(Map<UnitType, Integer> losses) {
-            losses.entrySet().forEach(entry -> {
-                army.compute(entry.getKey(), (unitType, integer) -> losses.get(unitType) + integer);
-            });
-        }
-
-        public void subtractAll() {
-            army = EnumSet.allOf(UnitType.class).stream()
-                    .collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
-        }
-
-        private void subtract(Map<UnitType, Integer> losses) {
-            losses.entrySet()
-                    .stream().filter(e -> e.getValue() > 0)
-                    .forEach(entry -> {
-                        army.compute(entry.getKey(), (unitType, current) -> current - losses.get(unitType));
-                    });
-        }
 
         public void subtractBasedOnDefPower(double power) {
             Map<UnitType, Double> infPerAtcPower = getPerAtcPower();
@@ -248,7 +401,7 @@ public class Battle {
                             Map.Entry::getKey,
                             entry -> (int) Math.round(power * entry.getValue() / (units.get(entry.getKey()).getAttack() * battleModifier.getAttackerModifier()))
                     ));
-            this.subtract(losses);
+            this.subtract(Army.of(losses));
         }
 
         public void subtractBasedOnInfAtcPower(double power) {
@@ -258,7 +411,7 @@ public class Battle {
                             Map.Entry::getKey,
                             entry -> (int) Math.round(power * entry.getValue() / (units.get(entry.getKey()).getInfantryDef() * battleModifier.getDefenderModifier()))
                     ));
-            this.subtract(losses);
+            this.subtract(Army.of(losses));
         }
 
         public void subtractBasedOnCavAtcPower(double power) {
@@ -268,7 +421,7 @@ public class Battle {
                             Map.Entry::getKey,
                             entry -> (int) Math.round(power * entry.getValue() / (units.get(entry.getKey()).getCavalryDef() * battleModifier.getDefenderModifier()))
                     ));
-            this.subtract(losses);
+            this.subtract(Army.of(losses));
         }
 
         public void subtractBasedOnArcAtcPower(double power) {
@@ -278,13 +431,13 @@ public class Battle {
                             Map.Entry::getKey,
                             entry -> (int) Math.round(power * entry.getValue() / (units.get(entry.getKey()).getArcherDef() * battleModifier.getDefenderModifier()))
                     ));
-            this.subtract(losses);
+            this.subtract(Army.of(losses));
         }
 
 
         public int getArmyProvisions() {
             return EnumSet.allOf(UnitType.class).stream()
-                    .mapToInt(type -> army.get(type) * units.get(type).getCost().getProvision())
+                    .mapToInt(type -> get(type) * units.get(type).getCost().getProvision())
                     .sum();
         }
     }
@@ -309,7 +462,7 @@ public class Battle {
                 resultingWallLevel = 0;
             } else {
                 var def = getWallHitPoints(startWallLevel) * 2;
-                var atc = attackerArmy.getArmy().get(RAM) * battleModifier.getAttackerModifier();
+                var atc = attackerArmy.get(RAM) * battleModifier.getAttackerModifier();
                 var wsp = (demolitionModifier * atc) / def;
                 var newWall = startWallLevel - wsp < 10 ? Math.round(startWallLevel - wsp) : Math.ceil(startWallLevel - wsp);
                 resultingWallLevel = newWall < 0 ? 0 : (int) newWall;
@@ -317,22 +470,25 @@ public class Battle {
             wallBonusModifier = 1 + resultingWallLevel * 0.05;
             wallDefenseBonus = resultingWallLevel == 0 ? 0 : (int) Math.round(Math.pow(1.25, resultingWallLevel) * 20);
         }
+
         public void finish() {
             if (resultingWallLevel == 0) {
                 return;
             }
             var def = getWallHitPoints(resultingWallLevel) * 2;
-            var atc = attackerArmy.getArmy().get(RAM) * battleModifier.getAttackerModifier();
+            var atc = attackerArmy.get(RAM) * battleModifier.getAttackerModifier();
             var wsp = atc / def;
             var newWall = resultingWallLevel - wsp < 10 ? Math.round(resultingWallLevel - wsp) : Math.ceil(resultingWallLevel - wsp);
             resultingWallLevel = newWall < 0 ? 0 : (int) newWall;
         }
-        private double getDemolitionModifier(){
-            var wallBonus = startWallLevel == 0 ? 0 : Math.round(Math.pow(1.2515,(startWallLevel-1))*20);
-            var attackerProvisions = attackerArmy.getArmyProvisions() - attackerArmy.getArmy().get(RAM) * units.get(RAM).getCost().getProvision();
-            var defenderProvisions = wallBonus +  defenderArmy.getArmyProvisions();
+
+        private double getDemolitionModifier() {
+            var wallBonus = startWallLevel == 0 ? 0 : Math.round(Math.pow(1.2515, (startWallLevel - 1)) * 20);
+            var attackerProvisions = attackerArmy.getArmyProvisions() - attackerArmy.get(RAM) * units.get(RAM).getCost().getProvision();
+            var defenderProvisions = wallBonus + defenderArmy.getArmyProvisions();
             return ((double) attackerProvisions / defenderProvisions > 1) ? 1 : ((double) attackerProvisions / defenderProvisions);
         }
+
         private Integer getWallHitPoints(Integer level) {
             return switch (level) {
                 case 0 -> 0;
@@ -358,118 +514,6 @@ public class Battle {
                 case 20 -> 18;
                 default -> 0;
             };
-        }
-    }
-
-    private static final Integer MAX_NUMBER_OF_TURNS = 10;
-    private Integer turnCounter = 0;
-
-    public void startBattle() {
-        logger.debug("starting battle");
-
-        trebuchetTurn();
-        wall.init();
-        do {
-            startTurn();
-        } while (this.attackerArmy.getArmyProvisions() > 0 && this.defenderArmy.getArmyProvisions() > 0
-                || turnCounter >= MAX_NUMBER_OF_TURNS);
-        wall.finish();
-    }
-
-    private void startTurn() {
-        logger.debug("starting turn");
-        BattleArmy infTurnAtcArmy = attackerArmy.getInfArmy();
-        double infAtcArmyPercentage = (double) infTurnAtcArmy.getArmyProvisions() / attackerArmy.getArmyProvisions();
-        BattleArmy cavTurnAtcArmy = attackerArmy.getCavArmy();
-        double cavAtcArmyPercentage = (double) cavTurnAtcArmy.getArmyProvisions() / attackerArmy.getArmyProvisions();
-        BattleArmy arcTurnAtcArmy = attackerArmy.getArcArmy();
-        double arcAtcArmyPercentage = (double) arcTurnAtcArmy.getArmyProvisions() / attackerArmy.getArmyProvisions();
-
-        BattleArmy infTurnDefArmy = defenderArmy.getPercentageOfArmy(infAtcArmyPercentage);
-        BattleArmy cavTurnDefArmy = defenderArmy.getPercentageOfArmy(cavAtcArmyPercentage);
-        BattleArmy arcTurnDefArmy = defenderArmy.getPercentageOfArmy(arcAtcArmyPercentage);
-
-        startInfTurn(infTurnAtcArmy, infTurnDefArmy);
-        startCavTurn(cavTurnAtcArmy, cavTurnDefArmy);
-        startArcTurn(arcTurnAtcArmy, arcTurnDefArmy);
-
-        BattleArmy newAtcArmy = new BattleArmy();
-        newAtcArmy.add(infTurnAtcArmy.getArmy());
-        newAtcArmy.add(cavTurnAtcArmy.getArmy());
-        newAtcArmy.add(arcTurnAtcArmy.getArmy());
-        BattleArmy newDefArmy = new BattleArmy();
-        newDefArmy.add(infTurnDefArmy.getArmy());
-        newDefArmy.add(cavTurnDefArmy.getArmy());
-        newDefArmy.add(arcTurnDefArmy.getArmy());
-        this.attackerArmy = newAtcArmy;
-        this.defenderArmy = newDefArmy;
-
-        turnCounter++;
-        logger.debug("ended turn");
-    }
-
-    private void startInfTurn(BattleArmy infTurnAtcArmy, BattleArmy infTurnDefArmy) {
-        int atcArmyAttackPower = (int) (infTurnAtcArmy.getTotalAtcPower() * battleModifier.getAttackerModifier());
-        int defArmyDefPower = (int) (infTurnDefArmy.getTotalInfDefPower() * battleModifier.getDefenderModifier() + (wall.getWallDefenseBonus()));
-
-        if (atcArmyAttackPower == defArmyDefPower) {
-            infTurnDefArmy.subtractAll();
-            infTurnAtcArmy.subtractAll();
-        } else if (atcArmyAttackPower > defArmyDefPower) { // attacker win
-            infTurnDefArmy.subtractAll();
-            double powerToSubtract = Math.sqrt((double) defArmyDefPower / atcArmyAttackPower) * defArmyDefPower;
-            infTurnAtcArmy.subtractBasedOnDefPower(powerToSubtract);
-        } else { // def win
-            infTurnAtcArmy.subtractAll();
-            double powerToSubtract = Math.sqrt((double) atcArmyAttackPower / defArmyDefPower) * atcArmyAttackPower;
-            infTurnDefArmy.subtractBasedOnInfAtcPower(powerToSubtract);
-        }
-    }
-
-    private void startCavTurn(BattleArmy infTurnAtcArmy, BattleArmy infTurnDefArmy) {
-        int atcArmyAttackPower = (int) (infTurnAtcArmy.getTotalAtcPower() * battleModifier.getAttackerModifier());
-        int defArmyDefPower = (int) (infTurnDefArmy.getTotalInfDefPower() * battleModifier.getDefenderModifier() + (wall.getWallDefenseBonus() * battleModifier.getDefenderModifier()));
-
-        if (atcArmyAttackPower == defArmyDefPower) {
-            infTurnDefArmy.subtractAll();
-            infTurnAtcArmy.subtractAll();
-        } else if (atcArmyAttackPower > defArmyDefPower) { // attacker win
-            infTurnDefArmy.subtractAll();
-            double powerToSubtract = Math.sqrt((double) defArmyDefPower / atcArmyAttackPower) * defArmyDefPower;
-            infTurnAtcArmy.subtractBasedOnDefPower(powerToSubtract);
-        } else { // def win
-            infTurnAtcArmy.subtractAll();
-            double powerToSubtract = Math.sqrt((double) atcArmyAttackPower / defArmyDefPower) * atcArmyAttackPower;
-            infTurnDefArmy.subtractBasedOnCavAtcPower(powerToSubtract);
-        }
-    }
-
-    private void startArcTurn(BattleArmy infTurnAtcArmy, BattleArmy infTurnDefArmy) {
-        int atcArmyAttackPower = (int) (infTurnAtcArmy.getTotalAtcPower() * battleModifier.getAttackerModifier());
-        int defArmyDefPower = (int) (infTurnDefArmy.getTotalInfDefPower() * battleModifier.getDefenderModifier() + (wall.getWallDefenseBonus() * battleModifier.getDefenderModifier()));
-
-        if (atcArmyAttackPower == defArmyDefPower) {
-            infTurnDefArmy.subtractAll();
-            infTurnAtcArmy.subtractAll();
-        } else if (atcArmyAttackPower > defArmyDefPower) { // attacker win
-            infTurnDefArmy.subtractAll();
-            double powerToSubtract = Math.sqrt((double) defArmyDefPower / atcArmyAttackPower) * defArmyDefPower;
-            infTurnAtcArmy.subtractBasedOnDefPower(powerToSubtract);
-        } else { // def win
-            infTurnAtcArmy.subtractAll();
-            double powerToSubtract = Math.sqrt((double) atcArmyAttackPower / defArmyDefPower) * atcArmyAttackPower;
-            infTurnDefArmy.subtractBasedOnArcAtcPower(powerToSubtract);
-        }
-    }
-
-    private void trebuchetTurn() {
-        if (attackerArmy.getArmy().get(RAM) > 0) {
-            var startRamNumber = attackerArmy.getArmy().get(RAM);
-            var ramNumberToDestroy = defenderArmy.getArmy().get(TREBUCHET);
-            if (ramNumberToDestroy > startRamNumber) {
-                ramNumberToDestroy = startRamNumber;
-            }
-            attackerArmy.subtract(Map.of(RAM, ramNumberToDestroy));
         }
     }
 }

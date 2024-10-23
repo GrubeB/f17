@@ -44,29 +44,53 @@ class VillageArmyServiceImpl implements VillageArmyService {
 
     @Override
     public Mono<VillageArmy> add(VillageArmyCommand.AddUnitsCommand command) {
-        logger.debug("adding units to village army: {}", command.getVillageId());
+        logger.debug("adding units to village's army: {}", command.getVillageId());
         return villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while adding units to village army: {}, exception: {}", command.getVillageId(), e.getMessage()))
+                .doOnError(e -> logger.error("exception occurred while adding units to village's army: {}, exception: {}", command.getVillageId(), e.getMessage()))
                 .flatMap(domain -> {
-                    domain.add(command.getType(), command.getAmount());
-                    var event = new VillageArmyEvent.UnitsAddedEvent(domain.getVillageId(), command.getType(), command.getAmount());
+                    domain.add(command.getArmy());
+                    var event = new VillageArmyEvent.UnitsAddedEvent(domain.getVillageId(), command.getArmy());
                     return mongoTemplate.save(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("added units to village army: {}", saved.getVillageId()));
+                            .doOnSuccess(saved -> logger.debug("added units to village's army: {}", saved.getVillageId()));
                 });
     }
 
     @Override
     public Mono<VillageArmy> subtract(VillageArmyCommand.SubtractUnitsCommand command) {
-        logger.debug("subtracting units to village army: {}", command.getVillageId());
+        logger.debug("subtracting units to village's army: {}", command.getVillageId());
         return villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while subtracting units to village army: {}, exception: {}", command.getVillageId(), e.getMessage()))
+                .doOnError(e -> logger.error("exception occurred while subtracting units to village's army: {}, exception: {}", command.getVillageId(), e.getMessage()))
                 .flatMap(domain -> {
-                    domain.subtract(command.getType(), command.getAmount());
-                    var event = new VillageArmyEvent.UnitsAddedEvent(domain.getVillageId(), command.getType(), command.getAmount());
+                    domain.subtract(command.getArmy());
+                    var event = new VillageArmyEvent.UnitsAddedEvent(domain.getVillageId(), command.getArmy());
                     return mongoTemplate.save(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("subtracted units to village army: {}", saved.getVillageId()));
+                            .doOnSuccess(saved -> logger.debug("subtracted units to village's army: {}", saved.getVillageId()));
+                });
+    }
+
+    @Override
+    public Mono<VillageArmy> block(VillageArmyCommand.BlockUnitsCommand command) {
+        logger.debug("blocking units to village's army: {}", command.getVillageId());
+        return villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
+                .doOnError(e -> logger.error("exception occurred while blocking units to village's army: {}, exception: {}", command.getVillageId(), e.getMessage()))
+                .flatMap(domain -> {
+                    domain.block(command.getArmy());
+                    return mongoTemplate.save(domain)
+                            .doOnSuccess(saved -> logger.debug("blocked units to village's army: {}", saved.getVillageId()));
+                });
+    }
+
+    @Override
+    public Mono<VillageArmy> unblock(VillageArmyCommand.UnblockUnitsCommand command) {
+        logger.debug("unblocking units to village's army: {}", command.getVillageId());
+        return villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
+                .doOnError(e -> logger.error("exception occurred while unblocking units to village's army: {}, exception: {}", command.getVillageId(), e.getMessage()))
+                .flatMap(domain -> {
+                    domain.unblock(command.getArmy());
+                    return mongoTemplate.save(domain)
+                            .doOnSuccess(saved -> logger.debug("unblocked units to village's army: {}", saved.getVillageId()));
                 });
     }
 }

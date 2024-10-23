@@ -11,7 +11,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
-import pl.app.unit.unit.application.domain.UnitType;
 import pl.app.unit.village_army.application.domain.VillageArmy;
 import pl.app.unit.village_army.query.dto.VillageArmyDto;
 import reactor.core.publisher.Flux;
@@ -55,19 +54,9 @@ class VillageArmyDtoQueryServiceImpl implements VillageArmyDtoQueryService {
         VillageArmyDto mapToVillageArmyDto(VillageArmy domain) {
             return VillageArmyDto.builder()
                     .villageId(domain.getVillageId())
-                    .spearmanNumber(domain.getArmy().get(UnitType.SPEARMAN))
-                    .swordsmanNumber(domain.getArmy().get(UnitType.SWORDSMAN))
-                    .archerNumber(domain.getArmy().get(UnitType.ARCHER))
-                    .heavyCavalryNumber(domain.getArmy().get(UnitType.HEAVY_CAVALRY))
-                    .axeFighterNumber(domain.getArmy().get(UnitType.AXE_FIGHTER))
-                    .lightCavalryNumber(domain.getArmy().get(UnitType.LIGHT_CAVALRY))
-                    .mountedArcherNumber(domain.getArmy().get(UnitType.MOUNTED_ARCHER))
-                    .ramNumber(domain.getArmy().get(UnitType.RAM))
-                    .catapultNumber(domain.getArmy().get(UnitType.CATAPULT))
-                    .paladinNumber(domain.getArmy().get(UnitType.PALADIN))
-                    .noblemanNumber(domain.getArmy().get(UnitType.NOBLEMAN))
-                    .berserkerNumber(domain.getArmy().get(UnitType.BERSERKER))
-                    .trebuchetNumber(domain.getArmy().get(UnitType.TREBUCHET))
+                    .villageArmy(domain.getVillageArmy())
+                    .supportArmy(domain.getSupportArmy())
+                    .blockedArmy(domain.getBlockedArmy())
                     .build();
         }
     }

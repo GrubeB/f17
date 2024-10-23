@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.UnitType;
 
 import java.io.Serializable;
@@ -21,8 +22,7 @@ public interface VillageArmyEvent {
     @AllArgsConstructor
     class UnitsAddedEvent implements Serializable {
         private ObjectId villageId;
-        private UnitType type;
-        private Integer amount;
+        private Army army;
     }
 
     @Data
@@ -30,7 +30,6 @@ public interface VillageArmyEvent {
     @AllArgsConstructor
     class UnitsSubtractedEvent implements Serializable {
         private ObjectId villageId;
-        private UnitType type;
-        private Integer amount;
+        private Army army;
     }
 }

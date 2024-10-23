@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.building.village_infrastructure.application.domain.VillageInfrastructure;
 import pl.app.map.village_position.application.domain.VillagePosition;
 import pl.app.resource.village_resource.application.domain.VillageResource;
+import pl.app.unit.village_army.application.domain.VillageArmy;
 import pl.app.village.village.application.domain.VillageType;
 
 @Getter
@@ -34,4 +35,8 @@ public class VillageQuery {
     @ReadOnlyProperty
     @DocumentReference(lookup = "{'_id':?#{#self._id} }")
     private VillageInfrastructure villageInfrastructure;
+
+    @ReadOnlyProperty
+    @DocumentReference(lookup = "{'_id':?#{#self._id} }")
+    private VillageArmy villageArmy;
 }

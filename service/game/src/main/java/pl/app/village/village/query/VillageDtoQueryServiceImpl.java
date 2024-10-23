@@ -13,6 +13,7 @@ import pl.app.building.village_infrastructure.query.dto.VillageInfrastructureDto
 import pl.app.common.mapper.BaseMapper;
 import pl.app.map.village_position.query.dto.VillagePositionDto;
 import pl.app.resource.village_resource.query.dto.VillageResourceDto;
+import pl.app.unit.village_army.query.dto.VillageArmyDto;
 import pl.app.village.village.query.dto.VillageDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -60,6 +61,7 @@ class VillageDtoQueryServiceImpl implements VillageDtoQueryService {
                     .villagePosition(map(domain.getVillagePosition(), VillagePositionDto.class))
                     .villageResource(map(domain.getVillageResource(), VillageResourceDto.class))
                     .villageInfrastructure(map(domain.getVillageInfrastructure(), VillageInfrastructureDto.class))
+                    .villageArmy(map(domain.getVillageArmy(), VillageArmyDto.class))
                     .build();
         }
     }
