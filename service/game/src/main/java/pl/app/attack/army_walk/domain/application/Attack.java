@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.attack.battle.application.domain.Battle;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
@@ -26,7 +28,9 @@ public class Attack {
     private ObjectId defenderVillageId;
 
     private Instant battleDate;
+    @DocumentReference
     private ArmyWalk atackArmyWalk;
+    @DocumentReference
     private ArmyWalk returnArmyWalk;
     private Battle.BattleResult battleResult;
     private Resource plunderedResource;
@@ -45,6 +49,7 @@ public class Attack {
         this.battleDate = Instant.now();
 
         Battle battle = new Battle(army1, army2, units, defenderVillage.getWallLevel());
+        // TODO set buffs
         battle.setBattleBuffs(true, true, 100, 0, false, false);
         battleResult = battle.startBattle();
 
@@ -62,7 +67,7 @@ public class Attack {
     }
 
     public Optional<ArmyWalk> getReturnArmyWalk() {
-        return Optional.of(returnArmyWalk);
+        return Optional.ofNullable(returnArmyWalk);
     }
 
     @Getter

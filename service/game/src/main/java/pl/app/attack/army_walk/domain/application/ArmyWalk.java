@@ -36,6 +36,7 @@ public class ArmyWalk {
     private Duration duration;
 
     private Resource resource;
+    private Boolean processed;
 
     public ArmyWalk() {
     }
@@ -50,13 +51,14 @@ public class ArmyWalk {
         this.type = type;
         this.from = from;
         this.to = to;
-        this.army = army;
+        this.army = Army.of(army);
         this.armySpeed = calculateArmySpeed(army, units);
         this.distance = Position.calculateDistance(to.getPosition(), from.getPosition());
-        this.duration = Duration.ofSeconds((int) (armySpeed * 60 * distance));
+        this.duration = calculateDuration(this.armySpeed, this.distance);
         this.startDate = Instant.now();
         this.arriveDate = this.startDate.plus(duration);
         this.resource = resource;
+        this.processed = false;
     }
 
     private int calculateArmySpeed(Army army, Map<UnitType, Unit> units) {
@@ -66,6 +68,14 @@ public class ArmyWalk {
                 .map(units::get)
                 .max(Comparator.comparing(Unit::getSpeed));
         return max.map(Unit::getSpeed).orElseThrow(RuntimeException::new);
+    }
+    private Duration calculateDuration(int speed, double distance){
+        return Duration.ofSeconds((int) (speed * distance));
+    }
+
+
+    public void markAsProcessed() {
+        this.processed = true;
     }
 
     @Getter

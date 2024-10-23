@@ -10,7 +10,7 @@ import pl.app.unit.unit.application.domain.Army;
 
 import java.io.Serializable;
 
-public interface AttackCommand {
+public interface ArmyWalkCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

@@ -24,8 +24,8 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-class AttackServiceImpl implements AttackService {
-    private static final Logger logger = LoggerFactory.getLogger(AttackServiceImpl.class);
+class ArmyWalkServiceImpl implements ArmyWalkService {
+    private static final Logger logger = LoggerFactory.getLogger(ArmyWalkServiceImpl.class);
 
     private final ReactiveMongoTemplate mongoTemplate;
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
@@ -42,13 +42,13 @@ class AttackServiceImpl implements AttackService {
 
 
     @Override
-    public Mono<Attack> process(AttackCommand.ProcessArmyArrivalCommand command) {
-        logger.debug("finishing attack: {}", command.getWalkId());
+    public Mono<ArmyWalk> process(ArmyWalkCommand.ProcessArmyArrivalCommand command) {
         return armyWalkDomainRepository.fetchById(command.getWalkId())
                 .flatMap(armyWalk ->
                         switch (armyWalk.getType()) {
-                            case ATTACK -> processAttack(armyWalk);
-                            case RETURN -> throw new RuntimeException("not implemented yet");
+                            case ATTACK -> processAttack(armyWalk)
+                                    .map(attack -> attack.getReturnArmyWalk().orElse(null));
+                            case RETURN -> processReturn(armyWalk);
                             case SUPPORT -> throw new RuntimeException("not implemented yet");
                             case RELOCATE -> throw new RuntimeException("not implemented yet");
                         }
@@ -56,20 +56,36 @@ class AttackServiceImpl implements AttackService {
 
     }
 
-    Mono<Attack> processAttack(ArmyWalk armyWalk) {
+    Mono<ArmyWalk> processReturn(ArmyWalk domain) {
+        logger.debug("finishing army return: {}", domain.getArmyWalkId());
+        return
+                Mono.defer(() -> {
+                    domain.markAsProcessed();
+                    // unblock army, add resources
+                    return villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(domain.getTo().getVillageId(), domain.getArmy()))
+                            .flatMap(unused -> villageResourceService.add(new VillageResourceCommand.AddResourceCommand(domain.getTo().getVillageId(), domain.getResource())))
+                            .flatMap(unused -> mongoTemplate.save(domain))
+                            .doOnSuccess(d -> logger.debug("finished army return: {}", d.getArmyWalkId()));
+                });
+    }
+
+    Mono<Attack> processAttack(ArmyWalk domain) {
+        logger.debug("finishing attack: {}", domain.getArmyWalkId());
         return Mono.zip(
                         unitDomainRepository.fetchAll(),
-                        villageDtoQueryService.fetchById(armyWalk.getFrom().getVillageId()),
-                        villageDtoQueryService.fetchById(armyWalk.getTo().getVillageId())
+                        villageDtoQueryService.fetchById(domain.getFrom().getVillageId()),
+                        villageDtoQueryService.fetchById(domain.getTo().getVillageId())
                 )
                 .flatMap(t -> {
                     var units = t.getT1();
                     var attackerVillage = t.getT2();
                     var defenderVillage = t.getT3();
 
-                    var domain = new Attack(armyWalk, armyWalk.getArmy(), defenderVillage.getVillageArmy().getVillageArmy(), units,
+                    domain.markAsProcessed();
+                    var attack = new Attack(domain, domain.getArmy(), defenderVillage.getVillageArmy().getVillageArmy(), units,
                             new Attack.AttackVillage(defenderVillage.getVillageResource().getResource(), defenderVillage.getVillageInfrastructure().getWall().getLevel()));
                     return mongoTemplate.save(domain)
+                            .flatMap(d -> mongoTemplate.insert(attack))
                             // subtract attacker&defender units
                             .flatMap(d ->
                                     villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(d.getAttackerVillageId(), d.getBattleResult().getAttackerArmyLosses()))
@@ -105,7 +121,7 @@ class AttackServiceImpl implements AttackService {
     }
 
     @Override
-    public Mono<ArmyWalk> sendArmy(AttackCommand.SendArmyCommand command) {
+    public Mono<ArmyWalk> sendArmy(ArmyWalkCommand.SendArmyCommand command) {
         logger.debug("sending army to the village: {}", command.getToVillageId());
         return Mono.zip(
                         unitDomainRepository.fetchAll(),

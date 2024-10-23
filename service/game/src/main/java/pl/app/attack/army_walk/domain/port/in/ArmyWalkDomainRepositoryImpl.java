@@ -33,7 +33,8 @@ class ArmyWalkDomainRepositoryImpl implements ArmyWalkDomainRepository {
         Instant toTimeThreshold = currentTime.plus(withinTime);
 
         return mongoTemplate.query(ArmyWalk.class)
-                .matching(Query.query(Criteria.where("arriveDate").lte(toTimeThreshold)))
+                .matching(Query.query(Criteria.where("arriveDate").lte(toTimeThreshold)
+                        .and("processed").is(false)))
                 .all();
     }
 }

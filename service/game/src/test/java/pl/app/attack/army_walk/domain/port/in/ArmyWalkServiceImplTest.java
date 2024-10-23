@@ -25,10 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AttackServiceImplTest {
+class ArmyWalkServiceImplTest {
 
     @Autowired
-    private AttackServiceImpl service;
+    private ArmyWalkServiceImpl service;
     @Autowired
     private VillageService villageService;
     @Autowired
@@ -41,7 +41,7 @@ class AttackServiceImplTest {
         var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
 
-        StepVerifier.create(service.sendArmy(new AttackCommand.SendArmyCommand(
+        StepVerifier.create(service.sendArmy(new ArmyWalkCommand.SendArmyCommand(
                         ArmyWalkType.ATTACK,
                         playerId, village1.getId(),
                         playerId, village2.getId(),
@@ -60,7 +60,7 @@ class AttackServiceImplTest {
         var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
         var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 10)))).block();
-        ArmyWalk armyWalk = service.sendArmy(new AttackCommand.SendArmyCommand(
+        ArmyWalk armyWalk = service.sendArmy(new ArmyWalkCommand.SendArmyCommand(
                 ArmyWalkType.ATTACK,
                 playerId, village1.getId(),
                 playerId, village2.getId(),
@@ -68,7 +68,7 @@ class AttackServiceImplTest {
                 Resource.zero()
         )).block();
         StepVerifier.withVirtualTime(() -> Mono.delay(Duration.ofDays(1))
-                        .then(service.process(new AttackCommand.ProcessArmyArrivalCommand(armyWalk.getArmyWalkId()))))
+                        .then(service.process(new ArmyWalkCommand.ProcessArmyArrivalCommand(armyWalk.getArmyWalkId()))))
                 .thenAwait(Duration.ofDays(2))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();

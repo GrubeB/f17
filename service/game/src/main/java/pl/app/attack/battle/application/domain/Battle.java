@@ -3,6 +3,7 @@ package pl.app.attack.battle.application.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +37,14 @@ public class Battle {
     private BattleModifier battleModifier;
     private BattleResult battleResult;
 
+    public Battle() {
+    }
+
     public Battle(Army attackerArmy, Army defenderArmy, Map<UnitType, Unit> units, Integer inputWallLevel) {
         this.battleId = ObjectId.get();
         this.originalAttackerArmy = new BattleArmy(attackerArmy);
         this.attackerArmy = new BattleArmy(attackerArmy);
-        this.originalDefenderArmy = new BattleArmy(attackerArmy);
+        this.originalDefenderArmy = new BattleArmy(defenderArmy);
         this.defenderArmy = new BattleArmy(defenderArmy);
         this.units = units;
         this.wall = new Wall(inputWallLevel);
@@ -180,6 +184,7 @@ public class Battle {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class BattleResult {
         private ObjectId battleId;
         private boolean attackerWin;
@@ -443,10 +448,11 @@ public class Battle {
     }
 
     @Getter
+    @NoArgsConstructor
     public class Wall {
         private int wallDefenseBonus;
         private double wallBonusModifier; // 1 - default
-        private final int startWallLevel;
+        private int startWallLevel;
         private int resultingWallLevel;
 
         private double demolitionModifier;
