@@ -29,16 +29,32 @@ public class Resource {
         this.provision = provision;
     }
 
+    public Resource(Integer value, ResourceType resourceType) {
+        this.wood = 0;
+        this.clay = 0;
+        this.iron = 0;
+        this.provision = 0;
+        switch (resourceType){
+            case WOOD -> this.wood = value;
+            case CLAY -> this.clay = value;
+            case IRON -> this.iron = value;
+            case PROVISION -> this.provision = value;
+        }
+    }
+
     public static Resource zero() {
         return new Resource(0, 0, 0, 0);
     }
 
-    public static Resource of(Integer warehouseCapacity) {
-        return new Resource(warehouseCapacity, warehouseCapacity, warehouseCapacity, warehouseCapacity);
+    public static Resource of(Integer value) {
+        return new Resource(value, value, value, value);
     }
 
     public static Resource of(Integer wood, Integer clay, Integer iron, Integer provision) {
         return new Resource(wood, clay, iron, provision);
+    }
+    public static Resource of(Integer value, ResourceType resourceType) {
+        return new Resource(value, resourceType);
     }
 
     public Resource add(Integer resourceQuantity, ResourceType resourceType) {

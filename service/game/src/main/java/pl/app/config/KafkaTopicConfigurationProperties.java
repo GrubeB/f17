@@ -26,6 +26,8 @@ public class KafkaTopicConfigurationProperties {
     private Topic builderCreated;
     private Topic constructAdded;
     private Topic constructRemoved;
+    // item
+    private Topic playerInventoryCreated;
 
     // money
     private Topic playerMoneyCreated;
@@ -68,6 +70,8 @@ public class KafkaTopicConfigurationProperties {
                 builderCreated,
                 constructAdded,
                 constructRemoved,
+                // item
+                playerInventoryCreated,
                 // money
                 playerMoneyCreated,
                 moneyAdded,

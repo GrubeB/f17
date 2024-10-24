@@ -10,6 +10,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.item.inventory.application.port.in.InventoryCommand;
+import pl.app.item.inventory.application.port.in.InventoryService;
+import pl.app.money.player_money.application.port.in.PlayerMoneyCommand;
+import pl.app.money.player_money.application.port.in.PlayerMoneyService;
 import pl.app.player.player.application.domain.Player;
 import pl.app.player.player.application.domain.PlayerEvent;
 import pl.app.player.player.application.domain.PlayerException;
@@ -25,6 +29,9 @@ class PlayerServiceImpl implements PlayerService {
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
 
+    private final PlayerMoneyService playerMoneyService;
+    private final InventoryService inventoryService;
+
     @Override
     public Mono<Player> crate(PlayerCommand.CreatePlayerCommand command) {
         logger.debug("crating player: {}", command.getName());
@@ -34,7 +41,9 @@ class PlayerServiceImpl implements PlayerService {
                 .then(Mono.defer(() -> {
                     var domain = new Player(command.getAccountId());
                     var event = new PlayerEvent.PlayerCreatedEvent(domain.getPlayerId());
-                    return mongoTemplate.insert(domain)
+                    return playerMoneyService.crate(new PlayerMoneyCommand.CreatePlayerMoneyCommand(domain.getPlayerId()))
+                            .then(inventoryService.create(new InventoryCommand.CreateInventoryCommand(domain.getPlayerId())))
+                            .then(mongoTemplate.insert(domain))
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getPlayerCreated().getName(), saved.getPlayerId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> logger.debug("created player: {}", saved.getPlayerId()));
                 }));
