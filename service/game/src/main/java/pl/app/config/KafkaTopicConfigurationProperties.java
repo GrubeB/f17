@@ -52,6 +52,7 @@ public class KafkaTopicConfigurationProperties {
 
     // village
     private Topic villageCreated;
+    private Topic villageEffectCreated;
 
     public List<String> getAllTopicNames() {
         return getAllTopics().stream()
@@ -90,7 +91,8 @@ public class KafkaTopicConfigurationProperties {
                 unitsAdded,
                 unitsSubtracted,
                 // village
-                villageCreated
+                villageCreated,
+                villageEffectCreated
         );
     }
 

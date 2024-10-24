@@ -15,6 +15,8 @@ import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.domain.VillageResource;
 import pl.app.resource.village_resource.application.domain.VillageResourceEvent;
 import pl.app.resource.village_resource.application.domain.VillageResourceException;
+import pl.app.village.village_effect.application.domain.EffectType;
+import pl.app.village.village_effect.query.VillageEffectDtoQueryService;
 import reactor.core.publisher.Mono;
 
 
@@ -28,7 +30,9 @@ class VillageResourceServiceImpl implements VillageResourceService {
     private final KafkaTopicConfigurationProperties topicNames;
 
     private final VillageResourceDomainRepository villageResourceDomainRepository;
+
     private final VillageInfrastructureDtoQueryService villageInfrastructureDtoQueryService;
+    private final VillageEffectDtoQueryService villageEffectDtoQueryService;
 
     @Override
     public Mono<VillageResource> crate(VillageResourceCommand.CreateVillageResourceCommand command) {
@@ -70,17 +74,19 @@ class VillageResourceServiceImpl implements VillageResourceService {
         logger.trace("refreshing resources in village: {}", command.getVillageId());
         return Mono.zip(
                         villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
-                        villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId())
+                        villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId()),
+                        villageEffectDtoQueryService.fetchByVillageId(command.getVillageId())
                 )
                 .doOnError(e -> logger.error("exception occurred while refreshing resources in village: {}, exception: {}", command.getVillageId(), e.getMessage()))
                 .flatMap(t -> {
                     var domain = t.getT1();
                     var infrastructure = t.getT2();
+                    var villageEffect = t.getT3();
                     var warehouseCapacity = infrastructure.getWarehouse().getCapacity();
                     Resource resourceAdded = domain.refreshResource(new Resource(
-                            infrastructure.getTimberCamp().getProduction(),
-                            infrastructure.getClayPit().getProduction(),
-                            infrastructure.getIronMine().getProduction(),
+                            infrastructure.getTimberCamp().getProduction() * (1 + villageEffect.getBuffValue(EffectType.WOOD_BUFF)),
+                            infrastructure.getClayPit().getProduction() * (1 + villageEffect.getBuffValue(EffectType.CLAY_BUFF)),
+                            infrastructure.getIronMine().getProduction() * (1 + villageEffect.getBuffValue(EffectType.IRON_BUFF)),
                             0
                     ), Resource.of(warehouseCapacity));
                     var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), resourceAdded);
@@ -89,6 +95,7 @@ class VillageResourceServiceImpl implements VillageResourceService {
                             .doOnSuccess(saved -> logger.trace("refreshed resource in village: {}", saved.getVillageId()));
                 });
     }
+
 
     @Override
     public Mono<VillageResource> subtract(VillageResourceCommand.SubtractResourceCommand command) {
