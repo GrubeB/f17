@@ -1,5 +1,6 @@
 package pl.app.unit.village_army.application.domain;
 
+import pl.app.common.shared.exception.InvalidStateException;
 import pl.app.common.shared.exception.NotFoundException;
 import pl.app.common.shared.exception.ValidationException;
 
@@ -32,5 +33,15 @@ public interface VillageArmyException {
         public static DuplicatedVillageArmyException fromId(String id) {
             return new DuplicatedVillageArmyException(MessageFormat.format("there are army for given village: {0}", id));
         }
+    }
+    class VillageDoseNotSupportException extends InvalidStateException {
+        public VillageDoseNotSupportException() {
+            super("this village does not support given village");
+        }
+
+        public VillageDoseNotSupportException(String message) {
+            super(message);
+        }
+
     }
 }

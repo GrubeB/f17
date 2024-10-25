@@ -93,4 +93,28 @@ class VillageArmyServiceImpl implements VillageArmyService {
                             .doOnSuccess(saved -> logger.debug("unblocked units to village's army: {}", saved.getVillageId()));
                 });
     }
+
+    @Override
+    public Mono<VillageArmy> addSupport(VillageArmyCommand.AddVillageSupportCommand command) {
+        logger.debug("adding support to village's army: {}", command.getSupportedVillageId());
+        return villageArmyDomainRepository.fetchByVillageId(command.getSupportedVillageId())
+                .doOnError(e -> logger.error("exception occurred while adding support to village's army: {}, exception: {}", command.getSupportedVillageId(), e.getMessage()))
+                .flatMap(domain -> {
+                    domain.addSupport(command.getSupportingVillageId(), command.getArmy());
+                    return mongoTemplate.save(domain)
+                            .doOnSuccess(saved -> logger.debug("added support to village's army: {}", saved.getVillageId()));
+                });
+    }
+
+    @Override
+    public Mono<VillageArmy> subtractSupport(VillageArmyCommand.SubtractVillageSupportCommand command) {
+        logger.debug("subtracting support to village's army: {}", command.getSupportedVillageId());
+        return villageArmyDomainRepository.fetchByVillageId(command.getSupportedVillageId())
+                .doOnError(e -> logger.error("exception occurred while subtracting support to village's army: {}, exception: {}", command.getSupportedVillageId(), e.getMessage()))
+                .flatMap(domain -> {
+                    domain.removeSupport(command.getSupportingVillageId(), command.getArmy());
+                    return mongoTemplate.save(domain)
+                            .doOnSuccess(saved -> logger.debug("subtracted support to village's army: {}", saved.getVillageId()));
+                });
+    }
 }

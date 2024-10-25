@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.UnitType;
 
 import java.io.Serializable;
-import java.util.Map;
 
 public interface VillageArmyCommand {
     @Data
@@ -41,11 +39,29 @@ public interface VillageArmyCommand {
         private ObjectId villageId;
         private Army army;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class UnblockUnitsCommand implements Serializable {
         private ObjectId villageId;
+        private Army army;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class AddVillageSupportCommand implements Serializable {
+        private ObjectId supportedVillageId;
+        private ObjectId supportingVillageId;
+        private Army army;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class SubtractVillageSupportCommand implements Serializable {
+        private ObjectId supportedVillageId;
+        private ObjectId supportingVillageId;
         private Army army;
     }
 }

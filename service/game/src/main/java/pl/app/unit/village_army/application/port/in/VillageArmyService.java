@@ -13,4 +13,8 @@ public interface VillageArmyService {
     Mono<VillageArmy> block(VillageArmyCommand.BlockUnitsCommand command);
 
     Mono<VillageArmy> unblock(VillageArmyCommand.UnblockUnitsCommand command);
+
+    Mono<VillageArmy> addSupport(VillageArmyCommand.AddVillageSupportCommand command);
+
+    Mono<VillageArmy> subtractSupport(VillageArmyCommand.SubtractVillageSupportCommand command);
 }
