@@ -31,6 +31,6 @@ public abstract class AbstractIntegrationTest {
     static void redisProperties(DynamicPropertyRegistry registry) {
         logger.info("Setting dynamic properties to registry");
         registry.add("spring.data.mongodb.port", () -> "27018");
-        registry.add("app.kafka.bootstrap-servers", () -> "127.0.0.1:19093");
+        registry.add("app.kafka.bootstrap.servers", () -> "127.0.0.1:19093");
     }
 }

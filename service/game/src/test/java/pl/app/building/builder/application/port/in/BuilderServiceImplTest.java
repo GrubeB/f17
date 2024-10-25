@@ -15,6 +15,7 @@ import pl.app.building.builder.application.domain.BuilderEvent;
 import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.building.application.port.in.BuildingLevelDomainRepository;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureDomainRepository;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class BuilderServiceImplTest {
+class BuilderServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private BuilderServiceImpl service;

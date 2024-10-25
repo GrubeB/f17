@@ -43,4 +43,8 @@ public class Building {
             this.levelDown(buildingLevel);
         }
     }
+
+    public boolean meetRequirements(Integer level) {
+        return this.level >= level;
+    }
 }

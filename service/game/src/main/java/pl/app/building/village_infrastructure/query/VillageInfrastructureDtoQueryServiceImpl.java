@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.building.village_infrastructure.application.domain.VillageInfrastructure;
@@ -26,7 +27,7 @@ class VillageInfrastructureDtoQueryServiceImpl implements VillageInfrastructureD
     }
 
     @Override
-    public Mono<VillageInfrastructureDto> fetchByVillageId(ObjectId villageId) {
+    public Mono<VillageInfrastructureDto> fetchByVillageId(@NonNull ObjectId villageId) {
         return repository.findById(villageId)
                 .map(e -> mapper.map(e, VillageInfrastructureDto.class));
     }

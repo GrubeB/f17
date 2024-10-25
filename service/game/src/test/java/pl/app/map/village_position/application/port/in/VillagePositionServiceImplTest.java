@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.map.map.application.port.in.MapDomainRepository;
 import pl.app.map.village_position.application.domain.VillagePositionProvider;
@@ -16,7 +17,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillagePositionServiceImplTest {
+class VillagePositionServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private VillagePositionServiceImpl service;

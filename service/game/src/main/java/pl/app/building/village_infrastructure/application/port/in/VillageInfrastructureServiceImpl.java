@@ -61,93 +61,93 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
                 .flatMap(levels -> {
                     VillageInfrastructureEvent.VillageInfrastructureBuildingLevelUpEvent event = switch (buildingType) {
                         case ACADEMY -> {
-                            var building = domain.getAcademy();
+                            var building = domain.getBuildings().getAcademy();
                             building.levelUp(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelUpEvent(domain.getVillageId(), ACADEMY, numberOfLevels);
                         }
                         case BARRACKS -> {
-                            var building = domain.getBarracks();
+                            var building = domain.getBuildings().getBarracks();
                             building.levelUp(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelUpEvent(domain.getVillageId(), BARRACKS, numberOfLevels);
                         }
                         case CHAPEL -> {
-                            var building = domain.getChapel();
+                            var building = domain.getBuildings().getChapel();
                             building.levelUp(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelUpEvent(domain.getVillageId(), CHAPEL, numberOfLevels);
                         }
                         case CHURCH -> {
-                            var building = domain.getChurch();
+                            var building = domain.getBuildings().getChurch();
                             building.levelUp(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelUpEvent(domain.getVillageId(), CHURCH, numberOfLevels);
                         }
                         case CLAY_PIT -> {
-                            var building = domain.getClayPit();
+                            var building = domain.getBuildings().getClayPit();
                             building.levelUp(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelUpEvent(domain.getVillageId(), CLAY_PIT, numberOfLevels, currentProduction);
                         }
                         case FARM -> {
-                            var building = domain.getFarm();
+                            var building = domain.getBuildings().getFarm();
                             var enterProvisions = building.getProvisions();
                             building.levelUp(levels, numberOfLevels);
                             var currentProvisions = building.getProvisions();
                             yield new VillageInfrastructureEvent.VillageInfrastructureFarmBuildingLevelUpEvent(domain.getVillageId(), FARM, numberOfLevels, currentProvisions - enterProvisions);
                         }
                         case HEADQUARTERS -> {
-                            var building = domain.getHeadquarters();
+                            var building = domain.getBuildings().getHeadquarters();
                             building.levelUp(levels, numberOfLevels);
                             var currentFinishBuildingDuration = building.getFinishBuildingDuration();
                             yield new VillageInfrastructureEvent.VillageInfrastructureHeadquartersBuildingLevelUpEvent(domain.getVillageId(), HEADQUARTERS, numberOfLevels, currentFinishBuildingDuration);
                         }
                         case HOSPITAL -> {
-                            var building = domain.getHospital();
+                            var building = domain.getBuildings().getHospital();
                             building.levelUp(levels, numberOfLevels);
                             var currentBeds = building.getBeds();
                             yield new VillageInfrastructureEvent.VillageInfrastructureHospitalBuildingLevelUpEvent(domain.getVillageId(), HOSPITAL, numberOfLevels, currentBeds);
                         }
                         case IRON_MINE -> {
-                            var building = domain.getIronMine();
+                            var building = domain.getBuildings().getIronMine();
                             building.levelUp(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelUpEvent(domain.getVillageId(), IRON_MINE, numberOfLevels, currentProduction);
                         }
                         case MARKET -> {
-                            var building = domain.getMarket();
+                            var building = domain.getBuildings().getMarket();
                             building.levelUp(levels, numberOfLevels);
                             var currentTraderNumber = building.getTraderNumber();
                             yield new VillageInfrastructureEvent.VillageInfrastructureMarketBuildingLevelUpEvent(domain.getVillageId(), MARKET, numberOfLevels, currentTraderNumber);
                         }
                         case RALLY_POINT -> {
-                            var building = domain.getRallyPoint();
+                            var building = domain.getBuildings().getRallyPoint();
                             building.levelUp(levels, numberOfLevels);
                             var currentSpeedIncreaseAgainstBarbarians = building.getSpeedIncreaseAgainstBarbarians();
                             yield new VillageInfrastructureEvent.VillageInfrastructureRallyPointBuildingLevelUpEvent(domain.getVillageId(), RALLY_POINT, numberOfLevels, currentSpeedIncreaseAgainstBarbarians);
                         }
                         case STATUE -> {
-                            var building = domain.getStatue();
+                            var building = domain.getBuildings().getStatue();
                             building.levelUp(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelUpEvent(domain.getVillageId(), STATUE, numberOfLevels);
                         }
                         case TAVERN -> {
-                            var building = domain.getTavern();
+                            var building = domain.getBuildings().getTavern();
                             building.levelUp(levels, numberOfLevels);
                             var currentSpyNumber = building.getSpyNumber();
                             yield new VillageInfrastructureEvent.VillageInfrastructureTavernBuildingLevelUpEvent(domain.getVillageId(), TAVERN, numberOfLevels, currentSpyNumber);
                         }
                         case TIMBER_CAMP -> {
-                            var building = domain.getTimberCamp();
+                            var building = domain.getBuildings().getTimberCamp();
                             building.levelUp(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelUpEvent(domain.getVillageId(), TIMBER_CAMP, numberOfLevels, currentProduction);
                         }
                         case WALL -> {
-                            var building = domain.getWall();
+                            var building = domain.getBuildings().getWall();
                             building.levelUp(levels, numberOfLevels);
                             var currentDefenceIncrease = building.getDefenceIncrease();
                             yield new VillageInfrastructureEvent.VillageInfrastructureWallBuildingLevelUpEvent(domain.getVillageId(), WALL, numberOfLevels, currentDefenceIncrease);
                         }
                         case WAREHOUSE -> {
-                            var building = domain.getWarehouse();
+                            var building = domain.getBuildings().getWarehouse();
                             building.levelUp(levels, numberOfLevels);
                             var currentCapacity = building.getCapacity();
                             yield new VillageInfrastructureEvent.VillageInfrastructureWarehouseBuildingLevelUpEvent(domain.getVillageId(), WAREHOUSE, numberOfLevels, currentCapacity);
@@ -174,93 +174,93 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
                 .flatMap(levels -> {
                     VillageInfrastructureEvent.VillageInfrastructureBuildingLevelDownEvent event = switch (buildingType) {
                         case ACADEMY -> {
-                            var building = domain.getAcademy();
+                            var building = domain.getBuildings().getAcademy();
                             building.levelDown(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelDownEvent(domain.getVillageId(), ACADEMY, numberOfLevels);
                         }
                         case BARRACKS -> {
-                            var building = domain.getBarracks();
+                            var building = domain.getBuildings().getBarracks();
                             building.levelDown(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelDownEvent(domain.getVillageId(), BARRACKS, numberOfLevels);
                         }
                         case CHAPEL -> {
-                            var building = domain.getChapel();
+                            var building = domain.getBuildings().getChapel();
                             building.levelDown(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelDownEvent(domain.getVillageId(), CHAPEL, numberOfLevels);
                         }
                         case CHURCH -> {
-                            var building = domain.getChurch();
+                            var building = domain.getBuildings().getChurch();
                             building.levelDown(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelDownEvent(domain.getVillageId(), CHURCH, numberOfLevels);
                         }
                         case CLAY_PIT -> {
-                            var building = domain.getClayPit();
+                            var building = domain.getBuildings().getClayPit();
                             building.levelDown(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelDownEvent(domain.getVillageId(), CLAY_PIT, numberOfLevels, currentProduction);
                         }
                         case FARM -> {
-                            var building = domain.getFarm();
+                            var building = domain.getBuildings().getFarm();
                             var enterProvisions = building.getProvisions();
                             building.levelDown(levels, numberOfLevels);
                             var currentProvisions = building.getProvisions();
                             yield new VillageInfrastructureEvent.VillageInfrastructureFarmBuildingLevelDownEvent(domain.getVillageId(), FARM, numberOfLevels, currentProvisions - enterProvisions);
                         }
                         case HEADQUARTERS -> {
-                            var building = domain.getHeadquarters();
+                            var building = domain.getBuildings().getHeadquarters();
                             building.levelDown(levels, numberOfLevels);
                             var currentFinishBuildingDuration = building.getFinishBuildingDuration();
                             yield new VillageInfrastructureEvent.VillageInfrastructureHeadquartersBuildingLevelDownEvent(domain.getVillageId(), HEADQUARTERS, numberOfLevels, currentFinishBuildingDuration);
                         }
                         case HOSPITAL -> {
-                            var building = domain.getHospital();
+                            var building = domain.getBuildings().getHospital();
                             building.levelDown(levels, numberOfLevels);
                             var currentBeds = building.getBeds();
                             yield new VillageInfrastructureEvent.VillageInfrastructureHospitalBuildingLevelDownEvent(domain.getVillageId(), HOSPITAL, numberOfLevels, currentBeds);
                         }
                         case IRON_MINE -> {
-                            var building = domain.getIronMine();
+                            var building = domain.getBuildings().getIronMine();
                             building.levelDown(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelDownEvent(domain.getVillageId(), IRON_MINE, numberOfLevels, currentProduction);
                         }
                         case MARKET -> {
-                            var building = domain.getMarket();
+                            var building = domain.getBuildings().getMarket();
                             building.levelDown(levels, numberOfLevels);
                             var currentTraderNumber = building.getTraderNumber();
                             yield new VillageInfrastructureEvent.VillageInfrastructureMarketBuildingLevelDownEvent(domain.getVillageId(), MARKET, numberOfLevels, currentTraderNumber);
                         }
                         case RALLY_POINT -> {
-                            var building = domain.getRallyPoint();
+                            var building = domain.getBuildings().getRallyPoint();
                             building.levelDown(levels, numberOfLevels);
                             var currentSpeedIncreaseAgainstBarbarians = building.getSpeedIncreaseAgainstBarbarians();
                             yield new VillageInfrastructureEvent.VillageInfrastructureRallyPointBuildingLevelDownEvent(domain.getVillageId(), RALLY_POINT, numberOfLevels, currentSpeedIncreaseAgainstBarbarians);
                         }
                         case STATUE -> {
-                            var building = domain.getStatue();
+                            var building = domain.getBuildings().getStatue();
                             building.levelDown(levels, numberOfLevels);
                             yield new VillageInfrastructureEvent.VillageInfrastructureBuildingLevelDownEvent(domain.getVillageId(), STATUE, numberOfLevels);
                         }
                         case TAVERN -> {
-                            var building = domain.getTavern();
+                            var building = domain.getBuildings().getTavern();
                             building.levelDown(levels, numberOfLevels);
                             var currentSpyNumber = building.getSpyNumber();
                             yield new VillageInfrastructureEvent.VillageInfrastructureTavernBuildingLevelDownEvent(domain.getVillageId(), TAVERN, numberOfLevels, currentSpyNumber);
                         }
                         case TIMBER_CAMP -> {
-                            var building = domain.getTimberCamp();
+                            var building = domain.getBuildings().getTimberCamp();
                             building.levelDown(levels, numberOfLevels);
                             int currentProduction = building.getProduction();
                             yield new VillageInfrastructureEvent.VillageInfrastructureResourceBuildingLevelDownEvent(domain.getVillageId(), TIMBER_CAMP, numberOfLevels, currentProduction);
                         }
                         case WALL -> {
-                            var building = domain.getWall();
+                            var building = domain.getBuildings().getWall();
                             building.levelDown(levels, numberOfLevels);
                             var currentDefenceIncrease = building.getDefenceIncrease();
                             yield new VillageInfrastructureEvent.VillageInfrastructureWallBuildingLevelDownEvent(domain.getVillageId(), WALL, numberOfLevels, currentDefenceIncrease);
                         }
                         case WAREHOUSE -> {
-                            var building = domain.getWarehouse();
+                            var building = domain.getBuildings().getWarehouse();
                             building.levelDown(levels, numberOfLevels);
                             var currentCapacity = building.getCapacity();
                             yield new VillageInfrastructureEvent.VillageInfrastructureWarehouseBuildingLevelDownEvent(domain.getVillageId(), WAREHOUSE, numberOfLevels, currentCapacity);

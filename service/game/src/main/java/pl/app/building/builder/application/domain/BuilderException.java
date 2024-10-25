@@ -44,5 +44,13 @@ public interface BuilderException {
             super(message);
         }
     }
+    class VillageDoseNotMeetRequirementsException extends InvalidStateException {
+        public VillageDoseNotMeetRequirementsException() {
+            super("village does not meet requirements");
+        }
 
+        public VillageDoseNotMeetRequirementsException(String message) {
+            super(message);
+        }
+    }
 }

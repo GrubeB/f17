@@ -19,7 +19,7 @@ class VillageResourceDomainRepositoryImpl implements VillageResourceDomainReposi
     @Override
     public Mono<VillageResource> fetchByVillageId(ObjectId villageId) {
         return mongoTemplate.query(VillageResource.class)
-                .matching(Query.query(Criteria.where("villageId").is(villageId)))
+                .matching(Query.query(Criteria.where("_id").is(villageId)))
                 .one()
                 .switchIfEmpty(Mono.error(() -> VillageResourceException.NotFoundVillageResourceException.fromId(villageId.toHexString())));
     }

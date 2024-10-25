@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.item.item.application.domain.CrownPackItem;
 import pl.app.player.player.application.domain.Player;
 import pl.app.player.player.application.port.in.PlayerCommand;
@@ -15,7 +16,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class InventoryServiceImplTest {
+class InventoryServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private InventoryServiceImpl service;

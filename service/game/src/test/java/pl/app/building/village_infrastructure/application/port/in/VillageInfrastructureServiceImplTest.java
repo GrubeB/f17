@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import pl.app.building.building.application.port.in.BuildingLevelDomainRepository;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.test.StepVerifier;
 
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillageInfrastructureServiceImplTest {
+class VillageInfrastructureServiceImplTest extends AbstractIntegrationTest {
     @Autowired
     private VillageInfrastructureServiceImpl service;
     @SpyBean

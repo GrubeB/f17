@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.building.building.application.domain.BuildingLevel;
 import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.application.domain.Buildings;
 import pl.app.resource.resource.application.domain.Resource;
 
 import java.time.Instant;
@@ -29,12 +30,14 @@ public class Builder {
         this.constructs = new LinkedHashSet<>();
     }
 
-    public Construct addConstruct(BuildingType type, Integer currentLevel, Map<Integer, ? extends BuildingLevel> buildingLevels) {
+    public Construct addConstruct(BuildingType type, Buildings buildings, Map<Integer, ? extends BuildingLevel> buildingLevels) {
         if (constructs.size() >= constructNumberMax) {
             throw new BuilderException.ReachedMaxConstructorNumberException();
         }
-        var toLevel = calculateToLevel(type, currentLevel);
+        var currentBuilding = buildings.getBuildingByType(type);
+        var toLevel = calculateToLevel(type, currentBuilding.getLevel());
         var buildingLevel = buildingLevels.get(toLevel);
+        verifyVillageMeetsRequirements(buildings, buildingLevel.getRequirements());
         Optional<Construct> lastConstruct = getLastConstruct();
         if (lastConstruct.isPresent()) {
             Instant lastConstructToDate = lastConstruct.get().getTo();
@@ -46,6 +49,14 @@ public class Builder {
             Construct newConstruct = new Construct(type, toLevel, now, now.plus(buildingLevel.getDuration()), buildingLevel.getCost());
             constructs.add(newConstruct);
             return newConstruct;
+        }
+    }
+
+    private void verifyVillageMeetsRequirements(Buildings buildings, Set<BuildingLevel.Requirement> requirements) {
+        var meetRequirements = requirements.stream()
+                .allMatch(requirement -> buildings.meetRequirements(requirement.getBuildingType(), requirement.getLevel()));
+        if (!meetRequirements) {
+            throw new BuilderException.VillageDoseNotMeetRequirementsException();
         }
     }
 

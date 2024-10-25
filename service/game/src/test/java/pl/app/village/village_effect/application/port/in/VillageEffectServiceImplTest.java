@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.village.village.application.domain.Village;
 import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
@@ -17,7 +18,7 @@ import java.time.Duration;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillageEffectServiceImplTest {
+class VillageEffectServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private VillageEffectServiceImpl service;

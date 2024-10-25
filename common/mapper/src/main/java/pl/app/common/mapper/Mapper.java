@@ -9,18 +9,27 @@ import java.util.function.Function;
 @SuppressWarnings("unchecked")
 public interface Mapper {
     default <T, R> R map(T source, Class<R> destinationClass) {
+        if (Objects.isNull(source)) {
+            return null;
+        }
         Function<T, R> mapper = getMapper((Class<T>) source.getClass(), destinationClass)
                 .orElseThrow(() -> new RuntimeException("Mapper " + getClass().getName() + " has no mapper from " + source.getClass().getName() + " to " + destinationClass.getName()));
         return mapper.apply(source);
     }
 
     default <T, T2, R> R map(T source, T2 source2, Class<R> destinationClass) {
+        if (Objects.isNull(source)) {
+            return null;
+        }
         BiFunction<T, T2, R> mapper = getMapper((Class<T>) source.getClass(), (Class<T2>) source2.getClass(), destinationClass)
                 .orElseThrow(() -> new RuntimeException("Mapper " + getClass().getName() + " has no mapper from " + source.getClass().getName() + "," + source2.getClass().getName() + " to " + destinationClass.getName()));
         return mapper.apply(source, source2);
     }
 
     default <T, T2, T3, R> R map(T source, T2 source2, T3 source3, Class<R> destinationClass) {
+        if (Objects.isNull(source)) {
+            return null;
+        }
         MapperObject4.TriFunction<T, T2, T3, R> mapper = getMapper((Class<T>) source.getClass(), (Class<T2>) source2.getClass(), (Class<T3>) source3.getClass(), destinationClass)
                 .orElseThrow(() -> new RuntimeException("Mapper " + getClass().getName() + " has no mapper from " + source.getClass().getName() + "," + source2.getClass().getName() + "," + source3.getClass().getName() + " to " + destinationClass.getName()));
         return mapper.apply(source, source2, source3);

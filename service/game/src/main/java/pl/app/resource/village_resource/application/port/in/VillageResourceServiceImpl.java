@@ -60,7 +60,7 @@ class VillageResourceServiceImpl implements VillageResourceService {
                 .flatMap(t -> {
                     var domain = t.getT1();
                     var infrastructure = t.getT2();
-                    var warehouseCapacity = infrastructure.getWarehouse().getCapacity();
+                    var warehouseCapacity = infrastructure.getBuildings().getWarehouse().getCapacity();
                     domain.addResource(command.getResource(), Resource.of(warehouseCapacity));
                     var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), command.getResource());
                     return mongoTemplate.save(domain)
@@ -82,11 +82,11 @@ class VillageResourceServiceImpl implements VillageResourceService {
                     var domain = t.getT1();
                     var infrastructure = t.getT2();
                     var villageEffect = t.getT3();
-                    var warehouseCapacity = infrastructure.getWarehouse().getCapacity();
+                    var warehouseCapacity = infrastructure.getBuildings().getWarehouse().getCapacity();
                     Resource resourceAdded = domain.refreshResource(new Resource(
-                            infrastructure.getTimberCamp().getProduction() * (1 + villageEffect.getBuffValue(EffectType.WOOD_BUFF)),
-                            infrastructure.getClayPit().getProduction() * (1 + villageEffect.getBuffValue(EffectType.CLAY_BUFF)),
-                            infrastructure.getIronMine().getProduction() * (1 + villageEffect.getBuffValue(EffectType.IRON_BUFF)),
+                            infrastructure.getBuildings().getTimberCamp().getProduction() * (1 + villageEffect.getBuffValue(EffectType.WOOD_BUFF)),
+                            infrastructure.getBuildings().getClayPit().getProduction() * (1 + villageEffect.getBuffValue(EffectType.CLAY_BUFF)),
+                            infrastructure.getBuildings().getIronMine().getProduction() * (1 + villageEffect.getBuffValue(EffectType.IRON_BUFF)),
                             0
                     ), Resource.of(warehouseCapacity));
                     var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), resourceAdded);

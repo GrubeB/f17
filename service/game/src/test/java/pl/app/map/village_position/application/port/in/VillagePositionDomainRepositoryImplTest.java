@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillagePositionDomainRepositoryImplTest {
+class VillagePositionDomainRepositoryImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private VillagePositionDomainRepositoryImpl service;

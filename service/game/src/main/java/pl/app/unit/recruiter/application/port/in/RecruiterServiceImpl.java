@@ -85,7 +85,11 @@ class RecruiterServiceImpl implements RecruiterService {
     }
 
     private void verifyVillageMeetsRequirements(VillageInfrastructureDto infrastructure, Set<Unit.Requirement> requirements) {
-        //TODO
+        var meetRequirements = requirements.stream()
+                .allMatch(requirement -> infrastructure.getBuildings().meetRequirements(requirement.getBuildingType(), requirement.getLevel()));
+        if (!meetRequirements) {
+            throw new RecruiterException.VillageDoseNotMeetRequirementsException();
+        }
     }
 
     @Override

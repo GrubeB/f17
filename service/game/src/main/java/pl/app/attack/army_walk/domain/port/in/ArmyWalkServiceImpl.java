@@ -83,7 +83,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
 
                     domain.markAsProcessed();
                     var attack = new Attack(domain, domain.getArmy(), defenderVillage.getVillageArmy().getVillageArmy(), units,
-                            new Attack.AttackVillage(defenderVillage.getVillageResource().getResource(), defenderVillage.getVillageInfrastructure().getWall().getLevel()));
+                            new Attack.AttackVillage(defenderVillage.getVillageResource().getResource(), defenderVillage.getVillageInfrastructure().getBuildings().getWall().getLevel()));
                     return mongoTemplate.save(domain)
                             .flatMap(d -> mongoTemplate.insert(attack))
                             // subtract attacker&defender units

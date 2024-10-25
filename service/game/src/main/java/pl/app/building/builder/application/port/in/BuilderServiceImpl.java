@@ -16,12 +16,16 @@ import pl.app.building.building.application.port.in.BuildingLevelDomainRepositor
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureDomainRepository;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
+import pl.app.building.village_infrastructure.query.dto.VillageInfrastructureDto;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
+import pl.app.unit.recruiter.application.domain.RecruiterException;
+import pl.app.unit.unit.application.domain.Unit;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+import java.util.Set;
 
 
 @Service
@@ -67,8 +71,7 @@ class BuilderServiceImpl implements BuilderService {
                     var domain = t.getT1();
                     var infrastructure = t.getT2();
                     var buildingLevels = t.getT3();
-                    var building = infrastructure.getBuildingByType(command.getType());
-                    var construct = domain.addConstruct(command.getType(), building.getLevel(), buildingLevels);
+                    var construct = domain.addConstruct(command.getType(), infrastructure.getBuildings(), buildingLevels);
 
                     var event = new BuilderEvent.ConstructAddedEvent(domain.getVillageId(), construct.getType(), construct.getToLevel(), construct.getFrom(), construct.getTo());
                     return villageResourceService.subtract(new VillageResourceCommand.SubtractResourceCommand(command.getVillageId(), construct.getCost()))
@@ -77,6 +80,7 @@ class BuilderServiceImpl implements BuilderService {
                             .doOnSuccess(saved -> logger.debug("added building to construct in village: {}", saved.getVillageId()));
                 });
     }
+
 
     @Override
     public Mono<Builder> finish(BuilderCommand.FinishConstructCommand command) {
