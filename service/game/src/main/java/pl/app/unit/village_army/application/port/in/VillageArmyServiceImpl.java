@@ -63,7 +63,7 @@ class VillageArmyServiceImpl implements VillageArmyService {
                 .doOnError(e -> logger.error("exception occurred while subtracting units to village's army: {}, exception: {}", command.getVillageId(), e.getMessage()))
                 .flatMap(domain -> {
                     domain.subtract(command.getArmy());
-                    var event = new VillageArmyEvent.UnitsAddedEvent(domain.getVillageId(), command.getArmy());
+                    var event = new VillageArmyEvent.UnitsSubtractedEvent(domain.getVillageId(), command.getArmy());
                     return mongoTemplate.save(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> logger.debug("subtracted units to village's army: {}", saved.getVillageId()));

@@ -8,18 +8,29 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.attack.army_walk.domain.application.ArmyWalk;
+import pl.app.attack.army_walk.domain.application.ArmyWalkType;
 import pl.app.attack.army_walk.domain.application.Attack;
 import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.item.item.application.domain.Officers;
+import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
+import pl.app.unit.unit.application.domain.Army;
+import pl.app.unit.unit.application.domain.UnitType;
 import pl.app.unit.unit.application.port.in.UnitDomainRepository;
 import pl.app.unit.village_army.application.port.in.VillageArmyCommand;
 import pl.app.unit.village_army.application.port.in.VillageArmyService;
+import pl.app.unit.village_army.query.dto.VillageArmyDto;
 import pl.app.village.village.query.VillageDtoQueryService;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -46,8 +57,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
         return armyWalkDomainRepository.fetchById(command.getWalkId())
                 .flatMap(armyWalk ->
                         switch (armyWalk.getType()) {
-                            case ATTACK -> processAttack(armyWalk)
-                                    .map(attack -> attack.getReturnArmyWalk().orElse(null));
+                            case ATTACK -> processAttack(armyWalk);
                             case RETURN -> processReturn(armyWalk);
                             case SUPPORT -> throw new RuntimeException("not implemented yet");
                             case RELOCATE -> throw new RuntimeException("not implemented yet");
@@ -58,18 +68,17 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
 
     Mono<ArmyWalk> processReturn(ArmyWalk domain) {
         logger.debug("finishing army return: {}", domain.getArmyWalkId());
-        return
-                Mono.defer(() -> {
-                    domain.markAsProcessed();
-                    // unblock army, add resources
-                    return villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(domain.getTo().getVillageId(), domain.getArmy()))
-                            .flatMap(unused -> villageResourceService.add(new VillageResourceCommand.AddResourceCommand(domain.getTo().getVillageId(), domain.getResource())))
-                            .flatMap(unused -> mongoTemplate.save(domain))
-                            .doOnSuccess(d -> logger.debug("finished army return: {}", d.getArmyWalkId()));
-                });
+        return Mono.defer(() -> {
+            domain.markAsProcessed();
+            // unblock army, add resources
+            return villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(domain.getTo().getVillageId(), domain.getArmy()))
+                    .flatMap(unused -> villageResourceService.add(new VillageResourceCommand.AddResourceCommand(domain.getTo().getVillageId(), domain.getResource())))
+                    .flatMap(unused -> mongoTemplate.save(domain))
+                    .doOnSuccess(d -> logger.debug("finished army return: {}", d.getArmyWalkId()));
+        });
     }
 
-    Mono<Attack> processAttack(ArmyWalk domain) {
+    Mono<ArmyWalk> processAttack(ArmyWalk domain) {
         logger.debug("finishing attack: {}", domain.getArmyWalkId());
         return Mono.zip(
                         unitDomainRepository.fetchAll(),
@@ -80,22 +89,57 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                     var units = t.getT1();
                     var attackerVillage = t.getT2();
                     var defenderVillage = t.getT3();
-
                     domain.markAsProcessed();
-                    var attack = new Attack(domain, domain.getArmy(), defenderVillage.getVillageArmy().getVillageArmy(), units,
-                            new Attack.AttackVillage(defenderVillage.getVillageResource().getResource(), defenderVillage.getVillageInfrastructure().getBuildings().getWall().getLevel()));
+
+                    boolean attackerFaithBonus = attackerVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHURCH, 1)
+                            || attackerVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHAPEL, 1);
+                    boolean defenderFaithBonus = defenderVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHURCH, 1)
+                            || defenderVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHAPEL, 1);
+
+                    Army defenderArmy = Army.of(defenderVillage.getVillageArmy().getVillageArmy());
+                    defenderArmy.add(defenderVillage.getVillageArmy().getSupportArmy());
+
+                    var attack = new Attack(domain, defenderArmy, units,
+                            new Attack.AttackedVillage(defenderVillage.getVillageResource().getResource(), defenderVillage.getVillageInfrastructure().getBuildings().getWall().getLevel()), attackerFaithBonus, defenderFaithBonus
+                    );
+                    if (domain.getOfficers().getRanger() && !attack.getBattleResult().isAttackerWin()) {
+                        var returnArmyWalk = new ArmyWalk(ArmyWalkType.RETURN, units,
+                                domain.getTo(),
+                                domain.getFrom(),
+                                domain.getArmy(), Resource.zero(),
+                                new Officers()
+                        );
+                        return mongoTemplate.save(returnArmyWalk)
+                                .then(mongoTemplate.save(domain));
+                    }
                     return mongoTemplate.save(domain)
                             .flatMap(d -> mongoTemplate.insert(attack))
-                            // subtract attacker&defender units
+                            // subtract attacker units
                             .flatMap(d ->
                                     villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(d.getAttackerVillageId(), d.getBattleResult().getAttackerArmyLosses()))
                                             .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(d.getAttackerVillageId(), d.getBattleResult().getAttackerArmyLosses())))
                                             .thenReturn(d)
                             )
-                            .flatMap(d ->
-                                    villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(d.getDefenderVillageId(), d.getBattleResult().getDefenderArmyLosses()))
-                                            .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(d.getDefenderVillageId(), d.getBattleResult().getDefenderArmyLosses())))
-                                            .thenReturn(d)
+                            // subtract defender units
+                            .flatMap(d -> {
+                                        var totalLosses = d.getBattleResult().getDefenderArmyLosses();
+                                        var totalDefenderArmy = d.getBattleResult().getOriginalDefenderArmy();
+                                        Map<UnitType, Double> ratios = totalLosses.entrySet().stream()
+                                                .collect(Collectors.toMap(e -> e.getKey(), e -> (double) e.getValue() / totalDefenderArmy.get(e.getKey())));
+                                        Map<ObjectId, Army> lossesByVillageId =
+                                                Stream.concat(defenderVillage.getVillageArmy().getVillageSupports().stream(),
+                                                                Stream.of(new VillageArmyDto.VillageSupportDto(defenderVillage.getId(), defenderVillage.getVillageArmy().getVillageArmy())))
+                                                        .collect(Collectors.toMap(vs -> vs.getVillageId(), vs -> {
+                                                            var lossesArmy = Army.of(vs.getArmy());
+                                                            lossesArmy.multiply(ratios);
+                                                            return lossesArmy;
+                                                        }));
+                                        return Flux.fromIterable(lossesByVillageId.entrySet())
+                                                .flatMap(e -> villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(e.getKey(), e.getValue()))
+                                                                .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(e.getKey(), e.getValue())))
+                                                ).collectList()
+                                                .thenReturn(d);
+                                    }
                             )
                             // destroy wall
                             .flatMap(d -> {
@@ -115,7 +159,8 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                                         .flatMap(unused -> mongoTemplate.save(d.getReturnArmyWalk().get()))
                                         .thenReturn(d);
                             })
-                            .doOnSuccess(d -> logger.debug("finished attack: {}", d.getAttackId()));
+                            .thenReturn(domain)
+                            .doOnSuccess(d -> logger.debug("finished processing attack: {}", d.getArmyWalkId()));
 
                 });
     }
@@ -134,9 +179,10 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                     var attackerVillage = t.getT2();
                     var defenderVillage = t.getT3();
                     var domain = new ArmyWalk(command.getType(), units,
-                            new ArmyWalk.ArmyWalkVillage(command.getFromPlayerId(), command.getFromVillageId(), attackerVillage.getVillagePosition().getPosition()),
-                            new ArmyWalk.ArmyWalkVillage(command.getToPlayerId(), command.getToVillageId(), defenderVillage.getVillagePosition().getPosition()),
-                            command.getArmy(), command.getResource()
+                            new ArmyWalk.ArmyWalkVillage(attackerVillage.getOwnerId(), command.getFromVillageId(), attackerVillage.getVillagePosition().getPosition()),
+                            new ArmyWalk.ArmyWalkVillage(defenderVillage.getOwnerId(), command.getToVillageId(), defenderVillage.getVillagePosition().getPosition()),
+                            command.getArmy(), command.getResource(),
+                            command.getOfficers()
                     );
                     return villageArmyService.block(new VillageArmyCommand.BlockUnitsCommand(command.getFromVillageId(), command.getArmy()))
                             .flatMap(unused -> mongoTemplate.save(domain))

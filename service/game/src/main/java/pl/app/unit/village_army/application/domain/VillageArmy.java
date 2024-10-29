@@ -1,17 +1,20 @@
 package pl.app.unit.village_army.application.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.unit.unit.application.domain.Army;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Getter
 @Document(collection = "village_army")
+@NoArgsConstructor
 public class VillageArmy {
     @Id
     private ObjectId villageId;
@@ -20,14 +23,12 @@ public class VillageArmy {
     private List<VillageSupport> villageSupports;
     private Army blockedArmy; // armies that are on the expedition
 
-    public VillageArmy() {
-    }
-
     public VillageArmy(ObjectId villageId) {
         this.villageId = villageId;
         this.villageArmy = Army.zero();
         this.supportArmy = Army.zero();
         this.blockedArmy = Army.zero();
+        this.villageSupports = new LinkedList<>();
     }
 
     public void add(Army army) {

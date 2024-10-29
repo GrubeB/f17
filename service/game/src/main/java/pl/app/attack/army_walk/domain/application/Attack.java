@@ -4,18 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.attack.battle.application.domain.Battle;
+import pl.app.item.item.application.domain.Officers;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
 import pl.app.unit.unit.application.domain.UnitType;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 @Getter
 @Document(collection = "attack")
@@ -36,34 +38,55 @@ public class Attack {
     private Resource plunderedResource;
 
     public Attack(ArmyWalk atackArmyWalk,
-                  Army army1, Army army2,
+                  Army deffenderArmy,
                   Map<UnitType, Unit> units,
-                  AttackVillage defenderVillage
+                  AttackedVillage defenderVillage,
+                  Boolean attackerFaithBonus, Boolean defenderFaithBonus
     ) {
         this.attackId = atackArmyWalk.getArmyWalkId();
+        this.atackArmyWalk = atackArmyWalk;
+        this.battleDate = Instant.now();
+
         this.attackerId = atackArmyWalk.getFrom().getPlayerId();
         this.defenderId = atackArmyWalk.getTo().getPlayerId();
         this.attackerVillageId = atackArmyWalk.getFrom().getVillageId();
         this.defenderVillageId = atackArmyWalk.getTo().getVillageId();
-        this.atackArmyWalk = atackArmyWalk;
-        this.battleDate = Instant.now();
 
-        Battle battle = new Battle(army1, army2, units, defenderVillage.getWallLevel());
-        // TODO set buffs
-        battle.setBattleBuffs(true, true, 100, 0, false, false);
+        Battle battle = new Battle(atackArmyWalk.getArmy(), deffenderArmy, units, defenderVillage.getWallLevel());
+        battle.setBattleBuffs(attackerFaithBonus, defenderFaithBonus, 100, generateLuck(), atackArmyWalk.getOfficers().getGrandmaster(),
+                atackArmyWalk.getOfficers().getMedic(), calculateNightBuf());
         battleResult = battle.startBattle();
 
-        Army finalAttackerArmy = battleResult.getFinalAttackerArmy();
-        int armyCapacity = finalAttackerArmy.entrySet().stream().mapToInt(e -> units.get(e.getKey()).getCapacity() * e.getValue()).sum();
+        int armyCapacity = calculateArmyCapacity(battleResult.getFinalAttackerArmy(), units, atackArmyWalk.getOfficers());
         plunderedResource = calculatePlunderedResource(armyCapacity, defenderVillage.getResource());
 
-        if(battleResult.isAttackerWin()){
+        if (battleResult.isAttackerWin()) {
             returnArmyWalk = new ArmyWalk(ArmyWalkType.RETURN, units,
                     atackArmyWalk.getTo(),
                     atackArmyWalk.getFrom(),
-                    battleResult.getFinalAttackerArmy(), plunderedResource
+                    battleResult.getFinalAttackerArmy(), plunderedResource,
+                    new Officers()
             );
         }
+    }
+
+    private static final Random random = new Random();
+
+    private int generateLuck() {
+        return random.nextInt(31) - 15;
+    }
+
+    private int calculateArmyCapacity(Army army, Map<UnitType, Unit> units, Officers officers) {
+        var baseCapacity = army.entrySet().stream().mapToInt(e -> units.get(e.getKey()).getCapacity() * e.getValue()).sum();
+        var capacityWithOfficers = baseCapacity * (officers.getMasterOfLoot() ? 1.5 : 1.0);
+        return (int) capacityWithOfficers;
+    }
+
+    private boolean calculateNightBuf() {
+        LocalTime start = LocalTime.of(22, 0);
+        LocalTime end = LocalTime.of(6, 0);
+        LocalTime now = LocalTime.now();
+        return now.isAfter(start) || now.isBefore(end);
     }
 
     public Optional<ArmyWalk> getReturnArmyWalk() {
@@ -72,7 +95,7 @@ public class Attack {
 
     @Getter
     @AllArgsConstructor
-    public static class AttackVillage {
+    public static class AttackedVillage {
         private Resource resource;
         private Integer wallLevel;
     }

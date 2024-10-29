@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pl.app.attack.army_walk.domain.application.ArmyWalk;
 import pl.app.attack.army_walk.domain.application.ArmyWalkType;
 import pl.app.common.shared.test.AbstractIntegrationTest;
+import pl.app.item.item.application.domain.Officers;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.UnitType;
@@ -44,10 +45,11 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
 
         StepVerifier.create(service.sendArmy(new ArmyWalkCommand.SendArmyCommand(
                         ArmyWalkType.ATTACK,
-                        playerId, village1.getId(),
-                        playerId, village2.getId(),
+                        village1.getId(),
+                        village2.getId(),
                         Army.of(Map.of(UnitType.SPEARMAN, 100)),
-                        Resource.zero()
+                        Resource.zero(),
+                        new Officers()
                 )))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
@@ -60,13 +62,11 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
         var playerId = ObjectId.get();
         var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
         var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
-        villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 10)))).block();
+        villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
+        villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village2.getId(), Army.of(Map.of(UnitType.SPEARMAN, 10)))).block();
         ArmyWalk armyWalk = service.sendArmy(new ArmyWalkCommand.SendArmyCommand(
-                ArmyWalkType.ATTACK,
-                playerId, village1.getId(),
-                playerId, village2.getId(),
-                Army.of(Map.of(UnitType.SPEARMAN, 100)),
-                Resource.zero()
+                ArmyWalkType.ATTACK, village1.getId(), village2.getId(),
+                Army.of(Map.of(UnitType.SPEARMAN, 100)), Resource.zero(), new Officers()
         )).block();
         StepVerifier.withVirtualTime(() -> Mono.delay(Duration.ofDays(1))
                         .then(service.process(new ArmyWalkCommand.ProcessArmyArrivalCommand(armyWalk.getArmyWalkId()))))

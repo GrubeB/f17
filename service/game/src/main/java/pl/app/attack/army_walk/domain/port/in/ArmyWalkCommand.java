@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import pl.app.attack.army_walk.domain.application.ArmyWalkType;
+import pl.app.item.item.application.domain.Officers;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
 
@@ -16,13 +17,13 @@ public interface ArmyWalkCommand {
     @AllArgsConstructor
     class SendArmyCommand implements Serializable {
         private ArmyWalkType type;
-        private ObjectId fromPlayerId;
         private ObjectId fromVillageId;
-        private ObjectId toPlayerId;
         private ObjectId toVillageId;
         private Army army;
         private Resource resource;
+        private Officers officers;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

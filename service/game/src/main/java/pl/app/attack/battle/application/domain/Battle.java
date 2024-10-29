@@ -52,8 +52,8 @@ public class Battle {
     }
 
     public void setBattleBuffs(boolean attackerFaithBonus, boolean defenderFaithBonus, int moraleBonus,
-                               int luckBonus, boolean grandmasterBuff, boolean nightBuf) {
-        battleModifier = new BattleModifier(attackerFaithBonus, defenderFaithBonus, moraleBonus, luckBonus, grandmasterBuff, nightBuf);
+                               int luckBonus, boolean grandmasterBuff, boolean medicBuff, boolean nightBuf) {
+        battleModifier = new BattleModifier(attackerFaithBonus, defenderFaithBonus, moraleBonus, luckBonus, grandmasterBuff, medicBuff, nightBuf);
     }
 
     private static final Integer MAX_NUMBER_OF_TURNS = 10;
@@ -68,6 +68,7 @@ public class Battle {
         } while (this.attackerArmy.getArmyProvisions() > 0 && this.defenderArmy.getArmyProvisions() > 0
                 || turnCounter >= MAX_NUMBER_OF_TURNS);
         wall.finish();
+        logger.debug("ended battle");
         return endBattle();
     }
 
@@ -82,6 +83,13 @@ public class Battle {
                 wall.getStartWallLevel(),
                 wall.getResultingWallLevel()
         );
+        if (battleModifier.medicBuff && battleResult.isAttackerWin()) {
+            var refund = battleResult.getAttackerArmyLosses().army().entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue() / 10));
+            Army finalAttackerArmy = battleResult.getFinalAttackerArmy();
+            finalAttackerArmy.add(Army.of(refund));
+            battleResult.setFinalAttackerArmy(finalAttackerArmy);
+        }
         return battleResult;
     }
 
@@ -219,6 +227,7 @@ public class Battle {
         private int moraleBonus;
         private int luckBonus; // -15% and +15%
         private boolean grandmasterBuff;
+        private boolean medicBuff;
         private boolean nightBuff;
 
         public BattleModifier() {
@@ -227,6 +236,7 @@ public class Battle {
             this.moraleBonus = 100;
             this.luckBonus = 0;
             this.grandmasterBuff = false;
+            this.medicBuff = false;
             this.nightBuff = false;
         }
 
@@ -234,12 +244,14 @@ public class Battle {
                               boolean defenderFaithBuff,
                               int moraleBonus, int luckBonus,
                               boolean grandmasterBuff,
+                              boolean medicBuff,
                               boolean nightBuff) {
             this.attackerFaithBuff = attackerFaithBuff;
             this.defenderFaithBuff = defenderFaithBuff;
             this.moraleBonus = moraleBonus;
             this.luckBonus = luckBonus;
             this.grandmasterBuff = grandmasterBuff;
+            this.medicBuff = medicBuff;
             this.nightBuff = nightBuff;
         }
 

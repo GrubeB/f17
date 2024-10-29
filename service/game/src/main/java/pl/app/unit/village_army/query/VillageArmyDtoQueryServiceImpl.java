@@ -16,6 +16,8 @@ import pl.app.unit.village_army.query.dto.VillageArmyDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Collectors;
+
 @Service
 class VillageArmyDtoQueryServiceImpl implements VillageArmyDtoQueryService {
     private final Mapper mapper;
@@ -49,6 +51,7 @@ class VillageArmyDtoQueryServiceImpl implements VillageArmyDtoQueryService {
         @PostConstruct
         void init() {
             addMapper(VillageArmy.class, VillageArmyDto.class, this::mapToVillageArmyDto);
+            addMapper(VillageArmy.VillageSupport.class, VillageArmyDto.VillageSupportDto.class, e -> modelMapper.map(e, VillageArmyDto.VillageSupportDto.class));
         }
 
         VillageArmyDto mapToVillageArmyDto(VillageArmy domain) {
@@ -57,6 +60,7 @@ class VillageArmyDtoQueryServiceImpl implements VillageArmyDtoQueryService {
                     .villageArmy(domain.getVillageArmy())
                     .supportArmy(domain.getSupportArmy())
                     .blockedArmy(domain.getBlockedArmy())
+                    .villageSupports(domain.getVillageSupports().stream().map(e -> map(e, VillageArmyDto.VillageSupportDto.class)).collect(Collectors.toList()))
                     .build();
         }
     }

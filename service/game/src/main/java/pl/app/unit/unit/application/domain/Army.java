@@ -168,6 +168,37 @@ public class Army {
         trebuchetNumber -= army.trebuchetNumber;
     }
 
+    public void multiply(Double number) {
+        spearmanNumber = (int) (spearmanNumber * number);
+        swordsmanNumber = (int) (swordsmanNumber * number);
+        archerNumber = (int) (archerNumber * number);
+        heavyCavalryNumber = (int) (heavyCavalryNumber * number);
+        axeFighterNumber = (int) (axeFighterNumber * number);
+        lightCavalryNumber = (int) (lightCavalryNumber * number);
+        mountedArcherNumber = (int) (mountedArcherNumber * number);
+        ramNumber = (int) (ramNumber * number);
+        catapultNumber = (int) (catapultNumber * number);
+        paladinNumber = (int) (paladinNumber * number);
+        noblemanNumber = (int) (noblemanNumber * number);
+        berserkerNumber = (int) (berserkerNumber * number);
+        trebuchetNumber = (int) (trebuchetNumber * number);
+    }
+    public void multiply(Map<UnitType, Double> ratios) {
+        spearmanNumber = (int) (spearmanNumber * ratios.get(SPEARMAN));
+        swordsmanNumber = (int) (swordsmanNumber * ratios.get(SWORDSMAN));
+        archerNumber = (int) (archerNumber * ratios.get(ARCHER));
+        heavyCavalryNumber = (int) (heavyCavalryNumber * ratios.get(HEAVY_CAVALRY));
+        axeFighterNumber = (int) (axeFighterNumber * ratios.get(AXE_FIGHTER));
+        lightCavalryNumber = (int) (lightCavalryNumber * ratios.get(LIGHT_CAVALRY));
+        mountedArcherNumber = (int) (mountedArcherNumber* ratios.get(MOUNTED_ARCHER));
+        ramNumber = (int) (ramNumber * ratios.get(RAM));
+        catapultNumber = (int) (catapultNumber * ratios.get(CATAPULT));
+        paladinNumber = (int) (paladinNumber * ratios.get(PALADIN));
+        noblemanNumber = (int) (noblemanNumber * ratios.get(NOBLEMAN));
+        berserkerNumber = (int) (berserkerNumber* ratios.get(BERSERKER));
+        trebuchetNumber = (int) (trebuchetNumber * ratios.get(TREBUCHET));
+    }
+
     public void toZero() {
         this.spearmanNumber = 0;
         this.swordsmanNumber = 0;

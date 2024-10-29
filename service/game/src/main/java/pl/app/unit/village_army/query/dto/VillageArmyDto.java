@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import pl.app.unit.unit.application.domain.Army;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,4 +19,13 @@ public class VillageArmyDto implements Serializable {
     private Army villageArmy;
     private Army supportArmy;
     private Army blockedArmy;
+    private List<VillageSupportDto> villageSupports;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class VillageSupportDto implements Serializable {
+        private ObjectId villageId;
+        private Army army;
+    }
 }

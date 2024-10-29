@@ -27,7 +27,6 @@ public class BattleTest {
         var army2 = EnumSet.allOf(UnitType.class).stream().collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
         army2.put(ARCHER, 100);
         Battle battle = new Battle(Army.of(army1), Army.of(army2), units, 0);
-        battle.setBattleBuffs(true, true, 100, 0, false, false);
         battle.startBattle();
         assertThat(battle.getAttackerArmy().getArmyProvisions()).isEqualTo(200 - 71);
         assertThat(battle.getDefenderArmy().getArmyProvisions()).isEqualTo(0);
@@ -68,7 +67,6 @@ public class BattleTest {
         var army2 = EnumSet.allOf(UnitType.class).stream().collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
         army2.put(ARCHER, 100);
         Battle battle = new Battle(Army.of(army1), Army.of(army2), units, 5);
-        battle.setBattleBuffs(true, true, 100, 0, false, false);
         battle.startBattle();
         assertThat(battle.getAttackerArmy().getArmyProvisions()).isEqualTo(200 - 106);
         assertThat(battle.getDefenderArmy().getArmyProvisions()).isEqualTo(0);
@@ -82,7 +80,6 @@ public class BattleTest {
         var army2 = EnumSet.allOf(UnitType.class).stream().collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
         army2.put(ARCHER, 100);
         Battle battle = new Battle(Army.of(army1), Army.of(army2), units, 5);
-        battle.setBattleBuffs(true, true, 100, 0, false, false);
         battle.startBattle();
         assertThat(battle.getAttackerArmy().get(SPEARMAN)).isEqualTo(196 - 90);
         assertThat(battle.getAttackerArmy().get(RAM)).isEqualTo(20 - 9);
@@ -98,7 +95,6 @@ public class BattleTest {
         var army2 = EnumSet.allOf(UnitType.class).stream().collect(Collectors.toMap(t -> t, t -> 0, (o, n) -> n, HashMap::new));
         army2.put(ARCHER, 100);
         Battle battle = new Battle(Army.of(army1), Army.of(army2), units, 14);
-        battle.setBattleBuffs(true, true, 100, 0, false, false);
         Battle.BattleResult battleResult = battle.startBattle();
         assertThat(battle.getWall().getResultingWallLevel()).isEqualTo(8);
         assertThat(battleResult.getFinishWallLevel()).isEqualTo(8);
