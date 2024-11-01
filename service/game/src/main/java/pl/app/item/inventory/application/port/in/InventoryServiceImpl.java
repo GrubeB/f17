@@ -53,45 +53,44 @@ class InventoryServiceImpl implements InventoryService {
         logger.debug("crating player inventory: {}", command.getPlayerId());
         return mongoTemplate.exists(Query.query(Criteria.where("playerId").is(command.getPlayerId().toHexString())), Inventory.class)
                 .flatMap(exist -> exist ? Mono.error(InventoryException.DuplicatedPlayerIdException.fromId(command.getPlayerId().toHexString())) : Mono.empty())
-                .doOnError(e -> logger.error("exception occurred while crating player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()))
                 .then(Mono.defer(() -> {
                     var domain = new Inventory(command.getPlayerId());
                     var event = new InventoryEvent.PlayerInventoryCreatedEvent(domain.getPlayerId());
                     return mongoTemplate.insert(domain)
                             .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getPlayerInventoryCreated().getName(), saved.getPlayerId(), event)).thenReturn(saved))
                             .doOnSuccess(saved -> logger.debug("created player inventory: {}", saved.getPlayerId()));
-                }));
+                }))
+                .doOnError(e -> logger.error("exception occurred while crating player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()));
     }
 
     @Override
     public Mono<Inventory> add(InventoryCommand.AddItemCommand command) {
         logger.debug("adding item to player inventory: {}", command.getPlayerId());
         return inventoryDomainRepository.fetchByPlayerId(command.getPlayerId())
-                .doOnError(e -> logger.error("exception occurred while adding item to player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()))
                 .flatMap(domain -> {
                     domain.addItem(command.getItem(), command.getAmount());
                     return mongoTemplate.save(domain)
                             .doOnSuccess(saved -> logger.debug("added item to player inventory: {}", saved.getPlayerId()));
-                });
+                })
+                .doOnError(e -> logger.error("exception occurred while adding item to player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()));
     }
 
     @Override
     public Mono<Inventory> remove(InventoryCommand.RemoveItemCommand command) {
         logger.debug("removing item in player inventory: {}", command.getPlayerId());
         return inventoryDomainRepository.fetchByPlayerId(command.getPlayerId())
-                .doOnError(e -> logger.error("exception occurred while removing item in player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()))
                 .flatMap(domain -> {
                     domain.removeItem(command.getItem(), command.getAmount());
                     return mongoTemplate.save(domain)
                             .doOnSuccess(saved -> logger.debug("removed item in player inventory: {}", saved.getPlayerId()));
-                });
+                })
+                .doOnError(e -> logger.error("exception occurred while removing item in player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()));
     }
 
     @Override
     public Mono<Inventory> use(InventoryCommand.UseItemCommand command) {
         logger.debug("using item in player inventory: {}", command.getPlayerId());
         return inventoryDomainRepository.fetchByPlayerId(command.getPlayerId())
-                .doOnError(e -> logger.error("exception occurred while using item in player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()))
                 .flatMap(domain -> {
                     Item item = command.getItem();
                     domain.removeItem(item, command.getAmount());
@@ -141,6 +140,7 @@ class InventoryServiceImpl implements InventoryService {
                             Mono.when(processItemPublisher)
                                     .then(mongoTemplate.save(domain))
                                     .doOnSuccess(saved -> logger.debug("used item in player inventory: {}", saved.getPlayerId()));
-                });
+                })
+                .doOnError(e -> logger.error("exception occurred while using item in player inventory: {}, exception: {}", command.getPlayerId(), e.getMessage()));
     }
 }

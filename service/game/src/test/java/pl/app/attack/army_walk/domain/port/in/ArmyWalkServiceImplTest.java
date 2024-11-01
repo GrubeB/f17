@@ -8,8 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import pl.app.attack.army_walk.domain.application.ArmyWalk;
 import pl.app.attack.army_walk.domain.application.ArmyWalkType;
-import pl.app.common.shared.test.AbstractIntegrationTest;
+import pl.app.item.inventory.application.port.in.InventoryCommand;
+import pl.app.item.inventory.application.port.in.InventoryService;
+import pl.app.item.item.application.domain.OfficerItem;
+import pl.app.item.item.application.domain.OfficerType;
 import pl.app.item.item.application.domain.Officers;
+import pl.app.player.player.application.port.in.PlayerCommand;
+import pl.app.player.player.application.port.in.PlayerService;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.UnitType;
@@ -27,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
+class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
 
     @Autowired
     private ArmyWalkServiceImpl service;
@@ -35,12 +40,15 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
     private VillageService villageService;
     @Autowired
     private VillageArmyService villageArmyService;
+    @Autowired
+    private PlayerService playerService;
+    @Autowired
+    private InventoryService inventoryService;
 
     @Test
     void sendArmy() {
-        var playerId = ObjectId.get();
-        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
-        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
+        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
+        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
 
         StepVerifier.create(service.sendArmy(new ArmyWalkCommand.SendArmyCommand(
@@ -50,6 +58,38 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
                         Army.of(Map.of(UnitType.SPEARMAN, 100)),
                         Resource.zero(),
                         new Officers()
+                )))
+                .assertNext(next -> {
+                    assertThat(next).isNotNull();
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void sendArmy_shouldThrow_whenThereIsNotEnoughOfficers() {
+        var player1 = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Kot")).block();
+        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
+
+        StepVerifier.create(service.sendArmy(new ArmyWalkCommand.SendArmyCommand(ArmyWalkType.ATTACK, village1.getId(), village2.getId(),
+                        Army.of(Map.of(UnitType.SPEARMAN, 100)), Resource.zero(),
+                        new Officers(true, false, false, false, false, false)
+                )))
+                .verifyError();
+    }
+
+    @Test
+    void sendArmy_shouldSendArmyAndRemoveItem_whenThereOfficers() {
+        var player1 = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Kot")).block();
+        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
+        inventoryService.add(new InventoryCommand.AddItemCommand(player1.getPlayerId(), new OfficerItem(OfficerType.GRANDMASTER), 1)).block();
+
+        StepVerifier.create(service.sendArmy(new ArmyWalkCommand.SendArmyCommand(ArmyWalkType.ATTACK, village1.getId(), village2.getId(),
+                        Army.of(Map.of(UnitType.SPEARMAN, 100)), Resource.zero(),
+                        new Officers(true, false, false, false, false, false)
                 )))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();

@@ -14,6 +14,10 @@ import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.item.inventory.application.port.in.InventoryCommand;
+import pl.app.item.inventory.application.port.in.InventoryService;
+import pl.app.item.item.application.domain.OfficerItem;
+import pl.app.item.item.application.domain.OfficerType;
 import pl.app.item.item.application.domain.Officers;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
@@ -50,6 +54,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
     private final VillageArmyService villageArmyService;
     private final VillageInfrastructureService villageInfrastructureService;
     private final VillageResourceService villageResourceService;
+    private final InventoryService inventoryService;
 
 
     @Override
@@ -136,7 +141,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                                                         }));
                                         return Flux.fromIterable(lossesByVillageId.entrySet())
                                                 .flatMap(e -> villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(e.getKey(), e.getValue()))
-                                                                .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(e.getKey(), e.getValue())))
+                                                        .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(e.getKey(), e.getValue())))
                                                 ).collectList()
                                                 .thenReturn(d);
                                     }
@@ -173,7 +178,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                         villageDtoQueryService.fetchById(command.getFromVillageId()),
                         villageDtoQueryService.fetchById(command.getToVillageId())
                 )
-                .doOnError(e -> logger.error("exception occurred while sending army to the village: {}, exception: {}", command.getToVillageId(), e.getMessage()))
+
                 .flatMap(t -> {
                     var units = t.getT1();
                     var attackerVillage = t.getT2();
@@ -184,10 +189,24 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                             command.getArmy(), command.getResource(),
                             command.getOfficers()
                     );
-                    return villageArmyService.block(new VillageArmyCommand.BlockUnitsCommand(command.getFromVillageId(), command.getArmy()))
-                            .flatMap(unused -> mongoTemplate.save(domain))
-                            .doOnSuccess(saved -> logger.debug("sent army: {}", saved.getArmyWalkId()));
-                });
+                    return removeOfficers(attackerVillage.getOwnerId(), command.getOfficers())
+                            .then(villageArmyService.block(new VillageArmyCommand.BlockUnitsCommand(command.getFromVillageId(), command.getArmy())))
+                            .then(mongoTemplate.save(domain))
+                            .doOnSuccess(unused -> logger.debug("sent army: {}", domain.getArmyWalkId()));
+                })
+                .doOnError(e -> logger.error("exception occurred while sending army to the village: {}, exception: {}", command.getToVillageId(), e.getMessage()))
+                ;
+    }
+
+    private Mono<Void> removeOfficers(ObjectId playerId, Officers officers) {
+        return Mono.when(
+                officers.getGrandmaster() ? inventoryService.remove(new InventoryCommand.RemoveItemCommand(playerId, new OfficerItem(OfficerType.GRANDMASTER), 1)) : Mono.empty(),
+                officers.getMasterOfLoot() ? inventoryService.remove(new InventoryCommand.RemoveItemCommand(playerId, new OfficerItem(OfficerType.MASTER_OF_LOOT), 1)) : Mono.empty(),
+                officers.getMedic() ? inventoryService.remove(new InventoryCommand.RemoveItemCommand(playerId, new OfficerItem(OfficerType.MEDIC), 1)) : Mono.empty(),
+                officers.getDeceiver() ? inventoryService.remove(new InventoryCommand.RemoveItemCommand(playerId, new OfficerItem(OfficerType.DECEIVER), 1)) : Mono.empty(),
+                officers.getRanger() ? inventoryService.remove(new InventoryCommand.RemoveItemCommand(playerId, new OfficerItem(OfficerType.RANGER), 1)) : Mono.empty(),
+                officers.getTactician() ? inventoryService.remove(new InventoryCommand.RemoveItemCommand(playerId, new OfficerItem(OfficerType.TACTICIAN), 1)) : Mono.empty()
+        );
     }
 
 
