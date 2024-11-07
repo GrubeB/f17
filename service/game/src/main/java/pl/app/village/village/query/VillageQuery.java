@@ -13,6 +13,7 @@ import pl.app.map.village_position.application.domain.VillagePosition;
 import pl.app.player.player.application.domain.Player;
 import pl.app.resource.village_resource.application.domain.VillageResource;
 import pl.app.unit.village_army.application.domain.VillageArmy;
+import pl.app.village.village.application.domain.Village;
 import pl.app.village.village.application.domain.VillageType;
 
 @Getter
@@ -24,6 +25,7 @@ public class VillageQuery {
     private ObjectId id;
     private VillageType type;
     private ObjectId ownerId;
+    private Village.VillageLoyalty villageLoyalty;
 
     @ReadOnlyProperty
     @DocumentReference(lookup = "{'_id':?#{#self.ownerId} }")

@@ -23,6 +23,7 @@ public class VillageDto implements Serializable {
     private VillageType type;
     private ObjectId ownerId;
     private PlayerDto player;
+    private Integer loyalty;
     private VillagePositionDto villagePosition;
     private VillageResourceDto villageResource;
     private VillageInfrastructureDto villageInfrastructure;

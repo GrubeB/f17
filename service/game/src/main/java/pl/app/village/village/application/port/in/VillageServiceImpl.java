@@ -41,6 +41,8 @@ class VillageServiceImpl implements VillageService {
     private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
     private final KafkaTopicConfigurationProperties topicNames;
 
+    private final VillageDomainRepository villageDomainRepository;
+
     private final VillageResourceService villageResourceService;
     private final VillagePositionService villagePositionService;
     private final VillageArmyService villageArmyService;
@@ -97,6 +99,53 @@ class VillageServiceImpl implements VillageService {
                 logger.debug("created barbarian village: {}", domain.getId())
         ).doOnError(e ->
                 logger.error("exception occurred while crating barbarian village, exception: {}", e.toString())
+        );
+    }
+
+    @Override
+    public Mono<Village> conquerVillage(VillageCommand.ConquerVillageCommand command) {
+        return Mono.fromCallable(() -> {
+            return Mono.just(new Village());
+        }).doOnSubscribe(subscription ->
+                logger.debug("conquering village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("conquered village: {}", command.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while conquering village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
+    }
+
+    @Override
+    public Mono<Village> subtractLoyalty(VillageCommand.SubtractLoyaltyCommand command) {
+        return Mono.fromCallable(() ->
+                villageDomainRepository.fetchById(command.getVillageId())
+                        .flatMap(domain -> {
+                            domain.getVillageLoyalty().subtractLoyalty(command.getAmount());
+                            return mongoTemplate.save(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("subtracting loyalty in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("subtracted loyalty in village: {}", command.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while subtracting loyalty in village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
+    }
+
+    @Override
+    public Mono<Village> refreshLoyalty(VillageCommand.RefreshLoyaltyCommand command) {
+        return Mono.fromCallable(() ->
+                villageDomainRepository.fetchById(command.getVillageId())
+                        .flatMap(domain -> {
+                            domain.getVillageLoyalty().refreshLoyalty();
+                            return mongoTemplate.save(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("refreshing loyalty in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("refreshed loyalty in village: {}", command.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while refreshing loyalty in village: {}, exception: {}", command.getVillageId(), e.toString())
         );
     }
 }

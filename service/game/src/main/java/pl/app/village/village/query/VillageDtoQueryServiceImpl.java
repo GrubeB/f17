@@ -60,6 +60,7 @@ class VillageDtoQueryServiceImpl implements VillageDtoQueryService {
                     .type(domain.getType())
                     .ownerId(domain.getOwnerId())
                     .player(map(domain.getPlayer(), PlayerDto.class))
+                    .loyalty(domain.getVillageLoyalty().getLoyalty())
                     .villagePosition(map(domain.getVillagePosition(), VillagePositionDto.class))
                     .villageResource(map(domain.getVillageResource(), VillageResourceDto.class))
                     .villageInfrastructure(map(domain.getVillageInfrastructure(), VillageInfrastructureDto.class))
