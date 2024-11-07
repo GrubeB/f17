@@ -29,6 +29,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
+import static pl.app.building.building.application.domain.BuildingType.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ class VillageServiceImpl implements VillageService {
     private final VillageEffectService villageEffectService;
 
     @Override
-    public Mono<Village> crate(VillageCommand.CreatePlayerVillageCommand command) {
+    public Mono<Village> cratePlayerVillage(VillageCommand.CreatePlayerVillageCommand command) {
         return Mono.fromCallable(() -> {
             var domain = new Village(VillageType.PLAYER, command.getPlayerId());
             var event = new VillageEvent.VillageCreatedEvent(domain.getId(), domain.getType(), domain.getOwnerId());
@@ -68,6 +70,33 @@ class VillageServiceImpl implements VillageService {
                 logger.debug("crated village: {}, for a player: {}", domain.getId(), command.getPlayerId())
         ).doOnError(e ->
                 logger.error("exception occurred while crating village for a player: {}, exception: {}", command.getPlayerId(), e.toString())
+        );
+    }
+
+    @Override
+    public Mono<Village> crateBarbarianVillage(VillageCommand.CreateBarbarianVillageCommand command) {
+        return Mono.fromCallable(() -> {
+            var domain = new Village(VillageType.BARBARIAN, null);
+            var event = new VillageEvent.VillageCreatedEvent(domain.getId(), domain.getType(), domain.getOwnerId());
+            return villagePositionService.crate(new VillagePositionCommand.CreateVillagePositionCommand(domain.getId()))
+                    .then(villageResourceService.crate(new VillageResourceCommand.CreateVillageResourceCommand(domain.getId())))
+                    .then(villageInfrastructureService.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(domain.getId())))
+                    .then(villageArmyService.crate(new VillageArmyCommand.CreateVillageArmyCommand(domain.getId())))
+                    .then(builderService.crate(new BuilderCommand.CreateBuilderCommand(domain.getId())))
+                    .then(recruiterService.crate(new RecruiterCommand.CreateRecruiterCommand(domain.getId())))
+                    .then(villageEffectService.crate(new VillageEffectCommand.CreateVillageEffectCommand(domain.getId())))
+                    .then(mongoTemplate.insert(domain))
+                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageCreated().getName(), domain.getId(), event)))
+                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), CLAY_PIT, 3)))
+                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), IRON_MINE, 3)))
+                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), TIMBER_CAMP, 3)))
+                    .thenReturn(domain);
+        }).doOnSubscribe(subscription ->
+                logger.debug("crating barbarian village")
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created barbarian village: {}", domain.getId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating barbarian village, exception: {}", e.toString())
         );
     }
 }

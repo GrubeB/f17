@@ -25,7 +25,7 @@ class VillageRestController {
 
     @PostMapping
     Mono<ResponseEntity<VillageDto>> crate(@RequestBody VillageCommand.CreatePlayerVillageCommand command) {
-        return service.crate(command)
+        return service.cratePlayerVillage(command)
                 .flatMap(domain -> queryService.fetchById(domain.getId()))
                 .map(ResponseEntity::ok);
     }

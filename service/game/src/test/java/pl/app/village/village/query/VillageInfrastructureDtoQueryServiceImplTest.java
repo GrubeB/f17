@@ -27,7 +27,7 @@ class VillageInfrastructureDtoQueryServiceImplTest extends AbstractIntegrationTe
     @Test
     void fetchById() {
         var playerId = ObjectId.get();
-        var villageId = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block().getId();
+        var villageId = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(playerId)).block().getId();
 
         StepVerifier.create(service.fetchById(villageId))
                 .assertNext(next -> {

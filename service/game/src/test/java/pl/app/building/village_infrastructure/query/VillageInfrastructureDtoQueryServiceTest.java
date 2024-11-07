@@ -24,7 +24,7 @@ class VillageInfrastructureDtoQueryServiceTest extends AbstractIntegrationTest {
 
     @Test
     void fetchByVillageId() {
-        Village village = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
+        Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
         StepVerifier.create(service.fetchByVillageId(village.getId()))
                 .assertNext(next -> {
                     Assertions.assertThat(next).isNotNull();

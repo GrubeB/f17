@@ -14,4 +14,8 @@ public interface VillageCommand {
     class CreatePlayerVillageCommand implements Serializable {
         private ObjectId playerId;
     }
+
+    @Data
+    class CreateBarbarianVillageCommand implements Serializable {
+    }
 }

@@ -47,8 +47,8 @@ class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
 
     @Test
     void sendArmy() {
-        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
-        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
+        var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
+        var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
 
         StepVerifier.create(service.sendArmy(new ArmyWalkCommand.SendArmyCommand(
@@ -68,8 +68,8 @@ class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
     @Test
     void sendArmy_shouldThrow_whenThereIsNotEnoughOfficers() {
         var player1 = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Kot")).block();
-        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
-        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
 
         StepVerifier.create(service.sendArmy(new ArmyWalkCommand.SendArmyCommand(ArmyWalkType.ATTACK, village1.getId(), village2.getId(),
@@ -82,8 +82,8 @@ class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
     @Test
     void sendArmy_shouldSendArmyAndRemoveItem_whenThereOfficers() {
         var player1 = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Kot")).block();
-        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
-        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
+        var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
         inventoryService.add(new InventoryCommand.AddItemCommand(player1.getPlayerId(), new OfficerItem(OfficerType.GRANDMASTER), 1)).block();
 
@@ -100,8 +100,8 @@ class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
     @Test
     void processAttack() {
         var playerId = ObjectId.get();
-        var village1 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
-        var village2 = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
+        var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
+        var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(playerId)).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village2.getId(), Army.of(Map.of(UnitType.SPEARMAN, 10)))).block();
         ArmyWalk armyWalk = service.sendArmy(new ArmyWalkCommand.SendArmyCommand(

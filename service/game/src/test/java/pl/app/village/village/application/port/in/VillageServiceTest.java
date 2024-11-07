@@ -43,11 +43,11 @@ class VillageServiceTest extends AbstractIntegrationTest {
     private VillageInfrastructureService villageInfrastructureService;
 
     @Test
-    void crate_shouldCreateVillage_whenCommandIsValid() {
+    void crate_PlayerVillage_shouldCreateVillage_whenCommandIsValid() {
         var playerId = ObjectId.get();
         var command = new VillageCommand.CreatePlayerVillageCommand(playerId);
 
-        StepVerifier.create(service.crate(command))
+        StepVerifier.create(service.cratePlayerVillage(command))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
                 }).verifyComplete();

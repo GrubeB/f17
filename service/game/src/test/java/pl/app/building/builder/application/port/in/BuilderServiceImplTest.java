@@ -79,7 +79,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
 
     @Test
     void add_shouldAddConstruct_whenThereIsEnoughResources() {
-        var village = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
+        var village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
         villageResourceService.add(new VillageResourceCommand.AddResourceCommand(village.getId(), Resource.of(100_000))).block();
         Mockito.reset(mongoTemplate, kafkaTemplate);
 
@@ -95,7 +95,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
 
     @Test
     void remove_shouldRemoveConstruct_whenCommandIsValid() {
-        var village = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
+        var village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
         villageResourceService.add(new VillageResourceCommand.AddResourceCommand(village.getId(), Resource.of(100_000))).block();
         service.add(new BuilderCommand.AddBuildingToConstructCommand(village.getId(), BuildingType.HEADQUARTERS)).block();
         Mockito.reset(mongoTemplate, kafkaTemplate, villageResourceService);
