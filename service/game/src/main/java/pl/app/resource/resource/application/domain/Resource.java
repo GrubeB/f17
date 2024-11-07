@@ -134,4 +134,16 @@ public class Resource {
                     new Resource(this.getWood(), this.getClay(), this.getIron(), this.getProvision() * number);
         };
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Resource resource)) return false;
+        return Objects.equals(wood, resource.wood) && Objects.equals(clay, resource.clay) && Objects.equals(iron, resource.iron) && Objects.equals(provision, resource.provision);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(wood, clay, iron, provision);
+    }
 }

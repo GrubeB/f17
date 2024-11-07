@@ -62,10 +62,11 @@ class UpcomingArmyArrivalsManager {
 
         @Scheduled(cron = "*/30 * * ? * *")
         public void addRecruiter() {
-            logger.debug("adding upcoming army arrivals");
+            logger.trace("adding upcoming army arrivals");
+            var startTime = Instant.now();
             armyWalkDomainRepository.fetchArmyWalkWithEnding(Duration.ofSeconds(31))
                     .doOnNext(upcomingArmyArrivalsManager::add)
-                    .doOnComplete(() -> logger.debug("added upcoming army arrivals"))
+                    .doOnComplete(() -> logger.trace("added upcoming army arrivals - {}", Duration.between(startTime, Instant.now())))
                     .subscribe();
         }
     }

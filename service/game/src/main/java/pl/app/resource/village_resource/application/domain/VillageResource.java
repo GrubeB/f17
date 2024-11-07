@@ -78,7 +78,7 @@ public class VillageResource {
         int newWood = Math.min(this.resource.getWood() + resourceToAdd.getWood(), resourceMax.getWood());
         int newClay = Math.min(this.resource.getClay() + resourceToAdd.getClay(), resourceMax.getClay());
         int newIron = Math.min(this.resource.getIron() + resourceToAdd.getIron(), resourceMax.getIron());
-        int newProvision = Math.min(this.resource.getProvision() + resourceToAdd.getProvision(), resourceMax.getProvision());
+        int newProvision = this.resource.getProvision() + resourceToAdd.getProvision();
 
         this.resource = new Resource(newWood, newClay, newIron, newProvision);
     }

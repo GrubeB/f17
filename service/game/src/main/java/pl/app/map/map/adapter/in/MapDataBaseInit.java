@@ -25,7 +25,7 @@ class MapDataBaseInit {
 
     @PostConstruct
     void initMap() {
-        logger.debug("inserting default map");
+        logger.trace("inserting default map");
         Map map = getBaseMap();
         mongoTemplate.remove(new Query(), Map.class)
                 .then(Mono.defer(() ->

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import pl.app.unit.recruiter.application.port.in.RecruiterDomainRepository;
 
 import java.time.Duration;
+import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -20,9 +21,10 @@ class UpcomingRecruitRequestsManagerDataPuller {
     @Scheduled(cron = "*/30 * * ? * *")
     public void addRecruiter() {
         logger.trace("adding upcoming recruit requests");
+        var startTime = Instant.now();
         recruiterDomainRepository.fetchRecruiterWithRequestEnding(Duration.ofSeconds(31))
                 .doOnNext(upcomingRecruitRequestsManager::addRecruiter)
-                .doOnComplete(() -> logger.debug("added upcoming recruit requests"))
+                .doOnComplete(() -> logger.trace("added upcoming recruit requests - {}", Duration.between(startTime, Instant.now())))
                 .subscribe();
     }
 }

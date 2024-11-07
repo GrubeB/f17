@@ -68,10 +68,11 @@ class UpcomingExpiredEffectManager {
 
         @Scheduled(cron = "*/30 * * ? * *")
         public void addRecruiter() {
-            logger.debug("adding upcoming expired effects");
+            logger.trace("adding upcoming expired effects");
+            var startTime = Instant.now();
             villageEffectDomainRepository.fetchVillageEffectWithEnding(Duration.ofSeconds(31))
                     .doOnNext(upcomingExpiredEffectManager::add)
-                    .doOnComplete(() -> logger.debug("added upcoming expired effects"))
+                    .doOnComplete(() -> logger.trace("added upcoming expired effects - {}", Duration.between(startTime, Instant.now())))
                     .subscribe();
         }
     }

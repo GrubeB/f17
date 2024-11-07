@@ -29,7 +29,7 @@ class VillageResourceRefresher {
                     var command = new VillageResourceCommand.RefreshResourceCommand(villageResource.getVillageId());
                     return villageResourceService.refresh(command);
                 })
-                .doOnComplete(() -> logger.debug("refreshed village resources - {}", Duration.between(startTime, Instant.now())))
+                .doOnComplete(() -> logger.trace("refreshed village resources - {}", Duration.between(startTime, Instant.now())))
                 .subscribe();
     }
 }
