@@ -5,6 +5,7 @@ import pl.app.resource.resource.application.domain.ResourceType;
 
 import java.time.Duration;
 import java.util.Objects;
+
 @Getter
 public class ResourceBuffItem extends DurationBuffItem {
     private ResourceType resourceType;
@@ -13,7 +14,7 @@ public class ResourceBuffItem extends DurationBuffItem {
     public ResourceBuffItem() {
     }
 
-    public ResourceBuffItem( Duration duration, ResourceType resourceType, Integer value) {
+    public ResourceBuffItem(Duration duration, ResourceType resourceType, Integer value) {
         super(ItemType.RESOURCE_BUFF, duration);
         this.resourceType = resourceType;
         this.value = value;

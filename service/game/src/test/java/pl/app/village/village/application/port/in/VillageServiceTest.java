@@ -26,9 +26,9 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillageServiceImplTest extends AbstractIntegrationTest {
+class VillageServiceTest extends AbstractIntegrationTest {
     @Autowired
-    private VillageServiceImpl service;
+    private VillageService service;
     @SpyBean
     private ReactiveMongoTemplate mongoTemplate;
     @SpyBean

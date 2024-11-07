@@ -1,18 +1,18 @@
 package pl.app.attack.army_walk.query.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.attack.army_walk.domain.application.ArmyWalk;
 import pl.app.attack.army_walk.domain.application.ArmyWalkType;
 import pl.app.map.map.application.domain.Position;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.Unit;
 
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor

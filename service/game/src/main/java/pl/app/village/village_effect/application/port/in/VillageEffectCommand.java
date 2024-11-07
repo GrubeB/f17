@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import pl.app.village.village_effect.application.domain.EffectType;
-import pl.app.village.village_effect.application.domain.VillageEffect;
 
 import java.io.Serializable;
 import java.time.Duration;

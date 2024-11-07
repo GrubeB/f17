@@ -27,6 +27,7 @@ import static pl.app.unit.unit.application.domain.UnitType.TREBUCHET;
 @Getter
 public class Battle {
     private static final Logger logger = LoggerFactory.getLogger(Battle.class);
+    private static final Integer MAX_NUMBER_OF_TURNS = 10;
     private ObjectId battleId;
     private BattleArmy originalAttackerArmy;
     private BattleArmy attackerArmy;
@@ -36,6 +37,7 @@ public class Battle {
     private Wall wall;
     private BattleModifier battleModifier;
     private BattleResult battleResult;
+    private Integer turnCounter = 0;
 
     public Battle() {
     }
@@ -55,9 +57,6 @@ public class Battle {
                                int luckBonus, boolean grandmasterBuff, boolean medicBuff, boolean nightBuf) {
         battleModifier = new BattleModifier(attackerFaithBonus, defenderFaithBonus, moraleBonus, luckBonus, grandmasterBuff, medicBuff, nightBuf);
     }
-
-    private static final Integer MAX_NUMBER_OF_TURNS = 10;
-    private Integer turnCounter = 0;
 
     public BattleResult startBattle() {
         logger.debug("starting battle");

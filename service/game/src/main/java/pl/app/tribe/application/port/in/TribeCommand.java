@@ -52,6 +52,7 @@ public interface TribeCommand {
         private ObjectId tribe2Id;
         private Diplomacy.DiplomacyType type;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

@@ -27,6 +27,8 @@ import pl.app.village.village_effect.application.port.in.VillageEffectCommand;
 import pl.app.village.village_effect.application.port.in.VillageEffectService;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+
 
 @Service
 @RequiredArgsConstructor
@@ -47,23 +49,25 @@ class VillageServiceImpl implements VillageService {
 
     @Override
     public Mono<Village> crate(VillageCommand.CreatePlayerVillageCommand command) {
-        logger.debug("crating village: {}", command.getPlayerId());
-        return Mono.defer(() -> {
-                    var domain = new Village(VillageType.PLAYER, command.getPlayerId());
-                    return villagePositionService.crate(new VillagePositionCommand.CreateVillagePositionCommand(domain.getId()))
-                            .flatMap(unused -> villageResourceService.crate(new VillageResourceCommand.CreateVillageResourceCommand(domain.getId())))
-                            .flatMap(unused -> villageInfrastructureService.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(domain.getId())))
-                            .flatMap(unused -> villageArmyService.crate(new VillageArmyCommand.CreateVillageArmyCommand(domain.getId())))
-                            .flatMap(unused -> builderService.crate(new BuilderCommand.CreateBuilderCommand(domain.getId())))
-                            .flatMap(unused -> recruiterService.crate(new RecruiterCommand.CreateRecruiterCommand(domain.getId())))
-                            .flatMap(unused -> villageEffectService.crate(new VillageEffectCommand.CreateVillageEffectCommand(domain.getId())))
-                            .flatMap(unused -> {
-                                var event = new VillageEvent.VillageCreatedEvent(domain.getId(), domain.getType(), domain.getOwnerId());
-                                return mongoTemplate.insert(domain)
-                                        .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageCreated().getName(), saved.getId(), event)).thenReturn(saved))
-                                        .doOnSuccess(saved -> logger.debug("created village: {}", saved.getId()));
-                            });
-                })
-                .doOnError(e -> logger.error("exception occurred while crating village: {}, exception: {}", command.getPlayerId(), e.getMessage()));
+        return Mono.fromCallable(() -> {
+            var domain = new Village(VillageType.PLAYER, command.getPlayerId());
+            var event = new VillageEvent.VillageCreatedEvent(domain.getId(), domain.getType(), domain.getOwnerId());
+            return villagePositionService.crate(new VillagePositionCommand.CreateVillagePositionCommand(domain.getId()))
+                    .then(villageResourceService.crate(new VillageResourceCommand.CreateVillageResourceCommand(domain.getId())))
+                    .then(villageInfrastructureService.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(domain.getId())))
+                    .then(villageArmyService.crate(new VillageArmyCommand.CreateVillageArmyCommand(domain.getId())))
+                    .then(builderService.crate(new BuilderCommand.CreateBuilderCommand(domain.getId())))
+                    .then(recruiterService.crate(new RecruiterCommand.CreateRecruiterCommand(domain.getId())))
+                    .then(villageEffectService.crate(new VillageEffectCommand.CreateVillageEffectCommand(domain.getId())))
+                    .then(mongoTemplate.insert(domain))
+                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageCreated().getName(), domain.getId(), event)))
+                    .thenReturn(domain);
+        }).doOnSubscribe(subscription ->
+                logger.debug("crating village for a player: {}", command.getPlayerId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("crated village: {}, for a player: {}", domain.getId(), command.getPlayerId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating village for a player: {}, exception: {}", command.getPlayerId(), e.toString())
+        );
     }
 }

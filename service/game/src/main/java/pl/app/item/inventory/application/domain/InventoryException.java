@@ -43,6 +43,7 @@ public interface InventoryException {
             super(message);
         }
     }
+
     class CanNotUseItemException extends IllegalArgumentException {
         public CanNotUseItemException() {
             super("can not use item in inventory");

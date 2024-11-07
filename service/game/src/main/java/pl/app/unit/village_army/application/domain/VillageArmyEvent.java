@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.UnitType;
 
 import java.io.Serializable;
 

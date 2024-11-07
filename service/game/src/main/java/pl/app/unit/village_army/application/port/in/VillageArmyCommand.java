@@ -56,6 +56,7 @@ public interface VillageArmyCommand {
         private ObjectId supportingVillageId;
         private Army army;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

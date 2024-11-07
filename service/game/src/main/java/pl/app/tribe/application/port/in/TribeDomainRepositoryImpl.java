@@ -6,16 +6,9 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import pl.app.attack.army_walk.domain.application.ArmyWalk;
-import pl.app.attack.army_walk.domain.application.ArmyWalkException;
-import pl.app.attack.army_walk.domain.port.in.ArmyWalkDomainRepository;
 import pl.app.tribe.application.domain.Tribe;
 import pl.app.tribe.application.domain.TribeException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor

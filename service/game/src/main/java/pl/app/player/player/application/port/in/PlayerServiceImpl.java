@@ -19,6 +19,8 @@ import pl.app.player.player.application.domain.PlayerEvent;
 import pl.app.player.player.application.domain.PlayerException;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,19 +36,25 @@ class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Mono<Player> crate(PlayerCommand.CreatePlayerCommand command) {
-        logger.debug("crating player: {}", command.getName());
-        return mongoTemplate.exists(Query.query(Criteria.where("name").is(command.getName())), Player.class)
-                .flatMap(exist -> exist ? Mono.error(PlayerException.DuplicatedPlayerNameException.fromName(command.getName())) : Mono.empty())
-                .doOnError(e -> logger.error("exception occurred while crating player: {}, exception: {}", command.getName(), e.getMessage()))
-                .then(Mono.defer(() -> {
-                    var domain = new Player(command.getAccountId());
-                    var event = new PlayerEvent.PlayerCreatedEvent(domain.getPlayerId());
-                    return playerMoneyService.crate(new PlayerMoneyCommand.CreatePlayerMoneyCommand(domain.getPlayerId()))
-                            .then(inventoryService.create(new InventoryCommand.CreateInventoryCommand(domain.getPlayerId())))
-                            .then(mongoTemplate.insert(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getPlayerCreated().getName(), saved.getPlayerId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("created player: {}", saved.getPlayerId()));
-                }));
+        return Mono.fromCallable(() ->
+                mongoTemplate.exists(Query.query(Criteria.where("name").is(command.getName())), Player.class)
+                        .flatMap(exist -> exist ? Mono.error(PlayerException.DuplicatedPlayerNameException.fromName(command.getName())) : Mono.empty())
+                        .then(Mono.defer(() -> {
+                            var domain = new Player(command.getAccountId());
+                            var event = new PlayerEvent.PlayerCreatedEvent(domain.getPlayerId());
+                            return playerMoneyService.crate(new PlayerMoneyCommand.CreatePlayerMoneyCommand(domain.getPlayerId()))
+                                    .then(inventoryService.create(new InventoryCommand.CreateInventoryCommand(domain.getPlayerId())))
+                                    .then(mongoTemplate.insert(domain))
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getPlayerCreated().getName(), domain.getPlayerId(), event)))
+                                    .thenReturn(domain);
+                        }))
+        ).doOnSubscribe(subscription ->
+                logger.debug("crating player with name: {}", command.getName())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created player: {}", domain.getPlayerId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating player with name: {}, exception: {}", command.getName(), e.toString())
+        );
     }
 
 

@@ -15,7 +15,7 @@ public class Player {
     public Player() {
     }
 
-    public Player( String accountId) {
+    public Player(String accountId) {
         this.playerId = ObjectId.get();
         this.accountId = accountId;
     }

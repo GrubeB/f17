@@ -14,6 +14,8 @@ import pl.app.building.village_infrastructure.application.domain.VillageInfrastr
 import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+
 import static pl.app.building.building.application.domain.BuildingType.*;
 
 
@@ -31,29 +33,38 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
 
     @Override
     public Mono<VillageInfrastructure> crate(VillageInfrastructureCommand.CreateVillageInfrastructureCommand command) {
-        logger.debug("crating village infrastructure: {}", command.getVillageId());
-        return Mono.defer(() -> {
-                    var domain = new VillageInfrastructure(command.getVillageId());
-                    var event = new VillageInfrastructureEvent.VillageInfrastructureCreatedEvent(domain.getVillageId());
-                    return Mono.just(domain)
-                            .flatMap(d -> innerLevelUp(d, HEADQUARTERS, 1))
-                            .flatMap(d -> innerLevelUp(d, WAREHOUSE, 1))
-                            .flatMap(d -> innerLevelUp(d, FARM, 1))
-                            .flatMap(d -> mongoTemplate.insert(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageInfrastructureCreated().getName(), saved.getVillageId(), event)).thenReturn(domain))
-                            .doOnSuccess(saved -> logger.debug("created village infrastructure: {}", saved.getVillageId()));
-                })
-                .doOnError(e -> logger.error("exception occurred while crating village infrastructure: {}, exception: {}", command.getVillageId(), e.getMessage()));
+        return Mono.fromCallable(() -> {
+            var domain = new VillageInfrastructure(command.getVillageId());
+            var event = new VillageInfrastructureEvent.VillageInfrastructureCreatedEvent(domain.getVillageId());
+            return innerLevelUp(domain, HEADQUARTERS, 1)
+                    .then(innerLevelUp(domain, WAREHOUSE, 1))
+                    .then(innerLevelUp(domain, FARM, 1))
+                    .then(mongoTemplate.insert(domain))
+                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageInfrastructureCreated().getName(), domain.getVillageId(), event)))
+                    .thenReturn(domain);
+        }).doOnSubscribe(subscription ->
+                logger.debug("crating village infrastructure for village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created village infrastructure for village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating village infrastructure for village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     @Override
     public Mono<VillageInfrastructure> levelUp(VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand command) {
-        logger.debug("leveling up village infrastructure building: {}", command.getVillageId());
-        return villageInfrastructureDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while leveling up village infrastructure building: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> this.innerLevelUp(domain, command.getBuildingType(), command.getNumberOfLevels()))
-                .flatMap(mongoTemplate::save)
-                .doOnSuccess(saved -> logger.debug("level up village infrastructure building: {}", saved.getVillageId()));
+        return Mono.fromCallable(() ->
+                villageInfrastructureDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> this.innerLevelUp(domain, command.getBuildingType(), command.getNumberOfLevels())
+                                .then(mongoTemplate.save(domain))
+                        )
+        ).doOnSubscribe(subscription ->
+                logger.debug("leveling up village infrastructure building: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("level up village infrastructure building: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while leveling up village infrastructure building: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     private Mono<VillageInfrastructure> innerLevelUp(VillageInfrastructure domain, BuildingType buildingType, Integer numberOfLevels) {
@@ -161,12 +172,18 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
 
     @Override
     public Mono<VillageInfrastructure> levelDown(VillageInfrastructureCommand.LevelDownVillageInfrastructureBuildingCommand command) {
-        logger.debug("leveling down village infrastructure building: {}", command.getVillageId());
-        return villageInfrastructureDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while leveling down village infrastructure building: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> this.innerLevelDown(domain, command.getBuildingType(), command.getNumberOfLevels()))
-                .flatMap(mongoTemplate::save)
-                .doOnSuccess(saved -> logger.debug("level down village infrastructure building: {}", saved.getVillageId()));
+        return Mono.fromCallable(() ->
+                villageInfrastructureDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> this.innerLevelDown(domain, command.getBuildingType(), command.getNumberOfLevels())
+                                .then(mongoTemplate.save(domain))
+                        )
+        ).doOnSubscribe(subscription ->
+                logger.debug("leveling down village infrastructure building: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("level down village infrastructure building: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while leveling down village infrastructure building: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     private Mono<VillageInfrastructure> innerLevelDown(VillageInfrastructure domain, BuildingType buildingType, Integer numberOfLevels) {

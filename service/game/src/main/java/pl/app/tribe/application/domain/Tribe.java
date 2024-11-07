@@ -56,6 +56,12 @@ public class Tribe {
         return members.stream().filter(e -> Objects.equals(e.getPlayerId(), playerId)).findAny();
     }
 
+    public enum MemberType {
+        DEFAULT,
+        TRUSTED,
+        FOUNDER
+    }
+
     @Getter
     @NoArgsConstructor
     public static class Member {
@@ -67,11 +73,5 @@ public class Tribe {
             this.playerId = playerId;
             this.type = type;
         }
-    }
-
-    public enum MemberType {
-        DEFAULT,
-        TRUSTED,
-        FOUNDER
     }
 }

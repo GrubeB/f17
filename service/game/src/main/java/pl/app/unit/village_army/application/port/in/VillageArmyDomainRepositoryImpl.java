@@ -18,8 +18,7 @@ class VillageArmyDomainRepositoryImpl implements VillageArmyDomainRepository {
     @Override
     public Mono<VillageArmy> fetchByVillageId(ObjectId villageId) {
         return mongoTemplate.query(VillageArmy.class)
-                .matching(Query.query(Criteria.where("villageId").is(villageId)))
-                .one()
+                .matching(Query.query(Criteria.where("villageId").is(villageId))).one()
                 .switchIfEmpty(Mono.error(() -> VillageArmyException.NotFoundVillageArmyException.fromId(villageId.toHexString())));
     }
 

@@ -30,6 +30,7 @@ public class Money {
     public Money subtraactMoney(Integer amount) {
         return new Money(this.amount - amount);
     }
+
     public Money subtraactMoney(Money money) {
         return new Money(this.amount - money.amount);
     }

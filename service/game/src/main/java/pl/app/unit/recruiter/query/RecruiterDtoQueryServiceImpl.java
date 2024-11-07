@@ -55,13 +55,15 @@ class RecruiterDtoQueryServiceImpl implements RecruiterDtoQueryService {
             addMapper(Recruiter.class, RecruiterDto.class, this::mapToRecruiterDto);
             addMapper(Recruiter.Request.class, RecruiterDto.RequestDto.class, this::mapToRecruiterDtoRequestDto);
         }
-        RecruiterDto mapToRecruiterDto(Recruiter domain){
+
+        RecruiterDto mapToRecruiterDto(Recruiter domain) {
             return RecruiterDto.builder()
                     .villageId(domain.getVillageId())
                     .constructNumberMax(domain.getConstructNumberMax())
                     .requests(domain.getRequests().stream().map(e -> map(e, RecruiterDto.RequestDto.class)).collect(Collectors.toSet()))
                     .build();
         }
+
         RecruiterDto.RequestDto mapToRecruiterDtoRequestDto(Recruiter.Request domain) {
             return new RecruiterDto.RequestDto(
                     domain.getUnit(),

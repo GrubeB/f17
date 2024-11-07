@@ -1,7 +1,7 @@
 package pl.app.item.item.application.domain;
 
 public enum ItemType {
-//    // money pack
+    //    // money pack
 //    CROWN_PACK,
 //
 //    // resource pack

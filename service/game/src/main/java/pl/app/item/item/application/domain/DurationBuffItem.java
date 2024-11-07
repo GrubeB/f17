@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.time.Duration;
 import java.util.Objects;
+
 @Getter
 public class DurationBuffItem extends Item {
     private Duration duration;

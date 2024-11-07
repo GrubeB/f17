@@ -92,6 +92,7 @@ public class Buildings {
     public boolean meetRequirements(BuildingType type, Integer level) {
         return buildings().get(type).meetRequirements(level);
     }
+
     public Building getBuildingByType(BuildingType type) {
         return switch (type) {
             case ACADEMY -> academy;

@@ -4,6 +4,7 @@ import lombok.Getter;
 import pl.app.resource.resource.application.domain.ResourceType;
 
 import java.util.Objects;
+
 @Getter
 public class ResourcePackItem extends Item {
     private ResourceType resourceType;

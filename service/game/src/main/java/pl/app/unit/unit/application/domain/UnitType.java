@@ -55,22 +55,27 @@ public enum UnitType {
                 .collect(Collectors.toSet());
     }
 
-    public static boolean isInfantry(UnitType unitType){
+    public static boolean isInfantry(UnitType unitType) {
         return getInfantryTypes().contains(unitType);
     }
-    public static boolean isCavalry(UnitType unitType){
+
+    public static boolean isCavalry(UnitType unitType) {
         return getCavalryTypes().contains(unitType);
     }
-    public static boolean isArchers(UnitType unitType){
+
+    public static boolean isArchers(UnitType unitType) {
         return getArchersTypes().contains(unitType);
     }
-    public boolean isInfantry(){
+
+    public boolean isInfantry() {
         return getAttackType().equals(INFANTRY);
     }
-    public boolean isCavalry(){
+
+    public boolean isCavalry() {
         return getAttackType().equals(CAVALRY);
     }
-    public boolean isArchers(){
+
+    public boolean isArchers() {
         return getAttackType().equals(ARCHERS);
     }
 }

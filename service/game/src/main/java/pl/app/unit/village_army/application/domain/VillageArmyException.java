@@ -34,6 +34,7 @@ public interface VillageArmyException {
             return new DuplicatedVillageArmyException(MessageFormat.format("there are army for given village: {0}", id));
         }
     }
+
     class VillageDoseNotSupportException extends InvalidStateException {
         public VillageDoseNotSupportException() {
             super("this village does not support given village");

@@ -16,6 +16,8 @@ import pl.app.map.village_position.application.domain.VillagePositionException;
 import pl.app.map.village_position.application.domain.VillagePositionProvider;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +32,20 @@ class VillagePositionServiceImpl implements VillagePositionService {
 
     @Override
     public Mono<VillagePosition> crate(VillagePositionCommand.CreateVillagePositionCommand command) {
-        logger.debug("crating village position: {}", command.getVillageId());
-        return mongoTemplate.exists(Query.query(Criteria.where("villageId").in(command.getVillageId().toHexString())), VillagePosition.class)
-                .flatMap(exist -> exist ? Mono.error(VillagePositionException.DuplicatedVillagePositionException.fromId(command.getVillageId().toHexString())) : Mono.empty())
-                .doOnError(e -> logger.error("exception occurred while crating village position: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .then(villagePositionProvider.getNewVillagePosition())
-                .flatMap(newVillagePosition -> {
-                    var domain = new VillagePosition(newVillagePosition, command.getVillageId());
-                    return mongoTemplate.insert(domain)
-                            .doOnSuccess(saved -> logger.debug("created village position: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                mongoTemplate.exists(Query.query(Criteria.where("villageId").in(command.getVillageId().toHexString())), VillagePosition.class)
+                        .flatMap(exist -> exist ? Mono.error(VillagePositionException.DuplicatedVillagePositionException.fromId(command.getVillageId().toHexString())) : Mono.empty())
+                        .then(villagePositionProvider.getNewVillagePosition())
+                        .flatMap(newVillagePosition -> {
+                            var domain = new VillagePosition(newVillagePosition, command.getVillageId());
+                            return mongoTemplate.insert(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("crating village position: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created village position: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating village position: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 }

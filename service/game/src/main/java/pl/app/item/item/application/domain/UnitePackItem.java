@@ -4,6 +4,7 @@ import lombok.Getter;
 import pl.app.unit.unit.application.domain.UnitType;
 
 import java.util.Objects;
+
 @Getter
 public class UnitePackItem extends Item {
     private UnitType unitType;

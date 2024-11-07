@@ -19,6 +19,7 @@ public interface TribeException {
             return new NotFoundTribeException("not found tribe: " + id);
         }
     }
+
     class DuplicatedNameException extends ValidationException {
         public DuplicatedNameException() {
             super("there is tribe with given name");

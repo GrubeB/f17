@@ -5,5 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface ArmyWalkService {
     Mono<ArmyWalk> sendArmy(ArmyWalkCommand.SendArmyCommand command);
+
     Mono<ArmyWalk> process(ArmyWalkCommand.ProcessArmyArrivalCommand command);
 }

@@ -16,6 +16,7 @@ import pl.app.village.village_effect.application.domain.VillageEffectException;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.function.Function;
 
 
 @Service
@@ -31,40 +32,56 @@ class VillageEffectServiceImpl implements VillageEffectService {
 
     @Override
     public Mono<VillageEffect> crate(VillageEffectCommand.CreateVillageEffectCommand command) {
-        logger.debug("crating village effect: {}", command.getVillageId());
-        return mongoTemplate.exists(Query.query(Criteria.where("playerId").is(command.getVillageId().toHexString())), VillageEffect.class)
-                .flatMap(exist -> exist ? Mono.error(VillageEffectException.DuplicatedVillageIdException.fromId(command.getVillageId().toHexString())) : Mono.empty())
-                .doOnError(e -> logger.error("exception occurred while crating village effect: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .then(Mono.defer(() -> {
-                    var domain = new VillageEffect(command.getVillageId());
-                    var event = new VillageEffectEvent.VillageEffectCreatedEvent(domain.getVillageId());
-                    return mongoTemplate.insert(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageEffectCreated().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("created village effect: {}", saved.getVillageId()));
-                }));
+        return Mono.fromCallable(() ->
+                mongoTemplate.exists(Query.query(Criteria.where("villageId").is(command.getVillageId().toHexString())), VillageEffect.class)
+                        .flatMap(exist -> exist ? Mono.error(VillageEffectException.DuplicatedVillageIdException.fromId(command.getVillageId().toHexString())) : Mono.empty())
+                        .then(Mono.defer(() -> {
+                            var domain = new VillageEffect(command.getVillageId());
+                            var event = new VillageEffectEvent.VillageEffectCreatedEvent(domain.getVillageId());
+                            return mongoTemplate.insert(domain)
+                                    .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageEffectCreated().getName(), saved.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        }))
+        ).doOnSubscribe(subscription ->
+                logger.debug("crating village effect for village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created village effect for village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating village effect for village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     @Override
     public Mono<VillageEffect> add(VillageEffectCommand.AddEffectCommand command) {
-        logger.debug("adding effect to village: {}", command.getVillageId());
-        return villageEffectDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while adding effect to village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> {
-                    domain.add(new VillageEffect.Effect(command.getEffectType(), command.getValue(), Instant.now(), Instant.now().plus(command.getDuration())));
-                    return mongoTemplate.save(domain)
-                            .doOnSuccess(saved -> logger.debug("added effect to village: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                villageEffectDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            domain.add(new VillageEffect.Effect(command.getEffectType(), command.getValue(), Instant.now(), Instant.now().plus(command.getDuration())));
+                            return mongoTemplate.save(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("adding effect to village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("added effect to village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while adding effect to village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     @Override
     public Mono<VillageEffect> remove(VillageEffectCommand.RemoveInvalidEffectsCommand command) {
-        logger.debug("removing effects from village: {}", command.getVillageId());
-        return villageEffectDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while removing effects from village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> {
-                    domain.removeInvalidEffect();
-                    return mongoTemplate.save(domain)
-                            .doOnSuccess(saved -> logger.debug("removed effects from village: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                villageEffectDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            domain.removeInvalidEffect();
+                            return mongoTemplate.save(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("removing effect from village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("removed effect from village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while removing effect from village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 }

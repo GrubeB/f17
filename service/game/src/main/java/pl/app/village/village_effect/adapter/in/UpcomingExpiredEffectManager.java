@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import pl.app.attack.army_walk.domain.application.ArmyWalk;
-import pl.app.attack.army_walk.domain.port.in.ArmyWalkDomainRepository;
 import pl.app.village.village_effect.application.domain.VillageEffect;
 import pl.app.village.village_effect.application.port.in.VillageEffectCommand;
 import pl.app.village.village_effect.application.port.in.VillageEffectDomainRepository;
@@ -44,8 +42,8 @@ class UpcomingExpiredEffectManager {
                     Instant toDate = firstEffect.get().getTo();
                     return Mono.delay(Duration.between(Instant.now(), toDate))
                             .flatMap(unused -> this.villageEffectService.remove(new VillageEffectCommand.RemoveInvalidEffectsCommand(e.getVillageId())))
-                                    .doFinally(signalType -> removeId(e.getVillageId()))
-                                    .subscribeOn(Schedulers.parallel());
+                            .doFinally(signalType -> removeId(e.getVillageId()))
+                            .subscribeOn(Schedulers.parallel());
                 })
                 .subscribe();
     }

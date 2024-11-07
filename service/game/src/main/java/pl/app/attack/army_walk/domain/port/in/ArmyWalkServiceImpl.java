@@ -33,6 +33,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,130 +73,142 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
     }
 
     Mono<ArmyWalk> processReturn(ArmyWalk domain) {
-        logger.debug("finishing army return: {}", domain.getArmyWalkId());
-        return Mono.defer(() -> {
+        return Mono.fromCallable(() -> {
             domain.markAsProcessed();
             // unblock army, add resources
             return villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(domain.getTo().getVillageId(), domain.getArmy()))
-                    .flatMap(unused -> villageResourceService.add(new VillageResourceCommand.AddResourceCommand(domain.getTo().getVillageId(), domain.getResource())))
-                    .flatMap(unused -> mongoTemplate.save(domain))
-                    .doOnSuccess(d -> logger.debug("finished army return: {}", d.getArmyWalkId()));
-        });
+                    .then(villageResourceService.add(new VillageResourceCommand.AddResourceCommand(domain.getTo().getVillageId(), domain.getResource())))
+                    .then(mongoTemplate.save(domain));
+        }).doOnSubscribe(subscription ->
+                logger.debug("finishing army return: {}", domain.getArmyWalkId())
+        ).flatMap(Function.identity()).doOnSuccess(d ->
+                logger.debug("finishing army return: {}", d.getArmyWalkId())
+        ).doOnError(e ->
+                logger.error("exception occurred while finishing army return: {}, exception: {}", domain.getArmyWalkId(), e.toString())
+        );
     }
 
     Mono<ArmyWalk> processAttack(ArmyWalk domain) {
-        logger.debug("finishing attack: {}", domain.getArmyWalkId());
-        return Mono.zip(
-                        unitDomainRepository.fetchAll(),
-                        villageDtoQueryService.fetchById(domain.getFrom().getVillageId()),
-                        villageDtoQueryService.fetchById(domain.getTo().getVillageId())
-                )
-                .flatMap(t -> {
-                    var units = t.getT1();
-                    var attackerVillage = t.getT2();
-                    var defenderVillage = t.getT3();
-                    domain.markAsProcessed();
+        return Mono.fromCallable(() ->
+                Mono.zip(
+                                unitDomainRepository.fetchAll(),
+                                villageDtoQueryService.fetchById(domain.getFrom().getVillageId()),
+                                villageDtoQueryService.fetchById(domain.getTo().getVillageId())
+                        )
+                        .flatMap(t -> {
+                            var units = t.getT1();
+                            var attackerVillage = t.getT2();
+                            var defenderVillage = t.getT3();
+                            domain.markAsProcessed();
 
-                    boolean attackerFaithBonus = attackerVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHURCH, 1)
-                            || attackerVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHAPEL, 1);
-                    boolean defenderFaithBonus = defenderVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHURCH, 1)
-                            || defenderVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHAPEL, 1);
+                            boolean attackerFaithBonus = attackerVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHURCH, 1)
+                                    || attackerVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHAPEL, 1);
+                            boolean defenderFaithBonus = defenderVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHURCH, 1)
+                                    || defenderVillage.getVillageInfrastructure().getBuildings().meetRequirements(BuildingType.CHAPEL, 1);
 
-                    Army defenderArmy = Army.of(defenderVillage.getVillageArmy().getVillageArmy());
-                    defenderArmy.add(defenderVillage.getVillageArmy().getSupportArmy());
+                            Army defenderArmy = Army.of(defenderVillage.getVillageArmy().getVillageArmy());
+                            defenderArmy.add(defenderVillage.getVillageArmy().getSupportArmy());
 
-                    var attack = new Attack(domain, defenderArmy, units,
-                            new Attack.AttackedVillage(defenderVillage.getVillageResource().getResource(), defenderVillage.getVillageInfrastructure().getBuildings().getWall().getLevel()), attackerFaithBonus, defenderFaithBonus
-                    );
-                    if (domain.getOfficers().getRanger() && !attack.getBattleResult().isAttackerWin()) {
-                        var returnArmyWalk = new ArmyWalk(ArmyWalkType.RETURN, units,
-                                domain.getTo(),
-                                domain.getFrom(),
-                                domain.getArmy(), Resource.zero(),
-                                new Officers()
-                        );
-                        return mongoTemplate.save(returnArmyWalk)
-                                .then(mongoTemplate.save(domain));
-                    }
-                    return mongoTemplate.save(domain)
-                            .flatMap(d -> mongoTemplate.insert(attack))
-                            // subtract attacker units
-                            .flatMap(d ->
-                                    villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(d.getAttackerVillageId(), d.getBattleResult().getAttackerArmyLosses()))
-                                            .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(d.getAttackerVillageId(), d.getBattleResult().getAttackerArmyLosses())))
-                                            .thenReturn(d)
-                            )
-                            // subtract defender units
-                            .flatMap(d -> {
-                                        var totalLosses = d.getBattleResult().getDefenderArmyLosses();
-                                        var totalDefenderArmy = d.getBattleResult().getOriginalDefenderArmy();
-                                        Map<UnitType, Double> ratios = totalLosses.entrySet().stream()
-                                                .collect(Collectors.toMap(e -> e.getKey(), e -> (double) e.getValue() / totalDefenderArmy.get(e.getKey())));
-                                        Map<ObjectId, Army> lossesByVillageId =
-                                                Stream.concat(defenderVillage.getVillageArmy().getVillageSupports().stream(),
-                                                                Stream.of(new VillageArmyDto.VillageSupportDto(defenderVillage.getId(), defenderVillage.getVillageArmy().getVillageArmy())))
-                                                        .collect(Collectors.toMap(vs -> vs.getVillageId(), vs -> {
-                                                            var lossesArmy = Army.of(vs.getArmy());
-                                                            lossesArmy.multiply(ratios);
-                                                            return lossesArmy;
-                                                        }));
-                                        return Flux.fromIterable(lossesByVillageId.entrySet())
-                                                .flatMap(e -> villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(e.getKey(), e.getValue()))
-                                                        .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(e.getKey(), e.getValue())))
-                                                ).collectList()
+                            var attack = new Attack(domain, defenderArmy, units,
+                                    new Attack.AttackedVillage(defenderVillage.getVillageResource().getResource(), defenderVillage.getVillageInfrastructure().getBuildings().getWall().getLevel()), attackerFaithBonus, defenderFaithBonus
+                            );
+                            if (domain.getOfficers().getRanger() && !attack.getBattleResult().isAttackerWin()) {
+                                var returnArmyWalk = new ArmyWalk(ArmyWalkType.RETURN, units,
+                                        domain.getTo(),
+                                        domain.getFrom(),
+                                        domain.getArmy(), Resource.zero(),
+                                        new Officers()
+                                );
+                                return mongoTemplate.save(returnArmyWalk)
+                                        .then(mongoTemplate.save(domain));
+                            }
+                            return mongoTemplate.save(domain)
+                                    .flatMap(d -> mongoTemplate.insert(attack))
+                                    // subtract attacker units
+                                    .flatMap(d ->
+                                            villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(d.getAttackerVillageId(), d.getBattleResult().getAttackerArmyLosses()))
+                                                    .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(d.getAttackerVillageId(), d.getBattleResult().getAttackerArmyLosses())))
+                                                    .thenReturn(d)
+                                    )
+                                    // subtract defender units
+                                    .flatMap(d -> {
+                                                var totalLosses = d.getBattleResult().getDefenderArmyLosses();
+                                                var totalDefenderArmy = d.getBattleResult().getOriginalDefenderArmy();
+                                                Map<UnitType, Double> ratios = totalLosses.entrySet().stream()
+                                                        .collect(Collectors.toMap(e -> e.getKey(), e -> (double) e.getValue() / totalDefenderArmy.get(e.getKey())));
+                                                Map<ObjectId, Army> lossesByVillageId =
+                                                        Stream.concat(defenderVillage.getVillageArmy().getVillageSupports().stream(),
+                                                                        Stream.of(new VillageArmyDto.VillageSupportDto(defenderVillage.getId(), defenderVillage.getVillageArmy().getVillageArmy())))
+                                                                .collect(Collectors.toMap(vs -> vs.getVillageId(), vs -> {
+                                                                    var lossesArmy = Army.of(vs.getArmy());
+                                                                    lossesArmy.multiply(ratios);
+                                                                    return lossesArmy;
+                                                                }));
+                                                return Flux.fromIterable(lossesByVillageId.entrySet())
+                                                        .flatMap(e -> villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(e.getKey(), e.getValue()))
+                                                                .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(e.getKey(), e.getValue())))
+                                                        ).collectList()
+                                                        .thenReturn(d);
+                                            }
+                                    )
+                                    // destroy wall
+                                    .flatMap(d -> {
+                                        if (d.getBattleResult().getNumberOfWallLevelDestroyed() > 0) {
+                                            return villageInfrastructureService.levelDown(new VillageInfrastructureCommand.LevelDownVillageInfrastructureBuildingCommand(
+                                                    d.getDefenderVillageId(), BuildingType.WALL, d.getBattleResult().getNumberOfWallLevelDestroyed()
+                                            )).thenReturn(d);
+                                        } else return Mono.just(d);
+                                    })
+                                    // attacker win:
+                                    // subtract resources, start walk
+                                    .flatMap(d -> {
+                                        if (!d.getBattleResult().isAttackerWin() || d.getReturnArmyWalk().isEmpty()) {
+                                            return Mono.just(d);
+                                        }
+                                        return villageResourceService.subtract(new VillageResourceCommand.SubtractResourceCommand(d.getDefenderVillageId(), d.getPlunderedResource()))
+                                                .flatMap(unused -> mongoTemplate.save(d.getReturnArmyWalk().get()))
                                                 .thenReturn(d);
-                                    }
-                            )
-                            // destroy wall
-                            .flatMap(d -> {
-                                if (d.getBattleResult().getNumberOfWallLevelDestroyed() > 0) {
-                                    return villageInfrastructureService.levelDown(new VillageInfrastructureCommand.LevelDownVillageInfrastructureBuildingCommand(
-                                            d.getDefenderVillageId(), BuildingType.WALL, d.getBattleResult().getNumberOfWallLevelDestroyed()
-                                    )).thenReturn(d);
-                                } else return Mono.just(d);
-                            })
-                            // attacker win:
-                            // subtract resources, start walk
-                            .flatMap(d -> {
-                                if (!d.getBattleResult().isAttackerWin() || d.getReturnArmyWalk().isEmpty()) {
-                                    return Mono.just(d);
-                                }
-                                return villageResourceService.subtract(new VillageResourceCommand.SubtractResourceCommand(d.getDefenderVillageId(), d.getPlunderedResource()))
-                                        .flatMap(unused -> mongoTemplate.save(d.getReturnArmyWalk().get()))
-                                        .thenReturn(d);
-                            })
-                            .thenReturn(domain)
-                            .doOnSuccess(d -> logger.debug("finished processing attack: {}", d.getArmyWalkId()));
-
-                });
+                                    })
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("finishing army attack: {}", domain.getArmyWalkId())
+        ).flatMap(Function.identity()).doOnSuccess(d ->
+                logger.debug("finished army attack: {}", d.getArmyWalkId())
+        ).doOnError(e ->
+                logger.error("exception occurred while finishing army attack: {}, exception: {}", domain.getArmyWalkId(), e.toString())
+        );
     }
 
     @Override
     public Mono<ArmyWalk> sendArmy(ArmyWalkCommand.SendArmyCommand command) {
-        logger.debug("sending army to the village: {}", command.getToVillageId());
-        return Mono.zip(
-                        unitDomainRepository.fetchAll(),
-                        villageDtoQueryService.fetchById(command.getFromVillageId()),
-                        villageDtoQueryService.fetchById(command.getToVillageId())
-                )
-
-                .flatMap(t -> {
-                    var units = t.getT1();
-                    var attackerVillage = t.getT2();
-                    var defenderVillage = t.getT3();
-                    var domain = new ArmyWalk(command.getType(), units,
-                            new ArmyWalk.ArmyWalkVillage(attackerVillage.getOwnerId(), command.getFromVillageId(), attackerVillage.getVillagePosition().getPosition()),
-                            new ArmyWalk.ArmyWalkVillage(defenderVillage.getOwnerId(), command.getToVillageId(), defenderVillage.getVillagePosition().getPosition()),
-                            command.getArmy(), command.getResource(),
-                            command.getOfficers()
-                    );
-                    return removeOfficers(attackerVillage.getOwnerId(), command.getOfficers())
-                            .then(villageArmyService.block(new VillageArmyCommand.BlockUnitsCommand(command.getFromVillageId(), command.getArmy())))
-                            .then(mongoTemplate.save(domain))
-                            .doOnSuccess(unused -> logger.debug("sent army: {}", domain.getArmyWalkId()));
-                })
-                .doOnError(e -> logger.error("exception occurred while sending army to the village: {}, exception: {}", command.getToVillageId(), e.getMessage()))
-                ;
+        return Mono.fromCallable(() ->
+                Mono.zip(
+                                unitDomainRepository.fetchAll(),
+                                villageDtoQueryService.fetchById(command.getFromVillageId()),
+                                villageDtoQueryService.fetchById(command.getToVillageId())
+                        )
+                        .flatMap(t -> {
+                            var units = t.getT1();
+                            var attackerVillage = t.getT2();
+                            var defenderVillage = t.getT3();
+                            var domain = new ArmyWalk(command.getType(), units,
+                                    new ArmyWalk.ArmyWalkVillage(attackerVillage.getOwnerId(), command.getFromVillageId(), attackerVillage.getVillagePosition().getPosition()),
+                                    new ArmyWalk.ArmyWalkVillage(defenderVillage.getOwnerId(), command.getToVillageId(), defenderVillage.getVillagePosition().getPosition()),
+                                    command.getArmy(), command.getResource(),
+                                    command.getOfficers()
+                            );
+                            return removeOfficers(attackerVillage.getOwnerId(), command.getOfficers())
+                                    .then(villageArmyService.block(new VillageArmyCommand.BlockUnitsCommand(command.getFromVillageId(), command.getArmy())))
+                                    .then(mongoTemplate.save(domain));
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("sending army to the village: {}", command.getToVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(d ->
+                logger.debug("sent army to the village: {}", d.getArmyWalkId())
+        ).doOnError(e ->
+                logger.error("exception occurred while sending army to the village: {}, exception: {}", command.getToVillageId(), e.toString())
+        );
     }
 
     private Mono<Void> removeOfficers(ObjectId playerId, Officers officers) {

@@ -5,7 +5,6 @@
               value="%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr(%applicationName[%15.15t]){faint} %clr(${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} %clr(:){faint} %clr(%m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}){bright_white}"/>
     <property name="CUSTOM_CONSOLE_LOG_PATTERN_2"
               value="%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr(%applicationName[%15.15t]){faint} %clr(${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} %clr(:){faint} %clr(%m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}){bright_blue}"/>
-
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
@@ -33,12 +32,24 @@
         </encoder>
     </appender>
 
+    <appender name="OPEN_TELEMETRY"
+        class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender">
+        <captureExperimentalAttributes>false</captureExperimentalAttributes>
+        <captureCodeAttributes>true</captureCodeAttributes>
+        <captureMarkerAttribute>true</captureMarkerAttribute>
+        <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+        <captureLoggerContext>true</captureLoggerContext>
+        <captureMdcAttributes>*</captureMdcAttributes>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="OPEN_TELEMETRY"/>
     </root>
 
     <logger name="pl.app" level="DEBUG" additivity="false">
         <appender-ref ref="CUSTOM_CONSOLE"/>
+        <appender-ref ref="OPEN_TELEMETRY"/>
     </logger>
     <logger name="pl.app.config" level="DEBUG" additivity="false">
         <appender-ref ref="CUSTOM_CONSOLE_2"/>

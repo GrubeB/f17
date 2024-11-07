@@ -20,13 +20,15 @@ public class PlayerMoney {
         this.playerId = playerId;
         this.money = money;
     }
-    public void add(Money money){
+
+    public void add(Money money) {
         if (money.getBalance() < 0) {
             throw new PlayerMoneyException.InvalidAmountException();
         }
         this.money = this.money.addMoney(money);
     }
-    public void subtract(Money money){
+
+    public void subtract(Money money) {
         if (money.getBalance() < 0) {
             throw new PlayerMoneyException.InvalidAmountException();
         }

@@ -2,7 +2,10 @@ package pl.app.attack.army_walk.adapter.in;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.app.attack.army_walk.domain.port.in.ArmyWalkCommand;
 import pl.app.attack.army_walk.domain.port.in.ArmyWalkService;
 import pl.app.attack.army_walk.query.ArmyWalkDtoQueryService;

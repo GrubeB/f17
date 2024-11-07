@@ -26,6 +26,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 
 @Service
@@ -46,42 +47,54 @@ class RecruiterServiceImpl implements RecruiterService {
 
     @Override
     public Mono<Recruiter> crate(RecruiterCommand.CreateRecruiterCommand command) {
-        logger.debug("crating recruiter for village: {}", command.getVillageId());
-        return mongoTemplate.exists(Query.query(Criteria.where("villageId").is(command.getVillageId().toHexString())), Recruiter.class)
-                .flatMap(exist -> exist ? Mono.error(RecruiterException.DuplicatedRecruiterException.fromId(command.getVillageId().toHexString())) : Mono.empty())
-                .doOnError(e -> logger.error("exception occurred while crating recruiter for village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .then(Mono.defer(() -> {
-                    var domain = new Recruiter(command.getVillageId(), 7);
-                    var event = new RecruiterEvent.RecruiterCreatedEvent(domain.getVillageId());
-                    return mongoTemplate.insert(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruiterCreated().getName(), saved.getVillageId(), event)).thenReturn(domain))
-                            .doOnSuccess(saved -> logger.debug("created recruiter for village: {}", saved.getVillageId()));
-                }));
+        return Mono.fromCallable(() ->
+                mongoTemplate.exists(Query.query(Criteria.where("villageId").is(command.getVillageId().toHexString())), Recruiter.class)
+                        .flatMap(exist -> exist ? Mono.error(RecruiterException.DuplicatedRecruiterException.fromId(command.getVillageId().toHexString())) : Mono.empty())
+                        .then(Mono.defer(() -> {
+                            var domain = new Recruiter(command.getVillageId(), 7);
+                            var event = new RecruiterEvent.RecruiterCreatedEvent(domain.getVillageId());
+                            return mongoTemplate.insert(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruiterCreated().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        }))
+        ).doOnSubscribe(subscription ->
+                logger.debug("crating recruiter for village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created recruiter for village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating recruiter for village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     @Override
     public Mono<Recruiter> add(RecruiterCommand.AddRecruitRequestCommand command) {
-        logger.debug("adding recruit request in village: {}", command.getVillageId());
-        return Mono.zip(
-                        recruiterDomainRepository.fetchByVillageId(command.getVillageId()),
-                        villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId()),
-                        unitDomainRepository.fetch(command.getType())
-                )
-                .doOnError(e -> logger.error("exception occurred while adding recruit request in village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(t -> {
-                    var domain = t.getT1();
-                    var infrastructure = t.getT2();
-                    var unit = t.getT3();
-                    verifyVillageMeetsRequirements(infrastructure, unit.getRequirements());
-                    var recruitRequest = domain.addRequest(unit, command.getAmount());
+        return Mono.fromCallable(() ->
+                Mono.zip(
+                                recruiterDomainRepository.fetchByVillageId(command.getVillageId()),
+                                villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId()),
+                                unitDomainRepository.fetch(command.getType())
+                        )
+                        .flatMap(t -> {
+                            var domain = t.getT1();
+                            var infrastructure = t.getT2();
+                            var unit = t.getT3();
+                            verifyVillageMeetsRequirements(infrastructure, unit.getRequirements());
+                            var recruitRequest = domain.addRequest(unit, command.getAmount());
 
-                    var event = new RecruiterEvent.RecruitRequestAddedEvent(domain.getVillageId(), recruitRequest.getUnit().getType(),
-                            recruitRequest.getAmount(), recruitRequest.getFrom(), recruitRequest.getTo());
-                    return villageResourceService.subtract(new VillageResourceCommand.SubtractResourceCommand(command.getVillageId(), recruitRequest.getCost()))
-                            .flatMap(unused -> mongoTemplate.save(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruitRequestAdded().getName(), saved.getVillageId(), event)).thenReturn(domain))
-                            .doOnSuccess(saved -> logger.debug("added recruit request in village: {}", saved.getVillageId()));
-                });
+                            var event = new RecruiterEvent.RecruitRequestAddedEvent(domain.getVillageId(), recruitRequest.getUnit().getType(),
+                                    recruitRequest.getAmount(), recruitRequest.getFrom(), recruitRequest.getTo());
+                            return villageResourceService.subtract(new VillageResourceCommand.SubtractResourceCommand(command.getVillageId(), recruitRequest.getCost()))
+                                    .then(mongoTemplate.save(domain))
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruitRequestAdded().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("adding recruit request in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("added recruit request in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while adding recruit request in village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     private void verifyVillageMeetsRequirements(VillageInfrastructureDto infrastructure, Set<Unit.Requirement> requirements) {
@@ -94,37 +107,48 @@ class RecruiterServiceImpl implements RecruiterService {
 
     @Override
     public Mono<Recruiter> remove(RecruiterCommand.RemoveRecruitRequestCommand command) {
-        logger.debug("removing recruit request in village: {}", command.getVillageId());
-        return recruiterDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while removing recruit request in village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> {
-                    var recruitRequest = domain.removeRequest();
-                    if (recruitRequest.isEmpty()) {
-                        return Mono.just(domain);
-                    }
-                    var event = new RecruiterEvent.RecruitRequestRemovedEvent(domain.getVillageId(), recruitRequest.get().getUnit().getType(),
-                            recruitRequest.get().getAmount(), recruitRequest.get().getFrom(), recruitRequest.get().getTo());
-                    return villageResourceService.add(new VillageResourceCommand.AddResourceCommand(command.getVillageId(), recruitRequest.get().getCost()))
-                            .flatMap(unused -> mongoTemplate.save(domain))
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruitRequestRemoved().getName(), saved.getVillageId(), event)).thenReturn(domain))
-                            .doOnSuccess(saved -> logger.debug("removed recruit request in village: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                recruiterDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            var recruitRequest = domain.removeRequest();
+                            if (recruitRequest.isEmpty()) {
+                                return Mono.just(domain);
+                            }
+                            var event = new RecruiterEvent.RecruitRequestRemovedEvent(domain.getVillageId(), recruitRequest.get().getUnit().getType(),
+                                    recruitRequest.get().getAmount(), recruitRequest.get().getFrom(), recruitRequest.get().getTo());
+                            return villageResourceService.add(new VillageResourceCommand.AddResourceCommand(command.getVillageId(), recruitRequest.get().getCost()))
+                                    .then(mongoTemplate.save(domain))
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getRecruitRequestRemoved().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("removing recruit request in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("removed recruit request in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while removing recruit request in village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     @Override
     public Mono<Recruiter> finish(RecruiterCommand.FinishRecruitRequestCommand command) {
-        logger.debug("finishing recruit request in village: {}", command.getVillageId());
-        return recruiterDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while finishing recruit request in village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> {
-                    var recruitRequest = domain.finishRequest();
-                    if (recruitRequest.isEmpty()) {
-                        return Mono.just(domain);
-                    }
-                    return villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(domain.getVillageId(), Army.of(Map.of(recruitRequest.get().getUnit().getType(), recruitRequest.get().getAmount()))))
-                            .flatMap(unused -> mongoTemplate.save(domain))
-                            .doOnSuccess(saved -> logger.debug("finished recruit request in village: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                recruiterDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            var recruitRequest = domain.finishRequest();
+                            if (recruitRequest.isEmpty()) {
+                                return Mono.just(domain);
+                            }
+                            return villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(domain.getVillageId(), Army.of(Map.of(recruitRequest.get().getUnit().getType(), recruitRequest.get().getAmount()))))
+                                    .then(mongoTemplate.save(domain));
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("finishing recruit request in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("finished recruit request in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while finishing recruit request in village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
 }

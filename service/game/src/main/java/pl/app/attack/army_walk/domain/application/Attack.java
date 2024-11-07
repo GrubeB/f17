@@ -22,13 +22,13 @@ import java.util.Random;
 @Getter
 @Document(collection = "attack")
 public class Attack {
+    private static final Random random = new Random();
     @Id
     private ObjectId attackId;
     private ObjectId attackerId;
     private ObjectId defenderId;
     private ObjectId attackerVillageId;
     private ObjectId defenderVillageId;
-
     private Instant battleDate;
     @DocumentReference
     private ArmyWalk atackArmyWalk;
@@ -70,8 +70,6 @@ public class Attack {
         }
     }
 
-    private static final Random random = new Random();
-
     private int generateLuck() {
         return random.nextInt(31) - 15;
     }
@@ -91,13 +89,6 @@ public class Attack {
 
     public Optional<ArmyWalk> getReturnArmyWalk() {
         return Optional.ofNullable(returnArmyWalk);
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class AttackedVillage {
-        private Resource resource;
-        private Integer wallLevel;
     }
 
     private Resource calculatePlunderedResource(int armyCapacity, Resource villageResource) {
@@ -122,6 +113,13 @@ public class Attack {
         int clayToPlunder3 = Math.min(remainderCapacity, villageResource.getClay());
         int ironToPlunder3 = Math.min(remainderCapacity, villageResource.getIron());
         return plunderedResource.add(Resource.of(woodToPlunder3, clayToPlunder3, ironToPlunder3, 0));
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class AttackedVillage {
+        private Resource resource;
+        private Integer wallLevel;
     }
 
 }

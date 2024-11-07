@@ -1,6 +1,5 @@
 package pl.app.item.item.application.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.Serializable;

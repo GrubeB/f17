@@ -19,6 +19,12 @@ public class VillageEffectDto implements Serializable {
     private ObjectId villageId;
     private List<EffectDto> effects;
 
+    public int getBuffValue(EffectType type) {
+        return effects.stream()
+                .filter(e -> e.getType().equals(type))
+                .map(VillageEffectDto.EffectDto::getValue).findAny().orElse(0);
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -27,11 +33,5 @@ public class VillageEffectDto implements Serializable {
         private Integer value;
         private Instant from;
         private Instant to;
-    }
-
-    public int getBuffValue(EffectType type) {
-        return effects.stream()
-                .filter(e -> e.getType().equals(type))
-                .map(VillageEffectDto.EffectDto::getValue).findAny().orElse(0);
     }
 }

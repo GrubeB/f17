@@ -10,7 +10,6 @@ import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.config.CorsRegistry;
-import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import pl.app.common.shared.config.CustomArgumentResolver;
@@ -19,7 +18,6 @@ import pl.app.common.shared.config.JacksonConfig;
 import pl.app.common.shared.config.ModelMapperConfig;
 
 @Configuration
-@EnableWebFlux
 @Import({
         JacksonConfig.class,
         ModelMapperConfig.class,

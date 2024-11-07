@@ -14,12 +14,9 @@ import pl.app.money.money.application.domain.Money;
 import pl.app.money.player_money.application.domain.PlayerMoney;
 import pl.app.money.player_money.application.domain.PlayerMoneyEvent;
 import pl.app.money.player_money.application.domain.PlayerMoneyException;
-import pl.app.player.player.application.domain.PlayerEvent;
-import pl.app.resource.resource.application.domain.Resource;
-import pl.app.resource.village_resource.application.domain.VillageResource;
-import pl.app.resource.village_resource.application.domain.VillageResourceEvent;
-import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import reactor.core.publisher.Mono;
+
+import java.util.function.Function;
 
 
 @Service
@@ -35,44 +32,62 @@ class PlayerMoneyServiceImpl implements PlayerMoneyService {
 
     @Override
     public Mono<PlayerMoney> crate(PlayerMoneyCommand.CreatePlayerMoneyCommand command) {
-        logger.debug("crating player money: {}", command.getPlayerId());
-        return mongoTemplate.exists(Query.query(Criteria.where("playerId").is(command.getPlayerId().toHexString())), PlayerMoney.class)
-                .flatMap(exist -> exist ? Mono.error(PlayerMoneyException.DuplicatedPlayerIdException.fromId(command.getPlayerId().toHexString())) : Mono.empty())
-                .doOnError(e -> logger.error("exception occurred while crating player money: {}, exception: {}", command.getPlayerId(), e.getMessage()))
-                .then(Mono.defer(() -> {
-                    var domain = new PlayerMoney(command.getPlayerId(), new Money(100));
-                    var event = new PlayerMoneyEvent.PlayerMoneyCreatedEvent(domain.getPlayerId(), domain.getMoney());
-                    return mongoTemplate.insert(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getPlayerMoneyCreated().getName(), saved.getPlayerId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("created player money: {}", saved.getPlayerId()));
-                }));
+        return Mono.fromCallable(() ->
+                mongoTemplate.exists(Query.query(Criteria.where("playerId").is(command.getPlayerId().toHexString())), PlayerMoney.class)
+                        .flatMap(exist -> exist ? Mono.error(PlayerMoneyException.DuplicatedPlayerIdException.fromId(command.getPlayerId().toHexString())) : Mono.empty())
+                        .then(Mono.defer(() -> {
+                            var domain = new PlayerMoney(command.getPlayerId(), new Money(100));
+                            var event = new PlayerMoneyEvent.PlayerMoneyCreatedEvent(domain.getPlayerId(), domain.getMoney());
+                            return mongoTemplate.insert(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getPlayerMoneyCreated().getName(), domain.getPlayerId(), event)))
+                                    .thenReturn(domain);
+                        }))
+        ).doOnSubscribe(subscription ->
+                logger.debug("crating player money: {}", command.getPlayerId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created player money: {}", domain.getPlayerId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating player money: {}, exception: {}", command.getPlayerId(), e.toString())
+        );
     }
 
     @Override
     public Mono<PlayerMoney> add(PlayerMoneyCommand.AddMoneyCommand command) {
-        logger.debug("adding money to player: {}", command.getPlayerId());
-        return playerMoneyDomainRepository.fetchByPlayerId(command.getPlayerId())
-                .doOnError(e -> logger.error("exception occurred while adding money to player: {}, exception: {}", command.getPlayerId(), e.getMessage()))
-                .flatMap(domain -> {
-                    domain.add(command.getMoney());
-                    var event = new PlayerMoneyEvent.MoneyAddedEvent(domain.getPlayerId(), command.getMoney());
-                    return mongoTemplate.save(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getMoneyAdded().getName(), saved.getPlayerId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("added money to player: {}", saved.getPlayerId()));
-                });
+        return Mono.fromCallable(() ->
+                playerMoneyDomainRepository.fetchByPlayerId(command.getPlayerId())
+                        .flatMap(domain -> {
+                            domain.add(command.getMoney());
+                            var event = new PlayerMoneyEvent.MoneyAddedEvent(domain.getPlayerId(), command.getMoney());
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getMoneyAdded().getName(), domain.getPlayerId(), event)))
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("adding money to player: {}", command.getPlayerId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("added money to player: {}", domain.getPlayerId())
+        ).doOnError(e ->
+                logger.error("exception occurred while adding money to player: {}, exception: {}", command.getPlayerId(), e.toString())
+        );
     }
 
     @Override
     public Mono<PlayerMoney> subtract(PlayerMoneyCommand.SubtractMoneyCommand command) {
-        logger.debug("subtracting money to player: {}", command.getPlayerId());
-        return playerMoneyDomainRepository.fetchByPlayerId(command.getPlayerId())
-                .doOnError(e -> logger.error("exception occurred while subtracting money to player: {}, exception: {}", command.getPlayerId(), e.getMessage()))
-                .flatMap(domain -> {
-                    domain.subtract(command.getMoney());
-                    var event = new PlayerMoneyEvent.MoneySubtractedEvent(domain.getPlayerId(), command.getMoney());
-                    return mongoTemplate.save(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getMoneySubtracted().getName(), saved.getPlayerId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("subtracted money to player: {}", saved.getPlayerId()));
-                });
+        return Mono.fromCallable(() ->
+                playerMoneyDomainRepository.fetchByPlayerId(command.getPlayerId())
+                        .flatMap(domain -> {
+                            domain.subtract(command.getMoney());
+                            var event = new PlayerMoneyEvent.MoneySubtractedEvent(domain.getPlayerId(), command.getMoney());
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getMoneySubtracted().getName(), domain.getPlayerId(), event)))
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("subtracting money from player: {}", command.getPlayerId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("subtracted money from player: {}", domain.getPlayerId())
+        ).doOnError(e ->
+                logger.error("exception occurred while subtracting money from player: {}, exception: {}", command.getPlayerId(), e.toString())
+        );
     }
 }

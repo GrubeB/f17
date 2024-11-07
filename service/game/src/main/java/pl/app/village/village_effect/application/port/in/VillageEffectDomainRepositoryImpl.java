@@ -6,10 +6,6 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import pl.app.attack.army_walk.domain.application.ArmyWalk;
-import pl.app.money.player_money.application.domain.PlayerMoney;
-import pl.app.money.player_money.application.port.in.PlayerMoneyDomainRepository;
-import pl.app.player.player.application.domain.PlayerException;
 import pl.app.village.village_effect.application.domain.VillageEffect;
 import pl.app.village.village_effect.application.domain.VillageEffectException;
 import reactor.core.publisher.Flux;
@@ -30,6 +26,7 @@ class VillageEffectDomainRepositoryImpl implements VillageEffectDomainRepository
                 .one()
                 .switchIfEmpty(Mono.error(() -> VillageEffectException.NotFoundVillageEffectException.fromId(villageId.toHexString())));
     }
+
     @Override
     public Flux<VillageEffect> fetchVillageEffectWithEnding(Duration withinTime) {
         Instant currentTime = Instant.now();

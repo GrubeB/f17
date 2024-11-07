@@ -11,7 +11,7 @@ public class CrownPackItem extends Item {
     public CrownPackItem() {
     }
 
-    public CrownPackItem( Integer value) {
+    public CrownPackItem(Integer value) {
         super(ItemType.CROWN_PACK);
         this.value = value;
     }

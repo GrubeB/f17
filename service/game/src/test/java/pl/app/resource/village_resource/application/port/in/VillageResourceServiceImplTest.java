@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillageResourceServiceImplTest extends AbstractIntegrationTest {
+class VillageResourceServiceImplTest {
 
     @Autowired
     private VillageResourceServiceImpl service;
@@ -69,6 +69,7 @@ class VillageResourceServiceImplTest extends AbstractIntegrationTest {
     @Test
     void add() {
         Village village = villageService.crate(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
+        System.out.println("/n/n/n/n/n/n/n/n/n");
         StepVerifier.create(service.add(new VillageResourceCommand.AddResourceCommand(village.getId(), Resource.of(100))))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();

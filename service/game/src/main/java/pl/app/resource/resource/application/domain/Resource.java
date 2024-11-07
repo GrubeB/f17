@@ -34,7 +34,7 @@ public class Resource {
         this.clay = 0;
         this.iron = 0;
         this.provision = 0;
-        switch (resourceType){
+        switch (resourceType) {
             case WOOD -> this.wood = value;
             case CLAY -> this.clay = value;
             case IRON -> this.iron = value;
@@ -53,6 +53,7 @@ public class Resource {
     public static Resource of(Integer wood, Integer clay, Integer iron, Integer provision) {
         return new Resource(wood, clay, iron, provision);
     }
+
     public static Resource of(Integer value, ResourceType resourceType) {
         return new Resource(value, resourceType);
     }
@@ -94,6 +95,7 @@ public class Resource {
 
         return new Resource(wood, clay, iron, provision);
     }
+
     public Resource subtract(Resource resource) {
         if (Objects.isNull(resource)) {
             return this;

@@ -33,6 +33,7 @@ public interface InventoryCommand {
         private Item item;
         private Integer amount;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

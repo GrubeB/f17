@@ -19,6 +19,8 @@ import pl.app.village.village_effect.application.domain.EffectType;
 import pl.app.village.village_effect.query.VillageEffectDtoQueryService;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+
 
 @Service
 @RequiredArgsConstructor
@@ -36,78 +38,100 @@ class VillageResourceServiceImpl implements VillageResourceService {
 
     @Override
     public Mono<VillageResource> crate(VillageResourceCommand.CreateVillageResourceCommand command) {
-        logger.debug("crating village resource: {}", command.getVillageId());
-        return mongoTemplate.exists(Query.query(Criteria.where("villageId").is(command.getVillageId().toHexString())), VillageResource.class)
-                .flatMap(exist -> exist ? Mono.error(VillageResourceException.DuplicatedVillageResourceException.fromId(command.getVillageId().toHexString())) : Mono.empty())
-                .doOnError(e -> logger.error("exception occurred while crating resource position: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .then(Mono.defer(() -> {
-                    var domain = new VillageResource(command.getVillageId(), Resource.of(1_000));
-                    var event = new VillageResourceEvent.VillageResourceCreatedEvent(domain.getVillageId());
-                    return mongoTemplate.insert(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageResourceCreated().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("created village resource: {}", saved.getVillageId()));
-                }));
+        return Mono.fromCallable(() ->
+                mongoTemplate.exists(Query.query(Criteria.where("villageId").is(command.getVillageId().toHexString())), VillageResource.class)
+                        .flatMap(exist -> exist ? Mono.error(VillageResourceException.DuplicatedVillageResourceException.fromId(command.getVillageId().toHexString())) : Mono.empty())
+                        .then(Mono.defer(() -> {
+                            var domain = new VillageResource(command.getVillageId(), Resource.of(1_000));
+                            var event = new VillageResourceEvent.VillageResourceCreatedEvent(domain.getVillageId());
+                            return mongoTemplate.insert(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageResourceCreated().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        }))
+        ).doOnSubscribe(subscription ->
+                logger.debug("crating village resource: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("created village resource: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while crating village resource: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     @Override
     public Mono<VillageResource> add(VillageResourceCommand.AddResourceCommand command) {
-        logger.debug("adding resource to village: {}", command.getVillageId());
-        return Mono.zip(
-                        villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
-                        villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId())
-                )
-                .doOnError(e -> logger.error("exception occurred while adding resource to village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(t -> {
-                    var domain = t.getT1();
-                    var infrastructure = t.getT2();
-                    var warehouseCapacity = infrastructure.getBuildings().getWarehouse().getCapacity();
-                    domain.addResource(command.getResource(), Resource.of(warehouseCapacity));
-                    var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), command.getResource());
-                    return mongoTemplate.save(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("added resource: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                Mono.zip(villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
+                                villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId()))
+                        .flatMap(t -> {
+                            var domain = t.getT1();
+                            var infrastructure = t.getT2();
+                            var warehouseCapacity = infrastructure.getBuildings().getWarehouse().getCapacity();
+                            domain.addResource(command.getResource(), Resource.of(warehouseCapacity));
+                            var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), command.getResource());
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceAdded().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("adding resource to village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("added resource to village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while adding resource to village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 
     @Override
     public Mono<VillageResource> refresh(VillageResourceCommand.RefreshResourceCommand command) {
-        logger.trace("refreshing resources in village: {}", command.getVillageId());
-        return Mono.zip(
-                        villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
-                        villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId()),
-                        villageEffectDtoQueryService.fetchByVillageId(command.getVillageId())
-                )
-                .doOnError(e -> logger.error("exception occurred while refreshing resources in village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(t -> {
-                    var domain = t.getT1();
-                    var infrastructure = t.getT2();
-                    var villageEffect = t.getT3();
-                    var warehouseCapacity = infrastructure.getBuildings().getWarehouse().getCapacity();
-                    Resource resourceAdded = domain.refreshResource(new Resource(
-                            infrastructure.getBuildings().getTimberCamp().getProduction() * (1 + villageEffect.getBuffValue(EffectType.WOOD_BUFF)),
-                            infrastructure.getBuildings().getClayPit().getProduction() * (1 + villageEffect.getBuffValue(EffectType.CLAY_BUFF)),
-                            infrastructure.getBuildings().getIronMine().getProduction() * (1 + villageEffect.getBuffValue(EffectType.IRON_BUFF)),
-                            0
-                    ), Resource.of(warehouseCapacity));
-                    var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), resourceAdded);
-                    return mongoTemplate.save(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceAdded().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.trace("refreshed resource in village: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                Mono.zip(
+                                villageResourceDomainRepository.fetchByVillageId(command.getVillageId()),
+                                villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId()),
+                                villageEffectDtoQueryService.fetchByVillageId(command.getVillageId())
+                        )
+                        .flatMap(t -> {
+                            var domain = t.getT1();
+                            var infrastructure = t.getT2();
+                            var villageEffect = t.getT3();
+                            var warehouseCapacity = infrastructure.getBuildings().getWarehouse().getCapacity();
+                            Resource resourceAdded = domain.refreshResource(new Resource(
+                                    infrastructure.getBuildings().getTimberCamp().getProduction() * (1 + villageEffect.getBuffValue(EffectType.WOOD_BUFF)),
+                                    infrastructure.getBuildings().getClayPit().getProduction() * (1 + villageEffect.getBuffValue(EffectType.CLAY_BUFF)),
+                                    infrastructure.getBuildings().getIronMine().getProduction() * (1 + villageEffect.getBuffValue(EffectType.IRON_BUFF)),
+                                    0
+                            ), Resource.of(warehouseCapacity));
+                            var event = new VillageResourceEvent.ResourceAddedEvent(domain.getVillageId(), resourceAdded);
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceAdded().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("refreshing resources in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("refreshed resources in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while refreshing resources in village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
-
 
     @Override
     public Mono<VillageResource> subtract(VillageResourceCommand.SubtractResourceCommand command) {
-        logger.debug("subtracting resource from village: {}", command.getVillageId());
-        return villageResourceDomainRepository.fetchByVillageId(command.getVillageId())
-                .doOnError(e -> logger.error("exception occurred while subtracting resource from village: {}, exception: {}", command.getVillageId(), e.getMessage()))
-                .flatMap(domain -> {
-                    domain.subtractResource(command.getResource());
-                    var event = new VillageResourceEvent.ResourceSubtractedEvent(domain.getVillageId(), command.getResource());
-                    return mongoTemplate.save(domain)
-                            .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceSubtracted().getName(), saved.getVillageId(), event)).thenReturn(saved))
-                            .doOnSuccess(saved -> logger.debug("subtracted resource: {}", saved.getVillageId()));
-                });
+        return Mono.fromCallable(() ->
+                villageResourceDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            domain.subtractResource(command.getResource());
+                            var event = new VillageResourceEvent.ResourceSubtractedEvent(domain.getVillageId(), command.getResource());
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getResourceSubtracted().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("subtracting resource from village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("subtracted resource from village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while subtracting resource from village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
     }
 }

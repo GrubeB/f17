@@ -3,6 +3,7 @@ package pl.app.item.item.application.domain;
 import lombok.Getter;
 
 import java.util.Objects;
+
 @Getter
 public class OfficerItem extends Item {
     private OfficerType officerType;

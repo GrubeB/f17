@@ -39,6 +39,12 @@ public class Diplomacy {
         return this.tribes.stream().filter(t -> Objects.equals(t.getTribe().getId(), tribeId)).findAny();
     }
 
+    public enum DiplomacyType {
+        ALLY,
+        NON_AGGRESSION_PACK,
+        ENEMY
+    }
+
     @Getter
     @NoArgsConstructor
     public static class DiplomacyTribe {
@@ -50,11 +56,5 @@ public class Diplomacy {
             this.tribe = tribe;
             this.type = type;
         }
-    }
-
-    public enum DiplomacyType {
-        ALLY,
-        NON_AGGRESSION_PACK,
-        ENEMY
     }
 }

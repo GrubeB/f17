@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillageArmyServiceImplTest extends AbstractIntegrationTest {
+class VillageArmyServiceImplTest {
     @Autowired
     private VillageArmyServiceImpl service;
 
