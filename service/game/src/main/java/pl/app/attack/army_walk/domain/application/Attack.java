@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.attack.battle.application.domain.Battle;
@@ -16,13 +17,14 @@ import pl.app.unit.unit.application.domain.UnitType;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 
 @Getter
 @Document(collection = "attack")
 public class Attack {
     private static final Random random = new Random();
+    @Transient
+    private final Map<UnitType, Unit> units;
     @Id
     private ObjectId attackId;
     private ObjectId attackerId;
@@ -35,12 +37,14 @@ public class Attack {
     @DocumentReference
     private ArmyWalk returnArmyWalk;
     private Battle.BattleResult battleResult;
-    private Resource plunderedResource;
+    private Resource plunderedResource = Resource.zero();
+    private Boolean villageConquered = false;
+    private Integer loyaltyDecrease = 0;
 
     public Attack(ArmyWalk atackArmyWalk,
                   Army deffenderArmy,
                   Map<UnitType, Unit> units,
-                  AttackedVillage defenderVillage,
+                  DefenderVillage defenderVillage,
                   Boolean attackerFaithBonus, Boolean defenderFaithBonus
     ) {
         this.attackId = atackArmyWalk.getArmyWalkId();
@@ -51,22 +55,25 @@ public class Attack {
         this.defenderId = atackArmyWalk.getTo().getPlayerId();
         this.attackerVillageId = atackArmyWalk.getFrom().getVillageId();
         this.defenderVillageId = atackArmyWalk.getTo().getVillageId();
+        this.units = units;
 
         Battle battle = new Battle(atackArmyWalk.getArmy(), deffenderArmy, units, defenderVillage.getWallLevel());
         battle.setBattleBuffs(attackerFaithBonus, defenderFaithBonus, 100, generateLuck(), atackArmyWalk.getOfficers().getGrandmaster(),
                 atackArmyWalk.getOfficers().getMedic(), calculateNightBuf());
         battleResult = battle.startBattle();
 
-        int armyCapacity = calculateArmyCapacity(battleResult.getFinalAttackerArmy(), units, atackArmyWalk.getOfficers());
-        plunderedResource = calculatePlunderedResource(armyCapacity, defenderVillage.getResource());
-
-        if (battleResult.isAttackerWin()) {
-            returnArmyWalk = new ArmyWalk(ArmyWalkType.RETURN, units,
-                    atackArmyWalk.getTo(),
-                    atackArmyWalk.getFrom(),
-                    battleResult.getFinalAttackerArmy(), plunderedResource,
-                    new Officers()
-            );
+        if (!battleResult.isAttackerWin()) {
+            return;
+        }
+        if (battleResult.getFinalAttackerArmy().get(UnitType.NOBLEMAN) > 0) {
+            loyaltyDecrease = 30;
+        }
+        if (battleResult.getFinalAttackerArmy().get(UnitType.NOBLEMAN) > 0 && defenderVillage.loyalty - loyaltyDecrease < 0) {
+            villageConquered = true;
+            battleResult.getFinalAttackerArmy().subtract(Army.of(Map.of(UnitType.NOBLEMAN, 1)));
+        } else {
+            int armyCapacity = calculateArmyCapacity(battleResult.getFinalAttackerArmy(), atackArmyWalk.getOfficers());
+            plunderedResource = calculatePlunderedResource(armyCapacity, defenderVillage.getResource());
         }
     }
 
@@ -74,7 +81,7 @@ public class Attack {
         return random.nextInt(31) - 15;
     }
 
-    private int calculateArmyCapacity(Army army, Map<UnitType, Unit> units, Officers officers) {
+    private int calculateArmyCapacity(Army army, Officers officers) {
         var baseCapacity = army.entrySet().stream().mapToInt(e -> units.get(e.getKey()).getCapacity() * e.getValue()).sum();
         var capacityWithOfficers = baseCapacity * (officers.getMasterOfLoot() ? 1.5 : 1.0);
         return (int) capacityWithOfficers;
@@ -87,8 +94,13 @@ public class Attack {
         return now.isAfter(start) || now.isBefore(end);
     }
 
-    public Optional<ArmyWalk> getReturnArmyWalk() {
-        return Optional.ofNullable(returnArmyWalk);
+    public ArmyWalk getReturnArmyWalk() {
+        return new ArmyWalk(ArmyWalkType.RETURN, units,
+                atackArmyWalk.getTo(),
+                atackArmyWalk.getFrom(),
+                battleResult.getFinalAttackerArmy(), plunderedResource,
+                new Officers()
+        );
     }
 
     private Resource calculatePlunderedResource(int armyCapacity, Resource villageResource) {
@@ -117,9 +129,10 @@ public class Attack {
 
     @Getter
     @AllArgsConstructor
-    public static class AttackedVillage {
+    public static class DefenderVillage {
         private Resource resource;
         private Integer wallLevel;
+        private Integer loyalty;
     }
 
 }

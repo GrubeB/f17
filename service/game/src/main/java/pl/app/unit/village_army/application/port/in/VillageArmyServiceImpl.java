@@ -50,6 +50,23 @@ class VillageArmyServiceImpl implements VillageArmyService {
     }
 
     @Override
+    public Mono<VillageArmy> killAllUnitsFromVillage(VillageArmyCommand.KillAllUnitsFromVillageCommand command) {
+        return Mono.fromCallable(() ->
+                villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            domain.reset();
+                            return mongoTemplate.save(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("killing all units from village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(saved ->
+                logger.debug("killed all units from village: {}", saved.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while killing all units from village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
+    }
+
+    @Override
     public Mono<VillageArmy> add(VillageArmyCommand.AddUnitsCommand command) {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getVillageId())

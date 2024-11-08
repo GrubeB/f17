@@ -104,9 +104,15 @@ class VillageServiceImpl implements VillageService {
 
     @Override
     public Mono<Village> conquerVillage(VillageCommand.ConquerVillageCommand command) {
-        return Mono.fromCallable(() -> {
-            return Mono.just(new Village());
-        }).doOnSubscribe(subscription ->
+        return Mono.fromCallable(() -> villageDomainRepository.fetchById(command.getVillageId())
+                .flatMap(domain -> {
+                    domain.setOwnerId(command.getNewOwnerId());
+                    domain.getVillageLoyalty().reset();
+                    return mongoTemplate.save(domain)
+                            .then(villageArmyService.killAllUnitsFromVillage(new VillageArmyCommand.KillAllUnitsFromVillageCommand(command.getVillageId())))
+                            .thenReturn(domain);
+                })
+        ).doOnSubscribe(subscription ->
                 logger.debug("conquering village: {}", command.getVillageId())
         ).flatMap(Function.identity()).doOnSuccess(domain ->
                 logger.debug("conquered village: {}", command.getVillageId())

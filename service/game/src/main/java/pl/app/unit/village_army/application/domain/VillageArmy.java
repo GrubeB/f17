@@ -72,6 +72,11 @@ public class VillageArmy {
         }
     }
 
+    public void reset() {
+        this.villageArmy = Army.zero();
+        this.blockedArmy = Army.zero();
+    }
+
     private Optional<VillageSupport> getVillageSupport(ObjectId villageId) {
         return villageSupports.stream().filter(e -> Objects.equals(e.getVillageId(), villageId)).findAny();
     }

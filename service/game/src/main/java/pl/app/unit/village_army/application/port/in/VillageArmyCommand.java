@@ -19,6 +19,13 @@ public interface VillageArmyCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    class KillAllUnitsFromVillageCommand implements Serializable {
+        private ObjectId villageId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     class AddUnitsCommand implements Serializable {
         private ObjectId villageId;
         private Army army;

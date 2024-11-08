@@ -6,6 +6,8 @@ import reactor.core.publisher.Mono;
 public interface VillageArmyService {
     Mono<VillageArmy> crate(VillageArmyCommand.CreateVillageArmyCommand command);
 
+    Mono<VillageArmy> killAllUnitsFromVillage(VillageArmyCommand.KillAllUnitsFromVillageCommand command);
+
     Mono<VillageArmy> add(VillageArmyCommand.AddUnitsCommand command);
 
     Mono<VillageArmy> subtract(VillageArmyCommand.SubtractUnitsCommand command);
