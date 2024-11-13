@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 
 public interface VillageDomainRepository {
     Mono<Village> fetchById(ObjectId villageId);
+
     Flux<Village> fetchVillagesWithoutMaxLoyalty();
 }

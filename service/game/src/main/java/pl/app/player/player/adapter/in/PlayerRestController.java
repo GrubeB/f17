@@ -2,10 +2,10 @@ package pl.app.player.player.adapter.in;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.*;
 import pl.app.player.player.application.port.in.PlayerCommand;
 import pl.app.player.player.application.port.in.PlayerService;
 import pl.app.player.player.query.PlayerDtoQueryService;
@@ -23,11 +23,17 @@ class PlayerRestController {
     private final PlayerService service;
     private final PlayerDtoQueryService queryService;
 
-
     @PostMapping
-    Mono<ResponseEntity<PlayerDto>> crate(@RequestBody PlayerCommand.CreatePlayerCommand command) {
-        return service.crate(command)
-                .flatMap(domain -> queryService.fetchById(domain.getPlayerId()))
-                .map(ResponseEntity::ok);
+    Mono<ResponseEntity<PlayerDto>> crate() {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(ctx -> ctx.getAuthentication().getPrincipal())
+                .cast(Jwt.class)
+                .flatMap(jwt -> {
+                    String accountId = jwt.getSubject();
+                    String preferredUsername = jwt.getClaimAsString("preferred_username");
+                    return service.crate(new PlayerCommand.CreatePlayerCommand(accountId, preferredUsername))
+                            .flatMap(domain -> queryService.fetchById(domain.getPlayerId()))
+                            .map(ResponseEntity::ok);
+                });
     }
 }

@@ -13,6 +13,7 @@ import pl.app.unit.village_army.query.dto.VillageArmyDto;
 import pl.app.village.village.application.domain.VillageType;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -21,11 +22,14 @@ import java.io.Serializable;
 public class VillageDto implements Serializable {
     private ObjectId id;
     private VillageType type;
-    private ObjectId ownerId;
-    private PlayerDto player;
+    private PlayerDto owner;
     private Integer loyalty;
     private VillagePositionDto villagePosition;
     private VillageResourceDto villageResource;
     private VillageInfrastructureDto villageInfrastructure;
     private VillageArmyDto villageArmy;
+
+    public ObjectId getOwnerId() {
+        return Objects.isNull(owner) ? null : owner.getPlayerId();
+    }
 }
