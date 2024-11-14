@@ -38,7 +38,6 @@ class VillageInfrastructureServiceImpl implements VillageInfrastructureService {
             var event = new VillageInfrastructureEvent.VillageInfrastructureCreatedEvent(domain.getVillageId());
             return innerLevelUp(domain, HEADQUARTERS, 1)
                     .then(innerLevelUp(domain, WAREHOUSE, 1))
-                    .then(innerLevelUp(domain, FARM, 1))
                     .then(mongoTemplate.insert(domain))
                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageInfrastructureCreated().getName(), domain.getVillageId(), event)))
                     .thenReturn(domain);

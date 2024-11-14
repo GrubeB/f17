@@ -25,9 +25,6 @@ class VillagePositionServiceImpl implements VillagePositionService {
     private static final Logger logger = LoggerFactory.getLogger(VillagePositionServiceImpl.class);
 
     private final ReactiveMongoTemplate mongoTemplate;
-    private final KafkaTemplate<ObjectId, Object> kafkaTemplate;
-    private final KafkaTopicConfigurationProperties topicNames;
-    private final MapDomainRepository mapDomainRepository;
     private final VillagePositionProvider villagePositionProvider;
 
     @Override

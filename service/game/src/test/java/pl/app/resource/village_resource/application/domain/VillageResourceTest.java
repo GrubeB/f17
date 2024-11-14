@@ -8,7 +8,6 @@ import pl.app.resource.resource.application.domain.Resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
 class VillageResourceTest {
 
     @Test

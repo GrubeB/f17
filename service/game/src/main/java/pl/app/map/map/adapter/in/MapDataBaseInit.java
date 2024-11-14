@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.map.map.application.domain.Map;
 import pl.app.map.map.application.domain.Position;
@@ -14,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,13 +25,18 @@ class MapDataBaseInit {
 
     @PostConstruct
     void initMap() {
-        logger.trace("inserting default map");
-        Map map = getBaseMap();
-        mongoTemplate.remove(new Query(), Map.class)
-                .then(Mono.defer(() ->
-                        mongoTemplate.save(map)
-                ))
-                .doOnSuccess(unused -> logger.debug("Inserted default map"))
+        Map newMap = getBaseMap();
+        mongoTemplate.query(Map.class).one()
+                .switchIfEmpty(Mono.fromCallable(() ->
+                                mongoTemplate.save(newMap)
+                        ).doOnSubscribe(subscription ->
+                                logger.debug("inserting default map")
+                        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                                logger.debug("Inserted default map")
+                        ).doOnError(e ->
+                                logger.error("exception occurred while inserting default map, exception: {}", e.toString())
+                        )
+                )
                 .subscribe();
     }
 

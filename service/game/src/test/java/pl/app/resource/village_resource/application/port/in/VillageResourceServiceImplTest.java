@@ -13,6 +13,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.domain.VillageResource;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VillageResourceServiceImplTest {
+class VillageResourceServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private VillageResourceServiceImpl service;

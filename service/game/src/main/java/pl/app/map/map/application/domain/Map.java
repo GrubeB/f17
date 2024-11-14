@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.map.village_position.application.domain.VillagePosition;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -63,5 +64,23 @@ public class Map {
         return positions.stream()
                 .filter(position -> !occupiedPositions.contains(position))
                 .collect(Collectors.toSet());
+    }
+
+    public Optional<Position> getNextPosition() {
+        Set<Position> noOccupiedPositions = getNoOccupiedPositions();
+        if (noOccupiedPositions.isEmpty()) {
+            return Optional.empty();
+        }
+        Position center = new Position(height / 2, width / 2, null);
+        Position newPosition = noOccupiedPositions.iterator().next();
+        double min = Position.calculateDistance(newPosition, center);
+        for (Position p : noOccupiedPositions) {
+            double m = Position.calculateDistance(p, center);
+            if (m < min) {
+                newPosition = p;
+                min = m;
+            }
+        }
+        return Optional.of(newPosition);
     }
 }

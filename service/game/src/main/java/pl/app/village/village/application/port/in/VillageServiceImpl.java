@@ -89,9 +89,9 @@ class VillageServiceImpl implements VillageService {
                     .then(villageEffectService.crate(new VillageEffectCommand.CreateVillageEffectCommand(domain.getId())))
                     .then(mongoTemplate.insert(domain))
                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageCreated().getName(), domain.getId(), event)))
-                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), CLAY_PIT, 3)))
-                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), IRON_MINE, 3)))
-                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), TIMBER_CAMP, 3)))
+                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), CLAY_PIT, 8)))
+                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), IRON_MINE, 8)))
+                    .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(domain.getId(), TIMBER_CAMP, 8)))
                     .thenReturn(domain);
         }).doOnSubscribe(subscription ->
                 logger.debug("crating barbarian village")
