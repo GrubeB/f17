@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.UnitType;
 import reactor.test.StepVerifier;
@@ -62,7 +61,7 @@ class VillageArmyServiceImplTest {
     }
 
     @Test
-    void  unblock_shouldAddAndUnblockUnits_whenUnitsAreBlocked() {
+    void unblock_shouldAddAndUnblockUnits_whenUnitsAreBlocked() {
         var villageId = ObjectId.get();
         service.crate(new VillageArmyCommand.CreateVillageArmyCommand(villageId)).block();
         service.add(new VillageArmyCommand.AddUnitsCommand(villageId, Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();

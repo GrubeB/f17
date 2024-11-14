@@ -1,7 +1,6 @@
 package pl.app.attack.battle.application.domain;
 
 import org.junit.jupiter.api.Test;
-import pl.app.attack.battle.application.domain.Battle;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
 import pl.app.unit.unit.application.domain.UnitType;

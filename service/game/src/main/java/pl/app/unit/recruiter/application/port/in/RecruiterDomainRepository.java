@@ -10,5 +10,7 @@ import java.time.Duration;
 public interface RecruiterDomainRepository {
     Mono<Recruiter> fetchByVillageId(ObjectId villageId);
 
+    Flux<Recruiter> fetchByPlayerId(ObjectId playerId);
+
     Flux<Recruiter> fetchRecruiterWithRequestEnding(Duration withinTime);
 }

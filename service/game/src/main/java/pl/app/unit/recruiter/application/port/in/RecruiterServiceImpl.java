@@ -9,9 +9,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.building.village_infrastructure.query.VillageInfrastructureDtoQueryService;
-import pl.app.building.village_infrastructure.query.dto.VillageInfrastructureDto;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.money.gold_coin.query.PlayerGoldCoinDtoQueryService;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 import pl.app.unit.recruiter.application.domain.Recruiter;
@@ -19,13 +18,15 @@ import pl.app.unit.recruiter.application.domain.RecruiterEvent;
 import pl.app.unit.recruiter.application.domain.RecruiterException;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
+import pl.app.unit.unit.application.domain.UnitType;
 import pl.app.unit.unit.application.port.in.UnitDomainRepository;
 import pl.app.unit.village_army.application.port.in.VillageArmyCommand;
 import pl.app.unit.village_army.application.port.in.VillageArmyService;
+import pl.app.village.village.query.VillageDtoQueryService;
+import pl.app.village.village.query.dto.VillageDto;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 
@@ -43,7 +44,8 @@ class RecruiterServiceImpl implements RecruiterService {
     private final VillageArmyService villageArmyService;
 
     private final VillageResourceService villageResourceService;
-    private final VillageInfrastructureDtoQueryService villageInfrastructureDtoQueryService;
+    private final VillageDtoQueryService villageDtoQueryService;
+    private final PlayerGoldCoinDtoQueryService playerGoldCoinDtoQueryService;
 
     @Override
     public Mono<Recruiter> crate(RecruiterCommand.CreateRecruiterCommand command) {
@@ -71,14 +73,14 @@ class RecruiterServiceImpl implements RecruiterService {
         return Mono.fromCallable(() ->
                 Mono.zip(
                                 recruiterDomainRepository.fetchByVillageId(command.getVillageId()),
-                                villageInfrastructureDtoQueryService.fetchByVillageId(command.getVillageId()),
+                                villageDtoQueryService.fetchById(command.getVillageId()),
                                 unitDomainRepository.fetch(command.getType())
                         )
+                        .flatMap(t -> verifyVillageMeetsRequirements(t.getT2(), t.getT3(), command.getAmount()).thenReturn(t))
                         .flatMap(t -> {
                             var domain = t.getT1();
-                            var infrastructure = t.getT2();
                             var unit = t.getT3();
-                            verifyVillageMeetsRequirements(infrastructure, unit.getRequirements());
+
                             var recruitRequest = domain.addRequest(unit, command.getAmount());
 
                             var event = new RecruiterEvent.RecruitRequestAddedEvent(domain.getVillageId(), recruitRequest.getUnit().getType(),
@@ -97,12 +99,38 @@ class RecruiterServiceImpl implements RecruiterService {
         );
     }
 
-    private void verifyVillageMeetsRequirements(VillageInfrastructureDto infrastructure, Set<Unit.Requirement> requirements) {
-        var meetRequirements = requirements.stream()
-                .allMatch(requirement -> infrastructure.getBuildings().meetRequirements(requirement.getBuildingType(), requirement.getLevel()));
-        if (!meetRequirements) {
-            throw new RecruiterException.VillageDoseNotMeetRequirementsException();
+
+    private Mono<Void> verifyVillageMeetsRequirements(VillageDto village, Unit unit, Integer amount) {
+        if (UnitType.NOBLEMAN.equals(unit.getType())) {
+            return Mono.zip(
+                            playerGoldCoinDtoQueryService.fetchByPlayerId(village.getOwnerId()),
+                            villageDtoQueryService.fetchByPlayerId(village.getOwnerId()).collectList(),
+                            recruiterDomainRepository.fetchByPlayerId(village.getOwnerId()).collectList()
+                    )
+                    .flatMap(t -> {
+                        int max = t.getT1().getMaxNumberOfNobleMans();
+                        int numberOfVillages = t.getT2().size();
+                        int recruited = t.getT3().stream()
+                                .flatMap(recruiter -> recruiter.getRequests().stream())
+                                .filter(request -> UnitType.NOBLEMAN.equals(request.getUnit().getType()))
+                                .mapToInt(request -> request.getAmount())
+                                .sum();
+                        int current = t.getT2().stream()
+                                .mapToInt(v -> v.getVillageArmy().getVillageArmy().get(UnitType.NOBLEMAN))
+                                .sum();
+
+                        if ((numberOfVillages - 1) + recruited + current + amount > max) {
+                            return Mono.error(new RecruiterException.VillageDoseNotMeetRequirementsException());
+                        }
+                        return Mono.empty();
+                    });
         }
+        var meetRequirements = unit.getRequirements().stream()
+                .allMatch(requirement -> village.getVillageInfrastructure().getBuildings().meetRequirements(requirement.getBuildingType(), requirement.getLevel()));
+        if (!meetRequirements) {
+            return Mono.error(new RecruiterException.VillageDoseNotMeetRequirementsException());
+        }
+        return Mono.empty();
     }
 
     @Override

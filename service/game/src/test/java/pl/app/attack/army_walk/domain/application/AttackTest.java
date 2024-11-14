@@ -31,7 +31,7 @@ class AttackTest {
                 new Officers()
         );
         var domain = new Attack(armyWalk, Army.zero(), units,
-                new Attack.DefenderVillage(Resource.of(300, 150, 900, 0), 0,100),
+                new Attack.DefenderVillage(Resource.of(300, 150, 900, 0), 0, 100),
                 true, true
         );
         Assertions.assertThat(domain.getPlunderedResource().getWood()).isEqualTo(300);

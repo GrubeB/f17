@@ -9,5 +9,7 @@ import reactor.core.publisher.Mono;
 public interface VillageDtoQueryService {
     Mono<VillageDto> fetchById(@NonNull ObjectId id);
 
+    Flux<VillageDto> fetchByPlayerId(@NonNull ObjectId playerId);
+
     Flux<VillageDto> fetchAll();
 }

@@ -121,6 +121,7 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
                 })
                 .verifyComplete();
     }
+
     @Test
     void sendArmy_shouldConquerVillage() {
         var playerId1 = ObjectId.get();

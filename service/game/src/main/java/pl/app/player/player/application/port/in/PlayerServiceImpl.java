@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.item.inventory.application.port.in.InventoryCommand;
 import pl.app.item.inventory.application.port.in.InventoryService;
+import pl.app.money.gold_coin.application.port.in.PlayerGoldCoinCommand;
+import pl.app.money.gold_coin.application.port.in.PlayerGoldCoinService;
 import pl.app.money.player_money.application.port.in.PlayerMoneyCommand;
 import pl.app.money.player_money.application.port.in.PlayerMoneyService;
 import pl.app.player.player.application.domain.Player;
@@ -32,6 +34,7 @@ class PlayerServiceImpl implements PlayerService {
     private final KafkaTopicConfigurationProperties topicNames;
 
     private final PlayerMoneyService playerMoneyService;
+    private final PlayerGoldCoinService playerGoldCoinService;
     private final InventoryService inventoryService;
 
     @Override
@@ -43,6 +46,7 @@ class PlayerServiceImpl implements PlayerService {
                             var domain = new Player(command.getAccountId());
                             var event = new PlayerEvent.PlayerCreatedEvent(domain.getPlayerId());
                             return playerMoneyService.crate(new PlayerMoneyCommand.CreatePlayerMoneyCommand(domain.getPlayerId()))
+                                    .then(playerGoldCoinService.crate(new PlayerGoldCoinCommand.CreatePlayerGoldCoinCommand(domain.getPlayerId())))
                                     .then(inventoryService.create(new InventoryCommand.CreateInventoryCommand(domain.getPlayerId())))
                                     .then(mongoTemplate.insert(domain))
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getPlayerCreated().getName(), domain.getPlayerId(), event)))

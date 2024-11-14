@@ -15,12 +15,11 @@ import pl.app.unit.unit.application.port.in.UnitDomainRepositoryImpl;
 import java.time.Duration;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ArmyWalkTest {
     private final Map<UnitType, Unit> units = new UnitDomainRepositoryImpl().fetchAll().block();
+
     @Test
-    void testDuration(){
+    void testDuration() {
         var armyWalk = new ArmyWalk(
                 ArmyWalkType.ATTACK,
                 units,

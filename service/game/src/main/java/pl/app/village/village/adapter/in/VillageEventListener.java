@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import pl.app.village.village.application.domain.VillageEvent;
@@ -12,6 +13,7 @@ import pl.app.village.village.application.domain.VillageType;
 import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
 
+@ConditionalOnProperty(value = "app.kafka.listeners.enable", matchIfMissing = true)
 @Component("pl.app.village.village.adapter.in.VillageEventListener")
 @RequiredArgsConstructor
 class VillageEventListener {

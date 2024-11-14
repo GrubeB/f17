@@ -3,6 +3,7 @@ package pl.app.village.village.adapter.in;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pl.app.village.village.application.port.in.VillageCommand;
@@ -12,6 +13,7 @@ import pl.app.village.village.application.port.in.VillageService;
 import java.time.Duration;
 import java.time.Instant;
 
+@ConditionalOnProperty(value = "app.schedulers.enable", matchIfMissing = true)
 @Component
 @RequiredArgsConstructor
 class VillageLoyaltyRefresher {

@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.unit.recruiter.application.domain.Recruiter;
 import pl.app.unit.recruiter.application.domain.RecruiterException;
+import pl.app.village.village.application.domain.Village;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -35,5 +36,15 @@ class RecruiterDomainRepositoryImpl implements RecruiterDomainRepository {
         return mongoTemplate.query(Recruiter.class)
                 .matching(Query.query(Criteria.where("requests.to").lte(toTimeThreshold)))
                 .all();
+    }
+
+    @Override
+    public Flux<Recruiter> fetchByPlayerId(ObjectId playerId) {
+        return mongoTemplate.query(Village.class)
+                .matching(Query.query(Criteria.where("ownerId").is(playerId)))
+                .all()
+                .flatMap(village -> mongoTemplate.query(Recruiter.class)
+                        .matching(Query.query(Criteria.where("_id").is(village.getId()))).one()
+                );
     }
 }

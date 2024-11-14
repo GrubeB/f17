@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.data.mongodb.repository.support.ReactiveMongoRepositoryFactory;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,15 @@ class VillageDtoQueryServiceImpl implements VillageDtoQueryService {
                 .map(e -> mapper.map(e, VillageDto.class));
     }
 
+    @Override
+    public Flux<VillageDto> fetchByPlayerId(ObjectId playerId) {
+        return repository.findByOwnerId(playerId)
+                .map(e -> mapper.map(e, VillageDto.class));
+    }
+
     interface Repository extends ReactiveMongoRepository<VillageQuery, ObjectId> {
+        @Query("{ 'ownerId' : ?0 }")
+        Flux<VillageQuery> findByOwnerId(ObjectId ownerId);
     }
 
     @Component

@@ -30,9 +30,13 @@ public class KafkaTopicConfigurationProperties {
     private Topic playerInventoryCreated;
 
     // money
+    private Topic playerGoldCoinCreated;
+    private Topic goldCoinAdded;
+
     private Topic playerMoneyCreated;
     private Topic moneyAdded;
     private Topic moneySubtracted;
+
 
     // player
     private Topic playerCreated;

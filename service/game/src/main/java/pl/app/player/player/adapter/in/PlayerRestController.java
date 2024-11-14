@@ -2,10 +2,11 @@ package pl.app.player.player.adapter.in;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.app.player.player.application.port.in.PlayerCommand;
 import pl.app.player.player.application.port.in.PlayerService;
 import pl.app.player.player.query.PlayerDtoQueryService;

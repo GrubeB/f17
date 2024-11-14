@@ -1,9 +1,15 @@
 package pl.app.building.builder.adapter.in;
 
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pl.app.building.builder.application.domain.Builder;
 import pl.app.building.builder.application.port.in.BuilderCommand;
+import pl.app.building.builder.application.port.in.BuilderDomainRepository;
 import pl.app.building.builder.application.port.in.BuilderService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -47,4 +53,24 @@ class UpcomingConstructsManager {
     private void removeBuilderId(ObjectId villageId) {
         builderIds.remove(villageId);
     }
+
+    @ConditionalOnProperty(value = "app.schedulers.enable", matchIfMissing = true)
+    @Component
+    @RequiredArgsConstructor
+    public static class UpcomingConstructsManagerDataPuller {
+        private static final Logger logger = LoggerFactory.getLogger(UpcomingConstructsManagerDataPuller.class);
+
+        private final UpcomingConstructsManager upcomingConstructsManager;
+        private final BuilderDomainRepository builderDomainRepository;
+
+        @Scheduled(cron = "*/30 * * ? * *")
+        public void addBuilder() {
+            logger.trace("adding upcoming constructs");
+            builderDomainRepository.fetchBuildersWithConstructEnding(Duration.ofSeconds(31))
+                    .doOnNext(upcomingConstructsManager::addBuilder)
+                    .doOnComplete(() -> logger.trace("added upcoming constructs"))
+                    .subscribe();
+        }
+    }
+
 }
