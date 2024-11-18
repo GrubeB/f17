@@ -1,36 +1,10 @@
 # 
-
 ## Table of Contents
-
 * [General Info](#general-information)
-* [Technologies Used](#technologies-used)
-* [Documentation Used](#documentation)
+* [Documentation](#Documentation)
 
 ## General Information
-
-## Technologies Used
-
-- Spring Boot 3.1
-- PostgreSQL 13
+System is a multiplayer online strategy game inspired by Tribal Wars, more in documentation.
 
 ## Documentation
-
-## Run
-### Prod
-
-### Dev
-1. Start dev env:
-
-        docker-compose -p f17 -f .\.docker\docker-compose.yaml up -d
-
-2. Build:
-    - Without tests:
-
-             .\gradlew build -x test
-    - With test:
-
-             .\gradlew build
-
-3. Run applications:
-
-         .\gradlew :service:game:bootRun
+System documentation is in `.documentation` folder.

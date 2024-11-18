@@ -1,0 +1,837 @@
+{
+  "configuration" : { },
+  "description" : "description",
+  "documentation" : {
+    "decisions" : [ {
+      "content" : "# 1. Architecture Decision Record\n\nData: 2024-11-16\n\n## Status\n\nAccepted\n\n## Context\n\nWe need to record the architectural decisions made on this project.\n\n## Decision\n\ntemplate from article:\nhttps://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions\n\n## Consequences\n\nFrom now we will use Nygard's template, link above.",
+      "date" : "2024-11-18T11:08:52Z",
+      "format" : "Markdown",
+      "id" : "1",
+      "status" : "Accepted",
+      "title" : "Architecture Decision Record"
+    } ],
+    "images" : [ {
+      "content" : "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",
+      "name" : "images/arc42-logo.png",
+      "type" : "image/png"
+    } ],
+    "sections" : [ {
+      "content" : "# \n\n## Introduction and Goals\nThe game is a multiplayer online strategy game inspired by Tribal Wars, where players build villages, train armies, and compete for dominance in world. The system must support thousands of concurrent players, offer real-time interactions, and be scalable for future expansions.\n\n### Requirements Overview\nFeatures:\n- Core Gameplay: Village building, resource management, army training, and strategic battles.\n- Player Interaction: Alliance formation, diplomacy, and trading between players.\n- Scalability: Handle up to 1000 concurrent users on a single server.\n- Accessibility: Playable on desktop (browser-based).\n- Fairness and Security: Ensure balanced gameplay with anti-cheating mechanisms.\n\n### Quality Goals\n\n| Goal        | Motivation/description                                            | \n|-------------|-------------------------------------------------------------------|\n| Security    | Protect against cheating, unauthorized access, and data breaches. |\n| Reliability | System ensuring minimal downtime during server maintenance.       |\n\n\n### Stakeholders\n\n| Role/Name           | Expectations                                                             |\n|---------------------|--------------------------------------------------------------------------|\n| Players             | Expect engaging gameplay and fair rules.                                 |\n| Developers          | Need a maintainable and extensible codebase for future updates.          |\n| Game Administrators | Tools to manage game worlds, monitor player activity, and enforce rules. |\n\n\n## Architecture Constraints\n### Technical Constraints\n\n| Constraint          | Description                                                                                                |\n|---------------------|------------------------------------------------------------------------------------------------------------|\n| Database Technology | Integration with NoSQL solutions (e.g., MongoDB) for high-performance tasks like caching and leaderboards. |\n| Observability       | System  must send metrics for further analysis                                                             |\n\n### Organizational Constraints\n\n| Constraint          | Description                                                                                                |\n|---------------------|------------------------------------------------------------------------------------------------------------|\n\n### Conventions\n\n| Constraint                 | Description                                                                        |\n|----------------------------|------------------------------------------------------------------------------------|\n| Architecture documentation | Terminology and structure according to the arc42 template.                         | \n| Java applications          | Application written in Ports & Adapters (aka Hexagonal) architecture |\n\n\n## Context and Scope\n![](embed:systemContext_gameSystem)\n\n## Solution Strategy\n\n| Goal                 | Description                                                             |\n|----------------------|-------------------------------------------------------------------------|\n| Security             | Implement OAuth2 for secure player authentication                       |\n| Development Strategy | Use GitHub Actions to automate testing, build and deployment pipelines. |\n| Deployment Strategy  | Staging Environment or testing before pushing to production.            |\n\n## Building Block View\nDiagram from 3.1. section displaying all systems:\n![](embed:systemContext_gameSystem)\n\n| System                                      | Description                                                                    |\n|---------------------------------------------|--------------------------------------------------------------------------------|\n| Game system                                 | Main system responsible for gameplay.                                          |\n| Identity and Access Management (IAM) system | System responsible for authentication and user management.                     |\n| Observability System                        | System responsible for collecting telemetry signals: traces, metrics and logs. |\n\n### Level 1 - Game system\nThe system architecture consists of three main components: the frontend, backend, and supporting infrastructure.\n![](embed:container_gameSystem)\n\n| System or components      | Description                                                                                                  |\n|---------------------------|--------------------------------------------------------------------------------------------------------------|\n| Frontend                  | Developed using Angular, providing a dynamic and responsive user interface for web-based access to the game. |\n| Backend                   | The backend is implemented in Spring Framework                                                               |\n| supporting infrastructure | The system uses MongoDB as the primary database. Additionally Apache Kafka is utilized as a messaging system |\n\n#### Level 2 - Backend\n// TODO\n#### Level 2 - Frontend\n// :)\n\n### Level 1 - Identity and Access Management (IAM) system\nThe system integrates Keycloak as the Identity and Access Management (IAM) solution, eliminating the need to develop custom authentication and authorization mechanisms.\nThis choice reduces development effort, enhances security, and ensures compliance with modern authentication standards like OAuth2 and OpenID Connect.\n\n![](embed:container_iam)\n\n### Level 1 - Observability System\nThe observability system is designed to provide comprehensive monitoring and troubleshooting capabilities by collecting, processing, and visualizing telemetry data. The core of the system leverages the OpenTelemetry (OTel) Collector to gather signals from various components of the application, including metrics, traces, and logs.\nAll observability data is integrated into Grafana, providing a unified dashboard for:\n- Real-time metrics visualization (Prometheus).\n- Viewing and analyzing distributed traces (Tempo).\n- Querying and correlating logs (Loki).\n\n![](embed:container_observabilitySystem)\n\n## Runtime View\n// TODO\n## Deployment View\nDeployment diagram - dev:\n![](embed:development_dev)\n\n## Cross-cutting Concepts\n\n### Clean Architecture\nArchitecture is described in book: *Get Your Hands Dirty on Clean Architecture, by Tom Hombergs*.\n\n## Architecture Decisions\n[Link](/workspace/decisions)\n\n## Quality Requirements\n \n\n## Risks and Technical Debts\n\n## Glossary\n\n| Term        | Definition                |\n|-------------|---------------------------|\n| Tribal Wars | InnoGames game from 2003. |\n",
+      "filename" : "doc.md",
+      "format" : "Markdown",
+      "order" : 1,
+      "title" : ""
+    } ]
+  },
+  "id" : 1,
+  "lastModifiedDate" : "2024-11-18T11:08:52Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "children" : [ {
+        "containerInstances" : [ {
+          "containerId" : "5",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "45",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.0e0e4949-075f-4589-8425-3e7def54f49c"
+          },
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "6",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "47",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.7763a658-6853-4623-8868-81c0696ab0aa"
+          },
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "11",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "49",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.56929b75-e856-4485-a8cf-1926ae0c1d50"
+          },
+          "relationships" : [ {
+            "description" : "Uses",
+            "destinationId" : "51",
+            "id" : "52",
+            "linkedRelationshipId" : "13",
+            "sourceId" : "49"
+          } ],
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "12",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "51",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.33e83dfd-4630-4ed1-95a4-0c2888087159"
+          },
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "15",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "53",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.7da36ba4-f812-46aa-a5db-b6ecb1ac4e20"
+          },
+          "relationships" : [ {
+            "description" : "Send traces",
+            "destinationId" : "59",
+            "id" : "60",
+            "linkedRelationshipId" : "22",
+            "sourceId" : "53"
+          }, {
+            "description" : "Send traces",
+            "destinationId" : "61",
+            "id" : "63",
+            "linkedRelationshipId" : "23",
+            "sourceId" : "53"
+          }, {
+            "description" : "Send logs",
+            "destinationId" : "64",
+            "id" : "66",
+            "linkedRelationshipId" : "24",
+            "sourceId" : "53"
+          } ],
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "16",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "55",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.7d687129-0b59-4226-b183-d93d8917fb1e"
+          },
+          "relationships" : [ {
+            "description" : "Scrape metrics",
+            "destinationId" : "53",
+            "id" : "56",
+            "linkedRelationshipId" : "21",
+            "sourceId" : "55"
+          } ],
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "17",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "57",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.01e53960-a1b0-461f-8b37-4f88b271ec36"
+          },
+          "relationships" : [ {
+            "description" : "Get data",
+            "destinationId" : "55",
+            "id" : "58",
+            "linkedRelationshipId" : "26",
+            "sourceId" : "57"
+          }, {
+            "description" : "Get data",
+            "destinationId" : "61",
+            "id" : "62",
+            "linkedRelationshipId" : "27",
+            "sourceId" : "57"
+          }, {
+            "description" : "Get data",
+            "destinationId" : "64",
+            "id" : "65",
+            "linkedRelationshipId" : "25",
+            "sourceId" : "57"
+          } ],
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "18",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "59",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.654fded2-bbe2-44bf-9c42-5306ddd9f363"
+          },
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "19",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "61",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.546149c2-d41f-480f-a67e-a949014f61ee"
+          },
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "20",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Development",
+          "id" : "64",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0.de3a17f8-11bd-4460-8900-b1d115092c72"
+          },
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Development",
+        "id" : "44",
+        "instances" : "1",
+        "name" : "Docker",
+        "properties" : {
+          "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.df729aed-8d1c-4c24-9ccb-693f26fd7bf0"
+        },
+        "tags" : "Element,Deployment Node"
+      } ],
+      "containerInstances" : [ {
+        "containerId" : "3",
+        "deploymentGroups" : [ "Default" ],
+        "environment" : "Development",
+        "id" : "41",
+        "instanceId" : 1,
+        "properties" : {
+          "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.fc9aeefc-a3b3-4e2d-b67b-c10fd9472912"
+        },
+        "relationships" : [ {
+          "description" : "Uses",
+          "destinationId" : "42",
+          "id" : "43",
+          "linkedRelationshipId" : "7",
+          "sourceId" : "41"
+        } ],
+        "tags" : "Container Instance"
+      }, {
+        "containerId" : "4",
+        "deploymentGroups" : [ "Default" ],
+        "environment" : "Development",
+        "id" : "42",
+        "instanceId" : 1,
+        "properties" : {
+          "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359.8d80b1d3-72a5-4998-93e5-ad30be33ef98"
+        },
+        "relationships" : [ {
+          "description" : "Uses",
+          "destinationId" : "45",
+          "id" : "46",
+          "linkedRelationshipId" : "8",
+          "sourceId" : "42"
+        }, {
+          "description" : "Uses",
+          "destinationId" : "47",
+          "id" : "48",
+          "linkedRelationshipId" : "9",
+          "sourceId" : "42"
+        }, {
+          "description" : "Take keys",
+          "destinationId" : "49",
+          "id" : "50",
+          "linkedRelationshipId" : "36",
+          "sourceId" : "42"
+        }, {
+          "description" : "Sent metrics",
+          "destinationId" : "53",
+          "id" : "54",
+          "linkedRelationshipId" : "32",
+          "sourceId" : "42"
+        } ],
+        "tags" : "Container Instance"
+      } ],
+      "environment" : "Development",
+      "id" : "40",
+      "instances" : "1",
+      "name" : "Developer Laptop",
+      "properties" : {
+        "structurizr.dsl.identifier" : "dev.c20ed7fe-0a81-41e9-a539-d9b65c268359"
+      },
+      "tags" : "Element,Deployment Node"
+    } ],
+    "people" : [ {
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "User",
+      "properties" : {
+        "structurizr.dsl.identifier" : "user"
+      },
+      "relationships" : [ {
+        "description" : "Authenticate",
+        "destinationId" : "11",
+        "id" : "28",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Authenticate",
+        "destinationId" : "10",
+        "id" : "29",
+        "linkedRelationshipId" : "28",
+        "sourceId" : "1"
+      }, {
+        "description" : "Uses",
+        "destinationId" : "3",
+        "id" : "30",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Uses",
+        "destinationId" : "2",
+        "id" : "31",
+        "linkedRelationshipId" : "30",
+        "sourceId" : "1"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "documentation" : { },
+        "id" : "3",
+        "name" : "Game service Frontend",
+        "properties" : {
+          "structurizr.dsl.identifier" : "gamesystem.frontend"
+        },
+        "relationships" : [ {
+          "description" : "Uses",
+          "destinationId" : "4",
+          "id" : "7",
+          "sourceId" : "3",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "description" : "description",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Game service Backend",
+        "properties" : {
+          "structurizr.dsl.identifier" : "gamesystem.backend"
+        },
+        "relationships" : [ {
+          "description" : "Uses",
+          "destinationId" : "5",
+          "id" : "8",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Uses",
+          "destinationId" : "6",
+          "id" : "9",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Sent metrics",
+          "destinationId" : "15",
+          "id" : "32",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Sent metrics",
+          "destinationId" : "14",
+          "id" : "33",
+          "linkedRelationshipId" : "32",
+          "sourceId" : "4"
+        }, {
+          "description" : "Take keys",
+          "destinationId" : "11",
+          "id" : "36",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Take keys",
+          "destinationId" : "10",
+          "id" : "37",
+          "linkedRelationshipId" : "36",
+          "sourceId" : "4"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Spring"
+      }, {
+        "documentation" : { },
+        "id" : "5",
+        "name" : "MongoDB",
+        "properties" : {
+          "structurizr.dsl.identifier" : "gamesystem.database"
+        },
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "6",
+        "name" : "Kafka",
+        "properties" : {
+          "structurizr.dsl.identifier" : "gamesystem.kafka"
+        },
+        "tags" : "Element,Container"
+      } ],
+      "documentation" : { },
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Game system",
+      "properties" : {
+        "structurizr.dsl.identifier" : "gamesystem"
+      },
+      "relationships" : [ {
+        "description" : "Sent metrics",
+        "destinationId" : "15",
+        "id" : "34",
+        "linkedRelationshipId" : "32",
+        "sourceId" : "2"
+      }, {
+        "description" : "Sent metrics",
+        "destinationId" : "14",
+        "id" : "35",
+        "linkedRelationshipId" : "32",
+        "sourceId" : "2"
+      }, {
+        "description" : "Take keys",
+        "destinationId" : "11",
+        "id" : "38",
+        "linkedRelationshipId" : "36",
+        "sourceId" : "2"
+      }, {
+        "description" : "Take keys",
+        "destinationId" : "10",
+        "id" : "39",
+        "linkedRelationshipId" : "36",
+        "sourceId" : "2"
+      } ],
+      "tags" : "Element,Software System"
+    }, {
+      "containers" : [ {
+        "documentation" : { },
+        "id" : "11",
+        "name" : "Keycloak",
+        "properties" : {
+          "structurizr.dsl.identifier" : "iam.keycloak"
+        },
+        "relationships" : [ {
+          "description" : "Uses",
+          "destinationId" : "12",
+          "id" : "13",
+          "sourceId" : "11",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "12",
+        "name" : "Keycloak Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "iam.keycloakdatabase"
+        },
+        "tags" : "Element,Container"
+      } ],
+      "documentation" : { },
+      "id" : "10",
+      "location" : "Unspecified",
+      "name" : "Identity and Access Management (IAM)",
+      "properties" : {
+        "structurizr.dsl.identifier" : "iam"
+      },
+      "tags" : "Element,Software System"
+    }, {
+      "containers" : [ {
+        "documentation" : { },
+        "id" : "15",
+        "name" : "otel Collector",
+        "properties" : {
+          "structurizr.dsl.identifier" : "observabilitysystem.otelcollector"
+        },
+        "relationships" : [ {
+          "description" : "Send traces",
+          "destinationId" : "18",
+          "id" : "22",
+          "sourceId" : "15",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Send traces",
+          "destinationId" : "19",
+          "id" : "23",
+          "sourceId" : "15",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Send logs",
+          "destinationId" : "20",
+          "id" : "24",
+          "sourceId" : "15",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "16",
+        "name" : "prometheus",
+        "properties" : {
+          "structurizr.dsl.identifier" : "observabilitysystem.prometheus"
+        },
+        "relationships" : [ {
+          "description" : "Scrape metrics",
+          "destinationId" : "15",
+          "id" : "21",
+          "sourceId" : "16",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "17",
+        "name" : "grafana",
+        "properties" : {
+          "structurizr.dsl.identifier" : "observabilitysystem.grafana"
+        },
+        "relationships" : [ {
+          "description" : "Get data",
+          "destinationId" : "20",
+          "id" : "25",
+          "sourceId" : "17",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Get data",
+          "destinationId" : "16",
+          "id" : "26",
+          "sourceId" : "17",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Get data",
+          "destinationId" : "19",
+          "id" : "27",
+          "sourceId" : "17",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "18",
+        "name" : "zipkin",
+        "properties" : {
+          "structurizr.dsl.identifier" : "observabilitysystem.zipkin"
+        },
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "19",
+        "name" : "tempo",
+        "properties" : {
+          "structurizr.dsl.identifier" : "observabilitysystem.tempo"
+        },
+        "tags" : "Element,Container"
+      }, {
+        "documentation" : { },
+        "id" : "20",
+        "name" : "loki",
+        "properties" : {
+          "structurizr.dsl.identifier" : "observabilitysystem.loki"
+        },
+        "tags" : "Element,Container"
+      } ],
+      "documentation" : { },
+      "id" : "14",
+      "location" : "Unspecified",
+      "name" : "Observability System",
+      "properties" : {
+        "structurizr.dsl.identifier" : "observabilitysystem"
+      },
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Game system",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlIHsKICAgIG5hbWUgIkdhbWUgc3lzdGVtIgogICAgZGVzY3JpcHRpb24gImRlc2NyaXB0aW9uIgoKICAgICFkb2NzIGRvY3MKICAgICFhZHJzIGRvY3MvYWRycwogICAgIWlkZW50aWZpZXJzIGhpZXJhcmNoaWNhbAoKICAgIG1vZGVsIHsKICAgICAgICB1c2VyID0gcGVyc29uICJVc2VyIgogICAgICAgIGdhbWVTeXN0ZW0gPSBzb2Z0d2FyZVN5c3RlbSAiR2FtZSBzeXN0ZW0iIHsKICAgICAgICAgICAgZnJvbnRlbmQgPSBjb250YWluZXIgIkdhbWUgc2VydmljZSBGcm9udGVuZCIKICAgICAgICAgICAgYmFja2VuZCA9IGNvbnRhaW5lciAiR2FtZSBzZXJ2aWNlIEJhY2tlbmQiIHsKICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJkZXNjcmlwdGlvbiIKICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNwcmluZyIKICAgICAgICAgICAgfQogICAgICAgICAgICBkYXRhYmFzZSA9IGNvbnRhaW5lciAiTW9uZ29EQiIKICAgICAgICAgICAga2Fma2EgPSBjb250YWluZXIgIkthZmthIgoKICAgICAgICAgICAgZnJvbnRlbmQgLT4gYmFja2VuZCAiVXNlcyIKICAgICAgICAgICAgYmFja2VuZCAtPiBkYXRhYmFzZSAiVXNlcyIKICAgICAgICAgICAgYmFja2VuZCAtPiBrYWZrYSAiVXNlcyIKICAgICAgICB9CiAgICAgICAgaWFtID0gc29mdHdhcmVTeXN0ZW0gIklkZW50aXR5IGFuZCBBY2Nlc3MgTWFuYWdlbWVudCAoSUFNKSIgewogICAgICAgICAgICAgICAga2V5Y2xvYWsgPSBjb250YWluZXIgIktleWNsb2FrIgogICAgICAgICAgICAgICAga2V5Y2xvYWtEYXRhYmFzZSA9IGNvbnRhaW5lciAiS2V5Y2xvYWsgRGF0YWJhc2UiCgogICAgICAgICAgICAgICAga2V5Y2xvYWsgLT4ga2V5Y2xvYWtEYXRhYmFzZSAiVXNlcyIKICAgICAgICB9CiAgICAgICAgb2JzZXJ2YWJpbGl0eVN5c3RlbSA9IHNvZnR3YXJlU3lzdGVtICJPYnNlcnZhYmlsaXR5IFN5c3RlbSIgewogICAgICAgICAgICBvdGVsQ29sbGVjdG9yID0gY29udGFpbmVyICJvdGVsIENvbGxlY3RvciIKICAgICAgICAgICAgcHJvbWV0aGV1cyA9IGNvbnRhaW5lciAicHJvbWV0aGV1cyIKICAgICAgICAgICAgZ3JhZmFuYSA9IGNvbnRhaW5lciAiZ3JhZmFuYSIKICAgICAgICAgICAgemlwa2luID0gY29udGFpbmVyICJ6aXBraW4iCiAgICAgICAgICAgIHRlbXBvID0gY29udGFpbmVyICJ0ZW1wbyIKICAgICAgICAgICAgbG9raSA9IGNvbnRhaW5lciAibG9raSIKCiAgICAgICAgICAgIHByb21ldGhldXMgLT4gb3RlbENvbGxlY3RvciAiU2NyYXBlIG1ldHJpY3MiCiAgICAgICAgICAgIG90ZWxDb2xsZWN0b3IgLT4gemlwa2luICJTZW5kIHRyYWNlcyIKICAgICAgICAgICAgb3RlbENvbGxlY3RvciAtPiB0ZW1wbyAiU2VuZCB0cmFjZXMiCiAgICAgICAgICAgIG90ZWxDb2xsZWN0b3IgLT4gbG9raSAiU2VuZCBsb2dzIgoKICAgICAgICAgICAgZ3JhZmFuYSAtPiBsb2tpICJHZXQgZGF0YSIKICAgICAgICAgICAgZ3JhZmFuYSAtPiBwcm9tZXRoZXVzICJHZXQgZGF0YSIKICAgICAgICAgICAgZ3JhZmFuYSAtPiB0ZW1wbyAiR2V0IGRhdGEiCiAgICAgICAgfQoKICAgICAgICB1c2VyIC0+IGlhbS5rZXljbG9hayAiQXV0aGVudGljYXRlIgogICAgICAgIHVzZXIgLT4gZ2FtZVN5c3RlbS5mcm9udGVuZCAiVXNlcyIKCiAgICAgICAgZ2FtZVN5c3RlbS5iYWNrZW5kIC0+IG9ic2VydmFiaWxpdHlTeXN0ZW0ub3RlbENvbGxlY3RvciAiU2VudCBtZXRyaWNzIgogICAgICAgIGdhbWVTeXN0ZW0uYmFja2VuZCAtPiBpYW0ua2V5Y2xvYWsgIlRha2Uga2V5cyIKCiAgICAgICAgZGV2ID0gZGVwbG95bWVudEVudmlyb25tZW50ICJEZXZlbG9wbWVudCIgewogICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSAiRGV2ZWxvcGVyIExhcHRvcCIgewogICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgZ2FtZVN5c3RlbS5mcm9udGVuZAogICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgZ2FtZVN5c3RlbS5iYWNrZW5kCiAgICAgICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSAiRG9ja2VyIiB7CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgZ2FtZVN5c3RlbS5kYXRhYmFzZQogICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIGdhbWVTeXN0ZW0ua2Fma2EKCiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgaWFtLmtleWNsb2FrCiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgaWFtLmtleWNsb2FrRGF0YWJhc2UKCiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2Ugb2JzZXJ2YWJpbGl0eVN5c3RlbS5vdGVsQ29sbGVjdG9yCiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2Ugb2JzZXJ2YWJpbGl0eVN5c3RlbS5wcm9tZXRoZXVzCiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2Ugb2JzZXJ2YWJpbGl0eVN5c3RlbS5ncmFmYW5hCiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2Ugb2JzZXJ2YWJpbGl0eVN5c3RlbS56aXBraW4KICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBvYnNlcnZhYmlsaXR5U3lzdGVtLnRlbXBvCiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2Ugb2JzZXJ2YWJpbGl0eVN5c3RlbS5sb2tpCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgogICAgdmlld3MgewogICAgICAgIHRoZW1lIGRlZmF1bHQKICAgICAgICBzeXN0ZW1Db250ZXh0IGdhbWVTeXN0ZW0gInN5c3RlbUNvbnRleHRfZ2FtZVN5c3RlbSIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CiAgICAgICAgY29udGFpbmVyIGdhbWVTeXN0ZW0gImNvbnRhaW5lcl9nYW1lU3lzdGVtIiB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KICAgICAgICBjb250YWluZXIgb2JzZXJ2YWJpbGl0eVN5c3RlbSAiY29udGFpbmVyX29ic2VydmFiaWxpdHlTeXN0ZW0iIHsKICAgICAgICAgICAgaW5jbHVkZSAiZWxlbWVudC5wYXJlbnQ9PW9ic2VydmFiaWxpdHlTeXN0ZW0iCiAgICAgICAgfQogICAgICAgIGNvbnRhaW5lciBpYW0gImNvbnRhaW5lcl9pYW0iIHsKICAgICAgICAgICAgaW5jbHVkZSAiZWxlbWVudC5wYXJlbnQ9PWlhbSIKICAgICAgICAgICAgaW5jbHVkZSB1c2VyCiAgICAgICAgfQogICAgICAgIGRlcGxveW1lbnQgKiBkZXYgImRldmVsb3BtZW50X2RldiJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KICAgIH0KfQ=="
+  },
+  "views" : {
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "Deployment-001",
+      "styles" : { },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
+    },
+    "containerViews" : [ {
+      "dimensions" : {
+        "height" : 1748,
+        "width" : 2480
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 95,
+        "y" : 20
+      }, {
+        "id" : "3",
+        "x" : 65,
+        "y" : 865
+      }, {
+        "id" : "4",
+        "x" : 660,
+        "y" : 855
+      }, {
+        "id" : "5",
+        "x" : 1255,
+        "y" : 870
+      }, {
+        "id" : "6",
+        "x" : 1250,
+        "y" : 530
+      }, {
+        "id" : "10",
+        "x" : 1945,
+        "y" : 70
+      }, {
+        "id" : "14",
+        "x" : 1945,
+        "y" : 880
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "container_gameSystem",
+      "order" : 2,
+      "paperSize" : "A5_Landscape",
+      "relationships" : [ {
+        "id" : "29"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "33",
+        "vertices" : [ {
+          "x" : 885,
+          "y" : 1470
+        }, {
+          "x" : 2185,
+          "y" : 1475
+        } ]
+      }, {
+        "id" : "37",
+        "vertices" : [ {
+          "x" : 885,
+          "y" : 460
+        } ]
+      }, {
+        "id" : "7"
+      }, {
+        "id" : "8"
+      }, {
+        "id" : "9"
+      } ],
+      "softwareSystemId" : "2"
+    }, {
+      "dimensions" : {
+        "height" : 1748,
+        "width" : 2480
+      },
+      "elements" : [ {
+        "id" : "15",
+        "x" : 40,
+        "y" : 350
+      }, {
+        "id" : "16",
+        "x" : 955,
+        "y" : 680
+      }, {
+        "id" : "17",
+        "x" : 1795,
+        "y" : 365
+      }, {
+        "id" : "18",
+        "x" : 955,
+        "y" : 1010
+      }, {
+        "id" : "19",
+        "x" : 955,
+        "y" : 50
+      }, {
+        "id" : "20",
+        "x" : 955,
+        "y" : 365
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "container_observabilitySystem",
+      "order" : 3,
+      "paperSize" : "A5_Landscape",
+      "relationships" : [ {
+        "id" : "21"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "23"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "25"
+      }, {
+        "id" : "26"
+      }, {
+        "id" : "27"
+      } ],
+      "softwareSystemId" : "14"
+    }, {
+      "dimensions" : {
+        "height" : 1748,
+        "width" : 2480
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 80,
+        "y" : 195
+      }, {
+        "id" : "11",
+        "x" : 815,
+        "y" : 245
+      }, {
+        "id" : "12",
+        "x" : 1645,
+        "y" : 245
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "container_iam",
+      "order" : 4,
+      "paperSize" : "A5_Landscape",
+      "relationships" : [ {
+        "id" : "13"
+      }, {
+        "id" : "28"
+      } ],
+      "softwareSystemId" : "10"
+    } ],
+    "deploymentViews" : [ {
+      "dimensions" : {
+        "height" : 2849,
+        "width" : 4660
+      },
+      "elements" : [ {
+        "id" : "40",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "41",
+        "x" : 136,
+        "y" : 409
+      }, {
+        "id" : "42",
+        "x" : 835,
+        "y" : 410
+      }, {
+        "id" : "44",
+        "x" : 175,
+        "y" : 175
+      }, {
+        "id" : "45",
+        "x" : 1611,
+        "y" : 524
+      }, {
+        "id" : "47",
+        "x" : 2341,
+        "y" : 529
+      }, {
+        "id" : "49",
+        "x" : 1585,
+        "y" : 110
+      }, {
+        "id" : "51",
+        "x" : 2335,
+        "y" : 110
+      }, {
+        "id" : "53",
+        "x" : 1616,
+        "y" : 1314
+      }, {
+        "id" : "55",
+        "x" : 2331,
+        "y" : 1684
+      }, {
+        "id" : "57",
+        "x" : 3116,
+        "y" : 1309
+      }, {
+        "id" : "59",
+        "x" : 2326,
+        "y" : 2044
+      }, {
+        "id" : "61",
+        "x" : 2346,
+        "y" : 1319
+      }, {
+        "id" : "64",
+        "x" : 2331,
+        "y" : 969
+      } ],
+      "environment" : "Development",
+      "key" : "development_dev",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "43"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "48",
+        "vertices" : [ {
+          "x" : 1526,
+          "y" : 479
+        }, {
+          "x" : 2191,
+          "y" : 489
+        } ]
+      }, {
+        "id" : "50"
+      }, {
+        "id" : "52"
+      }, {
+        "id" : "54",
+        "vertices" : [ {
+          "x" : 1281,
+          "y" : 1324
+        } ]
+      }, {
+        "id" : "56"
+      }, {
+        "id" : "58"
+      }, {
+        "id" : "60"
+      }, {
+        "id" : "62"
+      }, {
+        "id" : "63"
+      }, {
+        "id" : "65"
+      }, {
+        "id" : "66"
+      } ]
+    } ],
+    "systemContextViews" : [ {
+      "dimensions" : {
+        "height" : 1300,
+        "width" : 2350
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 155,
+        "y" : 45
+      }, {
+        "id" : "2",
+        "x" : 135,
+        "y" : 755
+      }, {
+        "id" : "10",
+        "x" : 1645,
+        "y" : 75
+      }, {
+        "id" : "14",
+        "x" : 1635,
+        "y" : 750
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "systemContext_gameSystem",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "29"
+      }, {
+        "id" : "31"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "39"
+      } ],
+      "softwareSystemId" : "2"
+    } ]
+  }
+}
