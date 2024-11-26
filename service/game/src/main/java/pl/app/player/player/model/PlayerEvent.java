@@ -1,4 +1,4 @@
-package pl.app.player.player.application.domain;
+package pl.app.player.player.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

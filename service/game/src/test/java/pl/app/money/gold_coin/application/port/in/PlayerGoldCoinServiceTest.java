@@ -11,8 +11,8 @@ import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.common.shared.test.AbstractIntegrationTest;
-import pl.app.player.player.application.port.in.PlayerCommand;
-import pl.app.player.player.application.port.in.PlayerService;
+import pl.app.player.player.service.PlayerService;
+import pl.app.player.player.service.dto.PlayerCreateDto;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
@@ -50,7 +50,7 @@ class PlayerGoldCoinServiceTest extends AbstractIntegrationTest {
 
     @Test
     void mint_shouldMintCoin_whenVillageMeetRequirementsAndHaveEnoughResources() {
-        var player = playerService.crate(new PlayerCommand.CreatePlayerCommand("1L", "Ala")).block();
+        var player = playerService.create(PlayerCreateDto.builder().build()).block();
         Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
         villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(village.getId(), BuildingType.HEADQUARTERS, 19))
                 .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(village.getId(), BuildingType.ACADEMY, 1)))

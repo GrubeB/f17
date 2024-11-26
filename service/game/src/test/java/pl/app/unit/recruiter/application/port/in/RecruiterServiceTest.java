@@ -13,8 +13,8 @@ import pl.app.building.village_infrastructure.application.port.in.VillageInfrast
 import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.money.gold_coin.application.port.in.PlayerGoldCoinCommand;
 import pl.app.money.gold_coin.application.port.in.PlayerGoldCoinService;
-import pl.app.player.player.application.port.in.PlayerCommand;
-import pl.app.player.player.application.port.in.PlayerService;
+import pl.app.player.player.service.PlayerService;
+import pl.app.player.player.service.dto.PlayerCreateDto;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
@@ -44,7 +44,7 @@ class RecruiterServiceTest extends AbstractIntegrationTest {
 
     @Test
     void add_shouldRecruitNobleManWhenThereIsEnoughGoldCoins() {
-        var player = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Ala")).block();
+        var player = playerService.create(PlayerCreateDto.builder().build()).block();
         Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
         villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(village.getId(), BuildingType.HEADQUARTERS, 19))
                 .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(village.getId(), BuildingType.ACADEMY, 1)))

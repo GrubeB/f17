@@ -1,4 +1,4 @@
-package pl.app.player.player.application.domain;
+package pl.app.player.player.model;
 
 import pl.app.common.shared.exception.NotFoundException;
 import pl.app.common.shared.exception.ValidationException;
@@ -20,17 +20,17 @@ public interface PlayerException {
         }
     }
 
-    class DuplicatedPlayerNameException extends ValidationException {
-        public DuplicatedPlayerNameException() {
+    class DuplicatedPlayerAccountIdException extends ValidationException {
+        public DuplicatedPlayerAccountIdException() {
             super("there is a player with given name");
         }
 
-        public DuplicatedPlayerNameException(String message) {
+        public DuplicatedPlayerAccountIdException(String message) {
             super(message);
         }
 
-        public static DuplicatedPlayerNameException fromName(String name) {
-            return new DuplicatedPlayerNameException(MessageFormat.format("there is a player with given: {0}", name));
+        public static DuplicatedPlayerAccountIdException fromAccountId(String name) {
+            return new DuplicatedPlayerAccountIdException(MessageFormat.format("there is a player with given: {0}", name));
         }
     }
 }

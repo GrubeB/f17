@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.money.player_money.application.domain.PlayerMoney;
-import pl.app.player.player.application.domain.PlayerException;
+import pl.app.player.player.model.PlayerException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

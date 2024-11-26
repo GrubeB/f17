@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import pl.app.player.player.application.domain.PlayerEvent;
+import pl.app.player.player.model.PlayerEvent;
 import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
 

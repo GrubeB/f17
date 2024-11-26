@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.item.item.application.domain.CrownPackItem;
-import pl.app.player.player.application.domain.Player;
-import pl.app.player.player.application.port.in.PlayerCommand;
-import pl.app.player.player.application.port.in.PlayerService;
+import pl.app.player.player.model.Player;
+import pl.app.player.player.service.PlayerService;
+import pl.app.player.player.service.dto.PlayerCreateDto;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +27,7 @@ class InventoryServiceImplTest extends AbstractIntegrationTest {
 
     @Test
     void add() {
-        Player player = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Ala")).block();
+        var player = playerService.create(PlayerCreateDto.builder().build()).block();
 
         StepVerifier.create(service.add(new InventoryCommand.AddItemCommand(player.getPlayerId(), new CrownPackItem(100), 1)))
                 .assertNext(next -> {

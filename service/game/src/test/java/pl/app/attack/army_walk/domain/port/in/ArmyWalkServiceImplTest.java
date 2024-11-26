@@ -14,8 +14,8 @@ import pl.app.item.inventory.application.port.in.InventoryService;
 import pl.app.item.item.application.domain.OfficerItem;
 import pl.app.item.item.application.domain.OfficerType;
 import pl.app.item.item.application.domain.Officers;
-import pl.app.player.player.application.port.in.PlayerCommand;
-import pl.app.player.player.application.port.in.PlayerService;
+import pl.app.player.player.service.PlayerService;
+import pl.app.player.player.service.dto.PlayerCreateDto;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.UnitType;
@@ -72,7 +72,7 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
 
     @Test
     void sendArmy_shouldThrow_whenThereIsNotEnoughOfficers() {
-        var player1 = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Kot")).block();
+        var player1 = playerService.create(PlayerCreateDto.builder().build()).block();
         var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
