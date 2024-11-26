@@ -1,4 +1,4 @@
-package pl.app.money.money.application.domain;
+package pl.app.money.share;
 
 public class Money {
     private Integer amount;

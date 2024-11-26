@@ -1,7 +1,6 @@
 package pl.app.unit.recruiter.application.port.in;
 
 import org.assertj.core.api.Assertions;
-import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -11,8 +10,8 @@ import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.common.shared.test.AbstractIntegrationTest;
-import pl.app.money.gold_coin.application.port.in.PlayerGoldCoinCommand;
-import pl.app.money.gold_coin.application.port.in.PlayerGoldCoinService;
+import pl.app.gold_coin.gold_coin.application.port.in.PlayerGoldCoinCommand;
+import pl.app.gold_coin.gold_coin.application.port.in.PlayerGoldCoinService;
 import pl.app.player.player.service.PlayerService;
 import pl.app.player.player.service.dto.PlayerCreateDto;
 import pl.app.resource.resource.application.domain.Resource;

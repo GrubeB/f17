@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.money.gold_coin.query.PlayerGoldCoinDtoQueryService;
+import pl.app.gold_coin.gold_coin.query.PlayerGoldCoinDtoQueryService;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 import pl.app.unit.recruiter.application.domain.Recruiter;

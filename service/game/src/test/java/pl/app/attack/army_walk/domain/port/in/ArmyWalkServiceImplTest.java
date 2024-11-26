@@ -86,7 +86,7 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
 
     @Test
     void sendArmy_shouldSendArmyAndRemoveItem_whenThereOfficers() {
-        var player1 = playerService.crate(new PlayerCommand.CreatePlayerCommand(ObjectId.get().toHexString(), "Kot")).block();
+        var player1 = playerService.create(PlayerCreateDto.builder().build()).block();
         var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();

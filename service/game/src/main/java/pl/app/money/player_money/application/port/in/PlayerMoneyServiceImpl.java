@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.money.money.application.domain.Money;
+import pl.app.money.share.Money;
 import pl.app.money.player_money.application.domain.PlayerMoney;
 import pl.app.money.player_money.application.domain.PlayerMoneyEvent;
 import pl.app.money.player_money.application.domain.PlayerMoneyException;

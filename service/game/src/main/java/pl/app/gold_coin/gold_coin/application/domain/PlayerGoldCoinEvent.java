@@ -1,4 +1,4 @@
-package pl.app.money.gold_coin.application.domain;
+package pl.app.gold_coin.gold_coin.application.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

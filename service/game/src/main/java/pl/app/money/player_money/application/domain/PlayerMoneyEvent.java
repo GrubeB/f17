@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.money.money.application.domain.Money;
+import pl.app.money.share.Money;
 
 import java.io.Serializable;
 

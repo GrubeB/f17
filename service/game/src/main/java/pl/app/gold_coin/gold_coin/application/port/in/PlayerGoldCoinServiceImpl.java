@@ -1,4 +1,4 @@
-package pl.app.money.gold_coin.application.port.in;
+package pl.app.gold_coin.gold_coin.application.port.in;
 
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -11,9 +11,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.app.building.building.application.domain.BuildingType;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.money.gold_coin.application.domain.PlayerGoldCoin;
-import pl.app.money.gold_coin.application.domain.PlayerGoldCoinEvent;
-import pl.app.money.gold_coin.application.domain.PlayerGoldCoinException;
+import pl.app.gold_coin.gold_coin.application.domain.PlayerGoldCoin;
+import pl.app.gold_coin.gold_coin.application.domain.PlayerGoldCoinEvent;
+import pl.app.gold_coin.gold_coin.application.domain.PlayerGoldCoinException;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 import pl.app.village.village.query.VillageDtoQueryService;

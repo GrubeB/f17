@@ -14,7 +14,7 @@ import pl.app.item.inventory.application.domain.Inventory;
 import pl.app.item.inventory.application.domain.InventoryEvent;
 import pl.app.item.inventory.application.domain.InventoryException;
 import pl.app.item.item.application.domain.*;
-import pl.app.money.money.application.domain.Money;
+import pl.app.money.share.Money;
 import pl.app.money.player_money.application.port.in.PlayerMoneyCommand;
 import pl.app.money.player_money.application.port.in.PlayerMoneyService;
 import pl.app.resource.resource.application.domain.Resource;

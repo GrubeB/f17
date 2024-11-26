@@ -1,4 +1,4 @@
-package pl.app.money.gold_coin.query.dto;
+package pl.app.gold_coin.gold_coin.query.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

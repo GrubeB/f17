@@ -1,4 +1,4 @@
-package pl.app.money.gold_coin.query;
+package pl.app.gold_coin.gold_coin.query;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.app.common.mapper.BaseMapper;
-import pl.app.money.gold_coin.application.domain.PlayerGoldCoin;
-import pl.app.money.gold_coin.query.dto.PlayerGoldCoinDto;
+import pl.app.gold_coin.gold_coin.application.domain.PlayerGoldCoin;
+import pl.app.gold_coin.gold_coin.query.dto.PlayerGoldCoinDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

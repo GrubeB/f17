@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.app.money.money.application.domain.Money;
+import pl.app.money.share.Money;
 
 @Getter
 @Document(collection = "player_money")
