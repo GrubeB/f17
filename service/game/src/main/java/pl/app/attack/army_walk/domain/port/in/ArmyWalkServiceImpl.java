@@ -127,8 +127,8 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                                     .then(subtractDefenderUnits(attack, defenderVillage))
                                     .then(destroyDefenderVillageWall(attack))
                                     .then(Mono.just(attack).filter(a -> a.getBattleResult().isAttackerWin())
-                                            .flatMap(a -> attack.getVillageConquered() ? conquerVillage(attack)
-                                                    : plunderVillage(attack).then(subtractLoyalty(attack)))
+                                            .flatMap(a -> attack.getVillageConquered() ?
+                                                    conquerVillage(attack) : plunderVillage(attack).then(subtractLoyalty(attack)))
                                     )
                                     .thenReturn(domain);
                         })
