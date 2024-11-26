@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.building.building.application.domain.BuildingLevel;
 import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.building.application.domain.Buildings;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 
 import java.time.Instant;
 import java.util.*;

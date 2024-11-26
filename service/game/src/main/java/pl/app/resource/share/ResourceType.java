@@ -1,4 +1,4 @@
-package pl.app.resource.resource.application.domain;
+package pl.app.resource.share;
 
 public enum ResourceType {
     WOOD,

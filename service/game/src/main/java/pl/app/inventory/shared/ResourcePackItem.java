@@ -1,7 +1,7 @@
 package pl.app.inventory.shared;
 
 import lombok.Getter;
-import pl.app.resource.resource.application.domain.ResourceType;
+import pl.app.resource.share.ResourceType;
 
 import java.util.Objects;
 

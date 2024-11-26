@@ -4,8 +4,8 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.app.resource.resource.application.domain.Resource;
-import pl.app.resource.resource.application.domain.ResourceType;
+import pl.app.resource.share.Resource;
+import pl.app.resource.share.ResourceType;
 
 import java.time.Duration;
 import java.time.Instant;

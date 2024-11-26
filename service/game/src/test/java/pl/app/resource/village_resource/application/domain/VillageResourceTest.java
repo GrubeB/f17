@@ -2,9 +2,7 @@ package pl.app.resource.village_resource.application.domain;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

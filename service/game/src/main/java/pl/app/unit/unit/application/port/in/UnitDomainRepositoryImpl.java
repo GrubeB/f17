@@ -2,7 +2,7 @@ package pl.app.unit.unit.application.port.in;
 
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.unit.unit.application.domain.Unit;
 import pl.app.unit.unit.application.domain.UnitType;
 import reactor.core.publisher.Mono;

@@ -17,7 +17,7 @@ import pl.app.building.building.application.port.in.BuildingLevelDomainRepositor
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureDomainRepository;
 import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 import pl.app.village.village.application.port.in.VillageCommand;

@@ -3,7 +3,7 @@ package pl.app.building.building.application.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 
 import java.time.Duration;
 import java.util.Set;

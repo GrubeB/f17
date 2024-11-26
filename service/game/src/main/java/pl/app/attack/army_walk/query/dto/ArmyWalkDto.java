@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import pl.app.attack.army_walk.domain.application.ArmyWalkType;
 import pl.app.map.map.application.domain.Position;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.unit.unit.application.domain.Army;
 
 import java.io.Serializable;

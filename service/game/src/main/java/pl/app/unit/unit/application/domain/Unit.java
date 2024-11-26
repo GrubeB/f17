@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.app.building.building.application.domain.BuildingType;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 
 import java.time.Duration;
 import java.util.Set;

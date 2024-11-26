@@ -15,7 +15,7 @@ import pl.app.gold_coin.gold_coin.application.port.in.PlayerGoldCoinCommand;
 import pl.app.gold_coin.gold_coin.application.port.in.PlayerGoldCoinService;
 import pl.app.player.player.service.PlayerService;
 import pl.app.player.player.service.dto.PlayerCreateDto;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 import pl.app.unit.unit.application.domain.UnitType;

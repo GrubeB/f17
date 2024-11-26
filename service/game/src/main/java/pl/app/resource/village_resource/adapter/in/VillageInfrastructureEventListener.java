@@ -9,8 +9,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import pl.app.building.village_infrastructure.application.domain.VillageInfrastructureEvent;
-import pl.app.resource.resource.application.domain.Resource;
-import pl.app.resource.resource.application.domain.ResourceType;
+import pl.app.resource.share.Resource;
+import pl.app.resource.share.ResourceType;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 

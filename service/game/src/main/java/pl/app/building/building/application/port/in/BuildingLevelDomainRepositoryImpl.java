@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import pl.app.building.building.application.domain.BuildingLevel;
 import pl.app.building.building.application.domain.BuildingType;
 import pl.app.building.building.application.domain.building_level.*;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;

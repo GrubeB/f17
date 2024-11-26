@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.inventory.shared.Officers;
 import pl.app.map.map.application.domain.Position;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
 import pl.app.unit.unit.application.domain.UnitType;

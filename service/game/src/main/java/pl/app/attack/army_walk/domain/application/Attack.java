@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.attack.battle.application.domain.Battle;
 import pl.app.inventory.shared.Officers;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
 import pl.app.unit.unit.application.domain.UnitType;

@@ -19,7 +19,7 @@ import pl.app.inventory.inventory.application.port.in.InventoryService;
 import pl.app.inventory.shared.OfficerItem;
 import pl.app.inventory.shared.OfficerType;
 import pl.app.inventory.shared.Officers;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 import pl.app.unit.unit.application.domain.Army;

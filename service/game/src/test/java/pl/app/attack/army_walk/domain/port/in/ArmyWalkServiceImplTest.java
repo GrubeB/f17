@@ -16,7 +16,7 @@ import pl.app.inventory.shared.OfficerType;
 import pl.app.inventory.shared.Officers;
 import pl.app.player.player.service.PlayerService;
 import pl.app.player.player.service.dto.PlayerCreateDto;
-import pl.app.resource.resource.application.domain.Resource;
+import pl.app.resource.share.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.UnitType;
 import pl.app.unit.village_army.application.port.in.VillageArmyCommand;
