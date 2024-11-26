@@ -42,12 +42,15 @@ import java.util.stream.Stream;
 @Configuration
 @EnableKafka
 @PropertySource("classpath:kafka.properties")
-@RequiredArgsConstructor
 public class KafkaConfig {
     private static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
     private final KafkaTopicConfigurationProperties topicNames;
     @Value("${app.kafka.bootstrap.servers}")
     private String bootstrapServers;
+
+    public KafkaConfig(KafkaTopicConfigurationProperties topicNames) {
+        this.topicNames = topicNames;
+    }
 
     @Configuration
     class TopicConfiguration {
@@ -62,19 +65,44 @@ public class KafkaConfig {
         KafkaAdmin.NewTopics createTopics() {
             NewTopic[] array = Stream.of(
                     createTopicFromConfig(topicNames.getTest()).stream(),
-
+                    // attack
+                    createTopicFromConfig(topicNames.getAttackStarted()).stream(),
+                    // building
                     createTopicFromConfig(topicNames.getVillageInfrastructureCreated()).stream(),
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelUp()).stream(),
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelDown()).stream(),
                     createTopicFromConfig(topicNames.getBuilderCreated()).stream(),
                     createTopicFromConfig(topicNames.getConstructAdded()).stream(),
                     createTopicFromConfig(topicNames.getConstructRemoved()).stream(),
-
+                    // inventory
+                    createTopicFromConfig(topicNames.getPlayerInventoryCreated()).stream(),
+                    createTopicFromConfig(topicNames.getItemAdded()).stream(),
+                    createTopicFromConfig(topicNames.getItemRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getItemUsed()).stream(),
+                    // gold coin
+                    createTopicFromConfig(topicNames.getPlayerGoldCoinCreated()).stream(),
+                    createTopicFromConfig(topicNames.getGoldCoinAdded()).stream(),
+                    // money
+                    createTopicFromConfig(topicNames.getPlayerMoneyCreated()).stream(),
+                    createTopicFromConfig(topicNames.getMoneyAdded()).stream(),
+                    createTopicFromConfig(topicNames.getMoneySubtracted()).stream(),
+                    // player
+                    createTopicFromConfig(topicNames.getPlayerCreated()).stream(),
+                    // resource
                     createTopicFromConfig(topicNames.getVillageResourceCreated()).stream(),
                     createTopicFromConfig(topicNames.getResourceAdded()).stream(),
                     createTopicFromConfig(topicNames.getResourceSubtracted()).stream(),
-
-                    createTopicFromConfig(topicNames.getVillageCreated()).stream()
+                    // unit
+                    createTopicFromConfig(topicNames.getRecruiterCreated()).stream(),
+                    createTopicFromConfig(topicNames.getRecruitRequestAdded()).stream(),
+                    createTopicFromConfig(topicNames.getRecruitRequestRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getVillageArmyCreated()).stream(),
+                    createTopicFromConfig(topicNames.getUnitsAdded()).stream(),
+                    createTopicFromConfig(topicNames.getUnitsSubtracted()).stream(),
+                    // village
+                    createTopicFromConfig(topicNames.getVillageCreated()).stream(),
+                    // village effect
+                    createTopicFromConfig(topicNames.getVillageEffectCreated()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

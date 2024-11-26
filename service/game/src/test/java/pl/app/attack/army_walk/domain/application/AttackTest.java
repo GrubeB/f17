@@ -3,7 +3,7 @@ package pl.app.attack.army_walk.domain.application;
 import org.assertj.core.api.Assertions;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
-import pl.app.item.item.application.domain.Officers;
+import pl.app.inventory.shared.Officers;
 import pl.app.map.map.application.domain.Position;
 import pl.app.map.map.application.domain.Province;
 import pl.app.resource.resource.application.domain.Resource;

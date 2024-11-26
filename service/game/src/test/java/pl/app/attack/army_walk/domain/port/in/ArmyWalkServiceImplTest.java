@@ -9,11 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pl.app.attack.army_walk.domain.application.ArmyWalk;
 import pl.app.attack.army_walk.domain.application.ArmyWalkType;
 import pl.app.common.shared.test.AbstractIntegrationTest;
-import pl.app.item.inventory.application.port.in.InventoryCommand;
-import pl.app.item.inventory.application.port.in.InventoryService;
-import pl.app.item.item.application.domain.OfficerItem;
-import pl.app.item.item.application.domain.OfficerType;
-import pl.app.item.item.application.domain.Officers;
+import pl.app.inventory.inventory.application.port.in.InventoryCommand;
+import pl.app.inventory.inventory.application.port.in.InventoryService;
+import pl.app.inventory.shared.OfficerItem;
+import pl.app.inventory.shared.OfficerType;
+import pl.app.inventory.shared.Officers;
 import pl.app.player.player.service.PlayerService;
 import pl.app.player.player.service.dto.PlayerCreateDto;
 import pl.app.resource.resource.application.domain.Resource;
@@ -72,7 +72,7 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
 
     @Test
     void sendArmy_shouldThrow_whenThereIsNotEnoughOfficers() {
-        var player1 = playerService.create(PlayerCreateDto.builder().build()).block();
+        var player1 = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
         var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
@@ -86,7 +86,7 @@ class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
 
     @Test
     void sendArmy_shouldSendArmyAndRemoveItem_whenThereOfficers() {
-        var player1 = playerService.create(PlayerCreateDto.builder().build()).block();
+        var player1 = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
         var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player1.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();

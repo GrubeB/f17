@@ -52,7 +52,7 @@ class PlayerGoldCoinServiceTest extends AbstractIntegrationTest {
 
     @Test
     void mint_shouldMintCoin_whenVillageMeetRequirementsAndHaveEnoughResources() {
-        var player = playerService.create(PlayerCreateDto.builder().build()).block();
+        var player = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
         Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
         villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(village.getId(), BuildingType.HEADQUARTERS, 19))
                 .then(villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(village.getId(), BuildingType.ACADEMY, 1)))

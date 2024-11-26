@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.app.item.item.application.domain.Officers;
+import pl.app.inventory.shared.Officers;
 import pl.app.map.map.application.domain.Position;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;

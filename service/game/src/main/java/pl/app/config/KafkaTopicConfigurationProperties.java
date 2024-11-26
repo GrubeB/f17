@@ -26,17 +26,19 @@ public class KafkaTopicConfigurationProperties {
     private Topic builderCreated;
     private Topic constructAdded;
     private Topic constructRemoved;
-    // item
+    // inventory
     private Topic playerInventoryCreated;
+    private Topic itemAdded;
+    private Topic itemRemoved;
+    private Topic itemUsed;
 
-    // money
+    // gold coin
     private Topic playerGoldCoinCreated;
     private Topic goldCoinAdded;
-
+    // money
     private Topic playerMoneyCreated;
     private Topic moneyAdded;
     private Topic moneySubtracted;
-
 
     // player
     private Topic playerCreated;
@@ -56,6 +58,7 @@ public class KafkaTopicConfigurationProperties {
 
     // village
     private Topic villageCreated;
+    // village effect
     private Topic villageEffectCreated;
 
     public List<String> getAllTopicNames() {
@@ -75,8 +78,13 @@ public class KafkaTopicConfigurationProperties {
                 builderCreated,
                 constructAdded,
                 constructRemoved,
-                // item
+
+                // inventory
                 playerInventoryCreated,
+                itemAdded,
+                itemRemoved,
+                itemUsed,
+
                 // money
                 playerMoneyCreated,
                 moneyAdded,

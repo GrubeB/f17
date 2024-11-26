@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.attack.battle.application.domain.Battle;
-import pl.app.item.item.application.domain.Officers;
+import pl.app.inventory.shared.Officers;
 import pl.app.resource.resource.application.domain.Resource;
 import pl.app.unit.unit.application.domain.Army;
 import pl.app.unit.unit.application.domain.Unit;
