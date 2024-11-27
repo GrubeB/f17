@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.model.BuildingType;
 
 import java.io.Serializable;
 
@@ -23,18 +23,32 @@ public interface BuilderCommand {
         private ObjectId villageId;
         private BuildingType type;
     }
-
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class FinishConstructCommand implements Serializable {
+    class StartBuildingToConstructCommand implements Serializable {
         private ObjectId villageId;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class RemoveBuildingToConstructCommand implements Serializable {
+    class FinishBuildingConstructCommand implements Serializable {
+        private ObjectId villageId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class CancelBuildingConstructCommand implements Serializable {
+        private ObjectId villageId;
+        private BuildingType type;
+        private Integer toLevel;
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class RejectBuildingConstructCommand implements Serializable {
         private ObjectId villageId;
         private BuildingType type;
     }

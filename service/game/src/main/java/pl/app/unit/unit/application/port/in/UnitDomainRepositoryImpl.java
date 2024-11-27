@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static pl.app.building.building.application.domain.BuildingType.*;
+import static pl.app.building.building.model.BuildingType.*;
 import static pl.app.unit.unit.application.domain.UnitAttackType.*;
 import static pl.app.unit.unit.application.domain.UnitType.*;
 

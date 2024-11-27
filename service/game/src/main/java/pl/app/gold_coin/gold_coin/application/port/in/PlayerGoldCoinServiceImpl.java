@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.model.BuildingType;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.gold_coin.gold_coin.application.domain.PlayerGoldCoin;
 import pl.app.gold_coin.gold_coin.application.domain.PlayerGoldCoinEvent;

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.model.BuildingType;
 
 import java.io.Serializable;
 
@@ -22,7 +22,7 @@ public interface VillageInfrastructureCommand {
     class LevelUpVillageInfrastructureBuildingCommand implements Serializable {
         private ObjectId villageId;
         private BuildingType buildingType;
-        private Integer numberOfLevels;
+        private Integer toLevel;
     }
 
     @Data
@@ -31,6 +31,6 @@ public interface VillageInfrastructureCommand {
     class LevelDownVillageInfrastructureBuildingCommand implements Serializable {
         private ObjectId villageId;
         private BuildingType buildingType;
-        private Integer numberOfLevels;
+        private Integer toLevel;
     }
 }

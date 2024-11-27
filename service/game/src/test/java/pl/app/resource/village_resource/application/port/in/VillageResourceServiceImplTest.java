@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.model.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.common.shared.test.AbstractIntegrationTest;

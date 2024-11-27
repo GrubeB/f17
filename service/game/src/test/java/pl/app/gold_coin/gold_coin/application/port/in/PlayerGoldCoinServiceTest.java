@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.model.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.common.shared.test.AbstractIntegrationTest;

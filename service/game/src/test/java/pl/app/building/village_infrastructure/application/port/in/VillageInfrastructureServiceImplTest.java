@@ -6,12 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.kafka.core.KafkaTemplate;
-import pl.app.building.building.application.port.in.BuildingLevelDomainRepository;
+import pl.app.building.building.model.BuildingType;
 import pl.app.common.shared.test.AbstractIntegrationTest;
-import pl.app.config.KafkaTopicConfigurationProperties;
 import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,25 +17,64 @@ import static org.assertj.core.api.Assertions.assertThat;
 class VillageInfrastructureServiceImplTest extends AbstractIntegrationTest {
     @Autowired
     private VillageInfrastructureServiceImpl service;
-    @SpyBean
-    private ReactiveMongoTemplate mongoTemplate;
-    @SpyBean
-    private KafkaTemplate<ObjectId, Object> kafkaTemplate;
-    @SpyBean
-    private KafkaTopicConfigurationProperties topicNames;
-    @SpyBean
-    private VillageInfrastructureDomainRepository villageInfrastructureDomainRepository;
-    @SpyBean
-    private BuildingLevelDomainRepository buildingLevelDomainRepository;
 
     @Test
     void crate() {
         var villageId = ObjectId.get();
-        var command = new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId);
-
-        StepVerifier.create(service.crate(command))
+        StepVerifier.create(service.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId)))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
                 }).verifyComplete();
+    }
+
+    @Test
+    void levelUp_shouldLevelUp_whenBuildingLevelIsLowerThanToLevelParameter() {
+        var villageId = ObjectId.get();
+        service.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId)).block();
+        StepVerifier.create(service.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(
+                        villageId, BuildingType.HEADQUARTERS, 10
+                )))
+                .assertNext(next -> {
+                    assertThat(next).isNotNull();
+                }).verifyComplete();
+    }
+    @Test
+    void levelUp_shouldThrow_whenBuildingLevelIsHigherThanToLevelParameter() {
+        var villageId = ObjectId.get();
+        service.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId)).block();
+        service.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(
+                        villageId, BuildingType.HEADQUARTERS, 10
+                )).block();
+
+        StepVerifier.create(service.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(
+                        villageId, BuildingType.HEADQUARTERS,2
+                )))
+                .verifyError();
+    }
+    @Test
+    void levelDown_shouldLevelDown_whenBuildingLevelIsHigherThanToLevelParameter() {
+        var villageId = ObjectId.get();
+        service.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId)).block();
+        service.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(
+                villageId, BuildingType.HEADQUARTERS, 10
+        )).block();
+        StepVerifier.create(service.levelDown(new VillageInfrastructureCommand.LevelDownVillageInfrastructureBuildingCommand(
+                        villageId, BuildingType.HEADQUARTERS, 9
+                )))
+                .assertNext(next -> {
+                    assertThat(next).isNotNull();
+                }).verifyComplete();
+    }
+    @Test
+    void levelDown_shouldThrow_whenBuildingLevelIsLowerThanToLevelParameter() {
+        var villageId = ObjectId.get();
+        service.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId)).block();
+        service.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(
+                villageId, BuildingType.HEADQUARTERS, 10
+        )).block();
+        StepVerifier.create(service.levelDown(new VillageInfrastructureCommand.LevelDownVillageInfrastructureBuildingCommand(
+                        villageId, BuildingType.HEADQUARTERS, 12
+                )))
+                .verifyError();
     }
 }

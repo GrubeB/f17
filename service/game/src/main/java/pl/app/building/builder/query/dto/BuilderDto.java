@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.model.BuildingType;
 import pl.app.resource.share.Resource;
 
 import java.io.Serializable;
@@ -26,6 +26,7 @@ public class BuilderDto implements Serializable {
     @NoArgsConstructor
     public static class ConstructDto implements Serializable {
         private BuildingType type;
+        private Boolean started;
         private Integer toLevel;
         private Instant from;
         private Instant to;

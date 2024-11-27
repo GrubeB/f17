@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import pl.app.attack.army_walk.domain.application.ArmyWalk;
 import pl.app.attack.army_walk.domain.application.ArmyWalkType;
 import pl.app.attack.army_walk.domain.application.Attack;
-import pl.app.building.building.application.domain.BuildingType;
+import pl.app.building.building.model.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.config.KafkaTopicConfigurationProperties;

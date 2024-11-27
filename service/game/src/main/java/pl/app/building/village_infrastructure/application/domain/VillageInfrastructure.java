@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.app.building.building.application.domain.Buildings;
+import pl.app.building.building.model.Buildings;
 
 @Getter
 @Document(collection = "village_infrastructure")

@@ -73,7 +73,7 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelDown()).stream(),
                     createTopicFromConfig(topicNames.getBuilderCreated()).stream(),
                     createTopicFromConfig(topicNames.getConstructAdded()).stream(),
-                    createTopicFromConfig(topicNames.getConstructRemoved()).stream(),
+                    createTopicFromConfig(topicNames.getConstructCanceled()).stream(),
                     // inventory
                     createTopicFromConfig(topicNames.getPlayerInventoryCreated()).stream(),
                     createTopicFromConfig(topicNames.getItemAdded()).stream(),

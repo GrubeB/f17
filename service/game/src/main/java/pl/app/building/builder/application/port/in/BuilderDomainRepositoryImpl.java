@@ -36,4 +36,14 @@ class BuilderDomainRepositoryImpl implements BuilderDomainRepository {
                 .matching(Query.query(Criteria.where("constructs.to").lte(toTimeThreshold)))
                 .all();
     }
+
+    @Override
+    public Flux<Builder> fetchBuildersWithConstructionStarting(Duration withinTime) {
+        Instant currentTime = Instant.now();
+        Instant toTimeThreshold = currentTime.plus(withinTime);
+
+        return mongoTemplate.query(Builder.class)
+                .matching(Query.query(Criteria.where("constructs.from").lte(toTimeThreshold).and("constructs.started").is(false)))
+                .all();
+    }
 }

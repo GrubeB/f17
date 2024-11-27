@@ -44,6 +44,15 @@ public interface BuilderException {
             super(message);
         }
     }
+    class FailedToStartBuildingConstructionException extends InvalidStateException {
+        public FailedToStartBuildingConstructionException() {
+            super("failed to start building construction");
+        }
+
+        public FailedToStartBuildingConstructionException(String message) {
+            super(message);
+        }
+    }
 
     class VillageDoseNotMeetRequirementsException extends InvalidStateException {
         public VillageDoseNotMeetRequirementsException() {

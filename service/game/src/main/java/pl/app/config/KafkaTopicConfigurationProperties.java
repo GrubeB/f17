@@ -25,7 +25,11 @@ public class KafkaTopicConfigurationProperties {
     private Topic villageInfrastructureBuildingLevelDown;
     private Topic builderCreated;
     private Topic constructAdded;
-    private Topic constructRemoved;
+    private Topic constructStarted;
+    private Topic constructFinished;
+    private Topic constructRejected;
+    private Topic constructCanceled;
+
     // inventory
     private Topic playerInventoryCreated;
     private Topic itemAdded;
@@ -75,9 +79,13 @@ public class KafkaTopicConfigurationProperties {
                 villageInfrastructureCreated,
                 villageInfrastructureBuildingLevelUp,
                 villageInfrastructureBuildingLevelDown,
+
                 builderCreated,
                 constructAdded,
-                constructRemoved,
+                constructStarted,
+                constructFinished,
+                constructRejected,
+                constructCanceled,
 
                 // inventory
                 playerInventoryCreated,

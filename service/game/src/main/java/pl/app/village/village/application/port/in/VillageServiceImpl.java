@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-import static pl.app.building.building.application.domain.BuildingType.*;
+import static pl.app.building.building.model.BuildingType.*;
 
 
 @Service

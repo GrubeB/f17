@@ -28,8 +28,8 @@ class BuilderRestController {
     }
 
     @DeleteMapping("/{villageId}/constructs")
-    Mono<ResponseEntity<BuilderDto>> add(@RequestBody BuilderCommand.RemoveBuildingToConstructCommand command) {
-        return service.remove(command)
+    Mono<ResponseEntity<BuilderDto>> cancel(@RequestBody BuilderCommand.CancelBuildingConstructCommand command) {
+        return service.cancel(command)
                 .flatMap(domain -> queryService.fetchByVillageId(domain.getVillageId()))
                 .map(ResponseEntity::ok);
     }

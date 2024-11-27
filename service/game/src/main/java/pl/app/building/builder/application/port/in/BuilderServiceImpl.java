@@ -12,16 +12,15 @@ import org.springframework.stereotype.Service;
 import pl.app.building.builder.application.domain.Builder;
 import pl.app.building.builder.application.domain.BuilderEvent;
 import pl.app.building.builder.application.domain.BuilderException;
-import pl.app.building.building.application.port.in.BuildingLevelDomainRepository;
-import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
+import pl.app.building.building.service.BuildingLevelService;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureDomainRepository;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 
@@ -36,9 +35,8 @@ class BuilderServiceImpl implements BuilderService {
 
     private final BuilderDomainRepository builderDomainRepository;
     private final VillageInfrastructureDomainRepository villageInfrastructureDomainRepository;
-    private final BuildingLevelDomainRepository buildingLevelDomainRepository;
+    private final BuildingLevelService buildingLevelDomainRepository;
     private final VillageResourceService villageResourceService;
-    private final VillageInfrastructureService villageInfrastructureService;
 
     @Override
     public Mono<Builder> crate(BuilderCommand.CreateBuilderCommand command) {
@@ -82,57 +80,102 @@ class BuilderServiceImpl implements BuilderService {
                                     .thenReturn(domain);
                         })
         ).doOnSubscribe(subscription ->
-                logger.debug("adding building to construct in village: {}", command.getVillageId())
+                logger.debug("adding construction in village: {}", command.getVillageId())
         ).flatMap(Function.identity()).doOnSuccess(domain ->
-                logger.debug("added building to construct in village: {}", domain.getVillageId())
+                logger.debug("added construction in village: {}", domain.getVillageId())
         ).doOnError(e ->
-                logger.error("exception occurred while adding building to construct in village: {}, exception: {}", command.getVillageId(), e.toString())
+                logger.error("exception occurred while adding construction in village: {}, exception: {}", command.getVillageId(), e.toString())
         );
     }
 
     @Override
-    public Mono<Builder> finish(BuilderCommand.FinishConstructCommand command) {
+    public Mono<Builder> start(BuilderCommand.StartBuildingToConstructCommand command) {
         return Mono.fromCallable(() ->
                 builderDomainRepository.fetchByVillageId(command.getVillageId())
                         .flatMap(domain -> {
-                            var construct = domain.finishConstruct();
-                            if (construct.isEmpty()) {
-                                return Mono.just(domain);
-                            }
-                            return villageInfrastructureService.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(command.getVillageId(), construct.get().getType(), 1))
-                                    .then(mongoTemplate.save(domain));
-                        })
-        ).doOnSubscribe(subscription ->
-                logger.debug("finishing construct in village: {}", command.getVillageId())
-        ).flatMap(Function.identity()).doOnSuccess(domain ->
-                logger.debug("finished construct in village: {}", domain.getVillageId())
-        ).doOnError(e ->
-                logger.error("exception occurred while finishing construct in village: {}, exception: {}", command.getVillageId(), e.toString())
-        );
-    }
-
-    @Override
-    public Mono<Builder> remove(BuilderCommand.RemoveBuildingToConstructCommand command) {
-        return Mono.fromCallable(() ->
-                builderDomainRepository.fetchByVillageId(command.getVillageId())
-                        .flatMap(domain -> {
-                            var construct = domain.removeConstruct(command.getType());
-                            if (Objects.isNull(construct)) {
-                                return Mono.just(domain);
-                            }
-                            var event = new BuilderEvent.ConstructRemovedEvent(domain.getVillageId(), construct.getType(), construct.getToLevel(), construct.getFrom(), construct.getTo());
-                            return villageResourceService.add(new VillageResourceCommand.AddResourceCommand(command.getVillageId(), construct.getCost()))
-                                    .then(mongoTemplate.save(domain))
-                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getConstructRemoved().getName(), domain.getVillageId(), event)))
+                            var construct = domain.starFirstConstruct();
+                            var event = new BuilderEvent.ConstructStartedEvent(domain.getVillageId(), construct.getType(), construct.getToLevel(), construct.getFrom(), construct.getTo());
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getConstructStarted().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
                         })
         ).doOnSubscribe(subscription ->
-                logger.debug("removing building to construct in village: {}", command.getVillageId())
+                logger.debug("starting construction in village: {}", command.getVillageId())
         ).flatMap(Function.identity()).doOnSuccess(domain ->
-                logger.debug("removed building to construct in village: {}", domain.getVillageId())
+                logger.debug("started construction village: {}", domain.getVillageId())
         ).doOnError(e ->
-                logger.error("exception occurred while removing building to construct in village: {}, exception: {}", command.getVillageId(), e.toString())
+                logger.error("exception occurred while starting construction in village: {}, exception: {}", command.getVillageId(), e.toString())
+        ).onErrorResume(e -> Mono.empty());
+    }
+
+    @Override
+    public Mono<Builder> finish(BuilderCommand.FinishBuildingConstructCommand command) {
+        return Mono.fromCallable(() ->
+                builderDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            var construct = domain.finishFirstConstruct();
+                            if (construct.isEmpty()) {
+                                return Mono.just(domain);
+                            }
+                            var event = new BuilderEvent.ConstructFinishedEvent(domain.getVillageId(), construct.get().getType(), construct.get().getToLevel(), construct.get().getFrom(), construct.get().getTo());
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getConstructFinished().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("finishing construction in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("finished construction in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while finishing construction in village: {}, exception: {}", command.getVillageId(), e.toString())
         );
     }
 
+    @Override
+    public Mono<Builder> cancel(BuilderCommand.CancelBuildingConstructCommand command) {
+        return Mono.fromCallable(() ->
+                builderDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            var canceledConstructions = domain.cancelConstruct(command.getType(), command.getToLevel());
+                            if (canceledConstructions.isEmpty()) {
+                                return Mono.just(domain);
+                            }
+                            return Flux.fromIterable(canceledConstructions)
+                                    .flatMap(construct -> villageResourceService.add(new VillageResourceCommand.AddResourceCommand(command.getVillageId(), construct.getCost())).thenReturn(construct))
+                                    .map(construct -> new BuilderEvent.ConstructCanceledEvent(domain.getVillageId(), construct.getType(), construct.getToLevel(), construct.getFrom(), construct.getTo()))
+                                    .flatMap(event -> Mono.fromFuture(kafkaTemplate.send(topicNames.getConstructCanceled().getName(), domain.getVillageId(), event)))
+                                    .then(mongoTemplate.save(domain));
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("canceling construction in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("canceled construction in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while canceling construction in village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
+    }
+
+    @Override
+    public Mono<Builder> reject(BuilderCommand.RejectBuildingConstructCommand command) {
+        return Mono.fromCallable(() ->
+                builderDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            var rejectedConstructions = domain.rejectConstruct(command.getType());
+                            if (rejectedConstructions.isEmpty()) {
+                                return Mono.just(domain);
+                            }
+                            return Flux.fromIterable(rejectedConstructions)
+                                    .flatMap(construct -> villageResourceService.add(new VillageResourceCommand.AddResourceCommand(command.getVillageId(), construct.getCost())).thenReturn(construct))
+                                    .map(construct -> new BuilderEvent.ConstructRejectedEvent(domain.getVillageId(), construct.getType(), construct.getToLevel(), construct.getFrom(), construct.getTo()))
+                                    .flatMap(event -> Mono.fromFuture(kafkaTemplate.send(topicNames.getConstructRejected().getName(), domain.getVillageId(), event)))
+                                    .then(mongoTemplate.save(domain));
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("rejecting construction in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("rejected construction in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while rejecting construction in village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
+    }
 }
