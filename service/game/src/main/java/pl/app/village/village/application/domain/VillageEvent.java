@@ -16,4 +16,12 @@ public interface VillageEvent {
         private VillageType villageType;
         private ObjectId ownerId;
     }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class VillageConqueredEvent implements Serializable {
+        private ObjectId villageId;
+        private ObjectId currentOwnerId;
+        private ObjectId previousOwnerId;
+    }
 }

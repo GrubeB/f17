@@ -9,7 +9,7 @@ import pl.app.building.village_infrastructure.query.dto.VillageInfrastructureDto
 import pl.app.map.village_position.query.dto.VillagePositionDto;
 import pl.app.player.player.service.dto.PlayerDto;
 import pl.app.resource.village_resource.query.dto.VillageResourceDto;
-import pl.app.unit.village_army.query.dto.VillageArmyDto;
+import pl.app.army.village_army.query.dto.VillageArmyDto;
 import pl.app.village.village.application.domain.VillageType;
 
 import java.io.Serializable;

@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class BuilderServiceImplTest { // extends AbstractIntegrationTest {
+class BuilderServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private BuilderServiceImpl service;

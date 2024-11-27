@@ -10,9 +10,9 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import pl.app.attack.battle.application.domain.Battle;
 import pl.app.inventory.shared.Officers;
 import pl.app.resource.share.Resource;
-import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.Unit;
-import pl.app.unit.unit.application.domain.UnitType;
+import pl.app.army.unit.model.Army;
+import pl.app.army.unit.model.Unit;
+import pl.app.army.unit.model.UnitType;
 
 import java.time.Instant;
 import java.time.LocalTime;

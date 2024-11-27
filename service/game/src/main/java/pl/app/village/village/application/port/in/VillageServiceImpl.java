@@ -16,10 +16,10 @@ import pl.app.map.village_position.application.port.in.VillagePositionCommand;
 import pl.app.map.village_position.application.port.in.VillagePositionService;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
-import pl.app.unit.recruiter.application.port.in.RecruiterCommand;
-import pl.app.unit.recruiter.application.port.in.RecruiterService;
-import pl.app.unit.village_army.application.port.in.VillageArmyCommand;
-import pl.app.unit.village_army.application.port.in.VillageArmyService;
+import pl.app.army.recruiter.application.port.in.RecruiterCommand;
+import pl.app.army.recruiter.application.port.in.RecruiterService;
+import pl.app.army.village_army.application.port.in.VillageArmyCommand;
+import pl.app.army.village_army.application.port.in.VillageArmyService;
 import pl.app.village.village.application.domain.Village;
 import pl.app.village.village.application.domain.VillageEvent;
 import pl.app.village.village.application.domain.VillageType;
@@ -109,7 +109,7 @@ class VillageServiceImpl implements VillageService {
                     domain.setOwnerId(command.getNewOwnerId());
                     domain.getVillageLoyalty().reset();
                     return mongoTemplate.save(domain)
-                            .then(villageArmyService.killAllUnitsFromVillage(new VillageArmyCommand.KillAllUnitsFromVillageCommand(command.getVillageId())))
+                            .then(villageArmyService.removeAllUnitsFromVillage(new VillageArmyCommand.RemoveAllUnitsFromVillageCommand(command.getVillageId())))
                             .thenReturn(domain);
                 })
         ).doOnSubscribe(subscription ->

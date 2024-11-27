@@ -7,17 +7,17 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.Unit;
-import pl.app.unit.unit.application.domain.UnitType;
+import pl.app.army.unit.model.Army;
+import pl.app.army.unit.model.Unit;
+import pl.app.army.unit.model.UnitType;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static pl.app.unit.unit.application.domain.UnitType.RAM;
-import static pl.app.unit.unit.application.domain.UnitType.TREBUCHET;
+import static pl.app.army.unit.model.UnitType.RAM;
+import static pl.app.army.unit.model.UnitType.TREBUCHET;
 
 /**
  * BUFF         TRUE/FALSE

@@ -65,15 +65,36 @@ public class KafkaConfig {
         KafkaAdmin.NewTopics createTopics() {
             NewTopic[] array = Stream.of(
                     createTopicFromConfig(topicNames.getTest()).stream(),
+                    // unit
+                    createTopicFromConfig(topicNames.getRecruiterCreated()).stream(),
+                    createTopicFromConfig(topicNames.getRecruitRequestAdded()).stream(),
+                    createTopicFromConfig(topicNames.getRecruitRequestStarted()).stream(),
+                    createTopicFromConfig(topicNames.getRecruitRequestFinished()).stream(),
+                    createTopicFromConfig(topicNames.getRecruitRequestCanceled()).stream(),
+                    createTopicFromConfig(topicNames.getRecruitRequestRejected()).stream(),
+
+                    createTopicFromConfig(topicNames.getVillageArmyCreated()).stream(),
+                    createTopicFromConfig(topicNames.getUnitsAdded()).stream(),
+                    createTopicFromConfig(topicNames.getUnitsSubtracted()).stream(),
+                    createTopicFromConfig(topicNames.getUnitsBlocked()).stream(),
+                    createTopicFromConfig(topicNames.getUnitsUnlocked()).stream(),
+                    createTopicFromConfig(topicNames.getVillageSupportAdded()).stream(),
+                    createTopicFromConfig(topicNames.getVillageSupportWithdraw()).stream(),
+
                     // attack
                     createTopicFromConfig(topicNames.getAttackStarted()).stream(),
                     // building
                     createTopicFromConfig(topicNames.getVillageInfrastructureCreated()).stream(),
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelUp()).stream(),
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelDown()).stream(),
+
                     createTopicFromConfig(topicNames.getBuilderCreated()).stream(),
                     createTopicFromConfig(topicNames.getConstructAdded()).stream(),
+                    createTopicFromConfig(topicNames.getConstructStarted()).stream(),
+                    createTopicFromConfig(topicNames.getConstructFinished()).stream(),
+                    createTopicFromConfig(topicNames.getConstructRejected()).stream(),
                     createTopicFromConfig(topicNames.getConstructCanceled()).stream(),
+
                     // inventory
                     createTopicFromConfig(topicNames.getPlayerInventoryCreated()).stream(),
                     createTopicFromConfig(topicNames.getItemAdded()).stream(),
@@ -92,15 +113,9 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getVillageResourceCreated()).stream(),
                     createTopicFromConfig(topicNames.getResourceAdded()).stream(),
                     createTopicFromConfig(topicNames.getResourceSubtracted()).stream(),
-                    // unit
-                    createTopicFromConfig(topicNames.getRecruiterCreated()).stream(),
-                    createTopicFromConfig(topicNames.getRecruitRequestAdded()).stream(),
-                    createTopicFromConfig(topicNames.getRecruitRequestRemoved()).stream(),
-                    createTopicFromConfig(topicNames.getVillageArmyCreated()).stream(),
-                    createTopicFromConfig(topicNames.getUnitsAdded()).stream(),
-                    createTopicFromConfig(topicNames.getUnitsSubtracted()).stream(),
                     // village
                     createTopicFromConfig(topicNames.getVillageCreated()).stream(),
+                    createTopicFromConfig(topicNames.getVillageConquered()).stream(),
                     // village effect
                     createTopicFromConfig(topicNames.getVillageEffectCreated()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);

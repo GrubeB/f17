@@ -1,10 +1,10 @@
 package pl.app.attack.battle.application.domain;
 
 import org.junit.jupiter.api.Test;
-import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.Unit;
-import pl.app.unit.unit.application.domain.UnitType;
-import pl.app.unit.unit.application.port.in.UnitDomainRepositoryImpl;
+import pl.app.army.unit.model.Army;
+import pl.app.army.unit.model.Unit;
+import pl.app.army.unit.model.UnitType;
+import pl.app.army.unit.service.UnitServiceImpl;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static pl.app.unit.unit.application.domain.UnitType.*;
+import static pl.app.army.unit.model.UnitType.*;
 
 public class BattleTest {
 
-    private final UnitDomainRepositoryImpl unitDomainRepository = new UnitDomainRepositoryImpl();
+    private final UnitServiceImpl unitDomainRepository = new UnitServiceImpl();
     private final Map<UnitType, Unit> units = unitDomainRepository.fetchAll().block();
 
     @Test

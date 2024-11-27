@@ -22,13 +22,13 @@ import pl.app.inventory.shared.Officers;
 import pl.app.resource.share.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
-import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.Unit;
-import pl.app.unit.unit.application.domain.UnitType;
-import pl.app.unit.unit.application.port.in.UnitDomainRepository;
-import pl.app.unit.village_army.application.port.in.VillageArmyCommand;
-import pl.app.unit.village_army.application.port.in.VillageArmyService;
-import pl.app.unit.village_army.query.dto.VillageArmyDto;
+import pl.app.army.unit.model.Army;
+import pl.app.army.unit.model.Unit;
+import pl.app.army.unit.model.UnitType;
+import pl.app.army.unit.service.UnitService;
+import pl.app.army.village_army.application.port.in.VillageArmyCommand;
+import pl.app.army.village_army.application.port.in.VillageArmyService;
+import pl.app.army.village_army.query.dto.VillageArmyDto;
 import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
 import pl.app.village.village.query.VillageDtoQueryService;
@@ -53,7 +53,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
 
     private final ArmyWalkDomainRepositoryImpl armyWalkDomainRepository;
 
-    private final UnitDomainRepository unitDomainRepository;
+    private final UnitService unitService;
     private final VillageDtoQueryService villageDtoQueryService;
 
     private final VillageService villageService;
@@ -81,7 +81,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
         return Mono.fromCallable(() -> {
             domain.markAsProcessed();
             // unblock army, add resources
-            return villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(domain.getTo().getVillageId(), domain.getArmy()))
+            return villageArmyService.unlock(new VillageArmyCommand.UnlockUnitsCommand(domain.getTo().getVillageId(), domain.getArmy()))
                     .then(villageResourceService.add(new VillageResourceCommand.AddResourceCommand(domain.getTo().getVillageId(), domain.getResource())))
                     .then(mongoTemplate.save(domain));
         }).doOnSubscribe(subscription ->
@@ -96,7 +96,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
     Mono<ArmyWalk> processAttack(ArmyWalk domain) {
         return Mono.fromCallable(() ->
                 Mono.zip(
-                                unitDomainRepository.fetchAll(),
+                                unitService.fetchAll(),
                                 villageDtoQueryService.fetchById(domain.getFrom().getVillageId()),
                                 villageDtoQueryService.fetchById(domain.getTo().getVillageId())
                         )
@@ -203,14 +203,14 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
                             return lossesArmy;
                         }));
         return Flux.fromIterable(lossesByVillageId.entrySet())
-                .flatMap(e -> villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(e.getKey(), e.getValue()))
+                .flatMap(e -> villageArmyService.unlock(new VillageArmyCommand.UnlockUnitsCommand(e.getKey(), e.getValue()))
                         .flatMap(unused -> villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(e.getKey(), e.getValue())))
                 ).collectList()
                 .then();
     }
 
     private Mono<Void> subtractAttackerUnits(Attack attack) {
-        return villageArmyService.unblock(new VillageArmyCommand.UnblockUnitsCommand(attack.getAttackerVillageId(), attack.getBattleResult().getAttackerArmyLosses()))
+        return villageArmyService.unlock(new VillageArmyCommand.UnlockUnitsCommand(attack.getAttackerVillageId(), attack.getBattleResult().getAttackerArmyLosses()))
                 .then(villageArmyService.subtract(new VillageArmyCommand.SubtractUnitsCommand(attack.getAttackerVillageId(), attack.getBattleResult().getAttackerArmyLosses())))
                 .then();
     }
@@ -219,7 +219,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
     public Mono<ArmyWalk> sendArmy(ArmyWalkCommand.SendArmyCommand command) {
         return Mono.fromCallable(() ->
                 Mono.zip(
-                                unitDomainRepository.fetchAll(),
+                                unitService.fetchAll(),
                                 villageDtoQueryService.fetchById(command.getFromVillageId()),
                                 villageDtoQueryService.fetchById(command.getToVillageId())
                         )

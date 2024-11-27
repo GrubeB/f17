@@ -38,19 +38,21 @@ class VillageInfrastructureServiceImplTest extends AbstractIntegrationTest {
                     assertThat(next).isNotNull();
                 }).verifyComplete();
     }
+
     @Test
     void levelUp_shouldThrow_whenBuildingLevelIsHigherThanToLevelParameter() {
         var villageId = ObjectId.get();
         service.crate(new VillageInfrastructureCommand.CreateVillageInfrastructureCommand(villageId)).block();
         service.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(
-                        villageId, BuildingType.HEADQUARTERS, 10
-                )).block();
+                villageId, BuildingType.HEADQUARTERS, 10
+        )).block();
 
         StepVerifier.create(service.levelUp(new VillageInfrastructureCommand.LevelUpVillageInfrastructureBuildingCommand(
-                        villageId, BuildingType.HEADQUARTERS,2
+                        villageId, BuildingType.HEADQUARTERS, 2
                 )))
                 .verifyError();
     }
+
     @Test
     void levelDown_shouldLevelDown_whenBuildingLevelIsHigherThanToLevelParameter() {
         var villageId = ObjectId.get();
@@ -65,6 +67,7 @@ class VillageInfrastructureServiceImplTest extends AbstractIntegrationTest {
                     assertThat(next).isNotNull();
                 }).verifyComplete();
     }
+
     @Test
     void levelDown_shouldThrow_whenBuildingLevelIsLowerThanToLevelParameter() {
         var villageId = ObjectId.get();

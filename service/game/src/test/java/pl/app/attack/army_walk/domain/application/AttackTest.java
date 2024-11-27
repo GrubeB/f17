@@ -7,17 +7,17 @@ import pl.app.inventory.shared.Officers;
 import pl.app.map.map.application.domain.Position;
 import pl.app.map.map.application.domain.Province;
 import pl.app.resource.share.Resource;
-import pl.app.unit.unit.application.domain.Army;
-import pl.app.unit.unit.application.domain.Unit;
-import pl.app.unit.unit.application.domain.UnitType;
-import pl.app.unit.unit.application.port.in.UnitDomainRepositoryImpl;
+import pl.app.army.unit.model.Army;
+import pl.app.army.unit.model.Unit;
+import pl.app.army.unit.model.UnitType;
+import pl.app.army.unit.service.UnitServiceImpl;
 
 import java.util.Map;
 
 
 class AttackTest {
 
-    private final Map<UnitType, Unit> units = new UnitDomainRepositoryImpl().fetchAll().block();
+    private final Map<UnitType, Unit> units = new UnitServiceImpl().fetchAll().block();
 
     @Test
     void calculatePlunderedResource() {

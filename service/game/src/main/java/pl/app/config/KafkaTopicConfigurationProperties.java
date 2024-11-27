@@ -16,6 +16,22 @@ import java.util.List;
 public class KafkaTopicConfigurationProperties {
     private Topic test;
 
+    // army
+    private Topic recruiterCreated;
+    private Topic recruitRequestAdded;
+    private Topic recruitRequestStarted;
+    private Topic recruitRequestFinished;
+    private Topic recruitRequestCanceled;
+    private Topic recruitRequestRejected;
+
+    private Topic villageArmyCreated;
+    private Topic unitsAdded;
+    private Topic unitsSubtracted;
+    private Topic unitsBlocked;
+    private Topic unitsUnlocked;
+    private Topic villageSupportAdded;
+    private Topic villageSupportWithdraw;
+
     // attack
     private Topic attackStarted;
 
@@ -52,16 +68,10 @@ public class KafkaTopicConfigurationProperties {
     private Topic resourceAdded;
     private Topic resourceSubtracted;
 
-    // unit
-    private Topic recruiterCreated;
-    private Topic recruitRequestAdded;
-    private Topic recruitRequestRemoved;
-    private Topic villageArmyCreated;
-    private Topic unitsAdded;
-    private Topic unitsSubtracted;
 
     // village
     private Topic villageCreated;
+    private Topic villageConquered;
     // village effect
     private Topic villageEffectCreated;
 
@@ -75,6 +85,22 @@ public class KafkaTopicConfigurationProperties {
     public List<Topic> getAllTopics() {
         return List.of(
                 test,
+                // army
+                recruiterCreated,
+                recruitRequestAdded,
+                recruitRequestStarted,
+                recruitRequestFinished,
+                recruitRequestCanceled,
+                recruitRequestRejected,
+
+                villageArmyCreated,
+                unitsAdded,
+                unitsSubtracted,
+                unitsBlocked,
+                unitsUnlocked,
+                villageSupportAdded,
+                villageSupportWithdraw,
+
                 // building
                 villageInfrastructureCreated,
                 villageInfrastructureBuildingLevelUp,
@@ -103,15 +129,10 @@ public class KafkaTopicConfigurationProperties {
                 villageResourceCreated,
                 resourceAdded,
                 resourceSubtracted,
-                // unit
-                recruiterCreated,
-                recruitRequestAdded,
-                recruitRequestRemoved,
-                villageArmyCreated,
-                unitsAdded,
-                unitsSubtracted,
+
                 // village
                 villageCreated,
+                villageConquered,
                 villageEffectCreated
         );
     }

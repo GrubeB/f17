@@ -1,7 +1,7 @@
 package pl.app.inventory.shared;
 
 import lombok.Getter;
-import pl.app.unit.unit.application.domain.UnitType;
+import pl.app.army.unit.model.UnitType;
 
 import java.util.Objects;
 
