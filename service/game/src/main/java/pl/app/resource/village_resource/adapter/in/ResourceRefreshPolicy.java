@@ -16,8 +16,8 @@ import java.time.Instant;
 @ConditionalOnProperty(value = "app.schedulers.enable", matchIfMissing = true)
 @Component
 @RequiredArgsConstructor
-class VillageResourceRefresher {
-    private static final Logger logger = LoggerFactory.getLogger(VillageResourceRefresher.class);
+class ResourceRefreshPolicy {
+    private static final Logger logger = LoggerFactory.getLogger(ResourceRefreshPolicy.class);
 
     private final VillageResourceDomainRepository villageResourceDomainRepository;
     private final VillageResourceService villageResourceService;
