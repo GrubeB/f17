@@ -13,10 +13,10 @@ import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
 
 @ConditionalOnProperty(value = "app.kafka.listeners.enable", matchIfMissing = true)
-@Component("pl.app.village.village.adapter.in.PlayerEventListener")
+@Component
 @RequiredArgsConstructor
-class PlayerEventListener {
-    private final Logger logger = LoggerFactory.getLogger(PlayerEventListener.class);
+class PlayerVillageCreationPolicy {
+    private final Logger logger = LoggerFactory.getLogger(PlayerVillageCreationPolicy.class);
     private final VillageService villageService;
 
     @KafkaListener(

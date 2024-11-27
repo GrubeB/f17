@@ -23,11 +23,4 @@ class VillageDomainRepositoryImpl implements VillageDomainRepository {
                 .one()
                 .switchIfEmpty(Mono.error(() -> VillageException.NotFoundVillageException.fromId(villageId.toHexString())));
     }
-
-    @Override
-    public Flux<Village> fetchVillagesWithoutMaxLoyalty() {
-        return mongoTemplate.query(Village.class)
-                .matching(Query.query(Criteria.where("villageLoyalty.loyalty").lt(Village.VillageLoyalty.LOYALTY_MAX)))
-                .all();
-    }
 }

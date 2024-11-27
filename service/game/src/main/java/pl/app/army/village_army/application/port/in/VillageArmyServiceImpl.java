@@ -9,12 +9,21 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import pl.app.army.unit.model.Army;
+import pl.app.army.unit.model.Unit;
+import pl.app.army.unit.model.UnitType;
+import pl.app.army.unit.service.UnitService;
 import pl.app.army.village_army.application.domain.VillageArmy;
 import pl.app.army.village_army.application.domain.VillageArmyEvent;
 import pl.app.army.village_army.application.domain.VillageArmyException;
 import pl.app.config.KafkaTopicConfigurationProperties;
+import pl.app.resource.share.Resource;
+import pl.app.resource.share.ResourceType;
+import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
+import pl.app.resource.village_resource.application.port.in.VillageResourceService;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.function.Function;
 
 
@@ -28,6 +37,7 @@ class VillageArmyServiceImpl implements VillageArmyService {
     private final KafkaTopicConfigurationProperties topicNames;
 
     private final VillageArmyDomainRepository villageArmyDomainRepository;
+    private final VillageResourceService villageResourceService;
 
     @Override
     public Mono<VillageArmy> crate(VillageArmyCommand.CreateVillageArmyCommand command) {
@@ -171,13 +181,20 @@ class VillageArmyServiceImpl implements VillageArmyService {
         );
     }
 
+    private final UnitService unitService;
+
     @Override
     public Mono<VillageArmy> removeAllUnitsFromVillage(VillageArmyCommand.RemoveAllUnitsFromVillageCommand command) {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
-                        .flatMap(domain -> {
-                            domain.reset();
-                            return mongoTemplate.save(domain);
+                        .zipWith(unitService.fetchAll())
+                        .flatMap(t -> {
+                            VillageArmy domain = t.getT1();
+                            Army removedUnits = domain.reset();
+                            Integer provision = calculateNumberOfProvisions(removedUnits, t.getT2());
+                            return villageResourceService
+                                    .add(new VillageResourceCommand.AddResourceCommand(domain.getVillageId(), Resource.of(provision, ResourceType.PROVISION)))
+                                    .then(mongoTemplate.save(domain));
                         })
         ).doOnSubscribe(subscription ->
                 logger.debug("removing all units from village: {}", command.getVillageId())
@@ -186,5 +203,11 @@ class VillageArmyServiceImpl implements VillageArmyService {
         ).doOnError(e ->
                 logger.error("exception occurred while removing all units from village: {}, exception: {}", command.getVillageId(), e.toString())
         );
+    }
+
+    private Integer calculateNumberOfProvisions(Army removedUnits, Map<UnitType, Unit> t2) {
+        return removedUnits.entrySet().stream()
+                .mapToInt(e -> t2.get(e.getKey()).getCost().getProvision() * e.getValue())
+                .sum();
     }
 }

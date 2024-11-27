@@ -9,8 +9,4 @@ public interface VillageService {
     Mono<Village> crateBarbarianVillage(VillageCommand.CreateBarbarianVillageCommand command);
 
     Mono<Village> conquerVillage(VillageCommand.ConquerVillageCommand command);
-
-    Mono<Village> subtractLoyalty(VillageCommand.SubtractLoyaltyCommand command);
-
-    Mono<Village> refreshLoyalty(VillageCommand.RefreshLoyaltyCommand command);
 }

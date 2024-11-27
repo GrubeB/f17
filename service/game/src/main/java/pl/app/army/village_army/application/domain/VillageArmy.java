@@ -72,9 +72,11 @@ public class VillageArmy {
         }
     }
 
-    public void reset() {
+    public Army reset() {
+        Army removedUnits = Army.of(blockedArmy);
         this.villageArmy = Army.zero();
         this.blockedArmy = Army.zero();
+        return removedUnits;
     }
 
     private Optional<VillageSupport> getVillageSupport(ObjectId villageId) {

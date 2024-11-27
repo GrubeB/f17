@@ -14,10 +14,10 @@ import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
 
 @ConditionalOnProperty(value = "app.kafka.listeners.enable", matchIfMissing = true)
-@Component("pl.app.village.village.adapter.in.VillageEventListener")
+@Component
 @RequiredArgsConstructor
-class VillageEventListener {
-    private final Logger logger = LoggerFactory.getLogger(VillageEventListener.class);
+class BarbarianVillageCreationPolicy {
+    private final Logger logger = LoggerFactory.getLogger(BarbarianVillageCreationPolicy.class);
     private final VillageService villageService;
 
     @KafkaListener(
@@ -25,7 +25,7 @@ class VillageEventListener {
             groupId = "${app.kafka.consumer.group-id}--village",
             topics = "${app.kafka.topic.village-created.name}"
     )
-    public void villageInfrastructureBuildingLevelUpEvent(ConsumerRecord<ObjectId, VillageEvent.VillageCreatedEvent> record) {
+    public void villageCreatedEvent(ConsumerRecord<ObjectId, VillageEvent.VillageCreatedEvent> record) {
         logger.debug("received event {} {}-{} key: {},value: {}", record.value().getClass().getSimpleName(), record.partition(), record.offset(), record.key(), record.value());
         final var event = record.value();
         if (event.getVillageType() == VillageType.PLAYER) {

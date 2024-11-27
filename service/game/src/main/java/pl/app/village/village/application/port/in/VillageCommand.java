@@ -26,19 +26,4 @@ public interface VillageCommand {
         private ObjectId villageId;
         private ObjectId newOwnerId;
     }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class SubtractLoyaltyCommand implements Serializable {
-        private ObjectId villageId;
-        private Integer amount;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class RefreshLoyaltyCommand implements Serializable {
-        private ObjectId villageId;
-    }
 }

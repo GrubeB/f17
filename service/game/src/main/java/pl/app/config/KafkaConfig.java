@@ -116,6 +116,12 @@ public class KafkaConfig {
                     // village
                     createTopicFromConfig(topicNames.getVillageCreated()).stream(),
                     createTopicFromConfig(topicNames.getVillageConquered()).stream(),
+                    // loyalty
+                    createTopicFromConfig(topicNames.getVillageLoyaltyCreated()).stream(),
+                    createTopicFromConfig(topicNames.getLoyaltyAdded()).stream(),
+                    createTopicFromConfig(topicNames.getLoyaltySubtracted()).stream(),
+                    createTopicFromConfig(topicNames.getLoyaltyReset()).stream(),
+
                     // village effect
                     createTopicFromConfig(topicNames.getVillageEffectCreated()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);

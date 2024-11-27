@@ -72,6 +72,13 @@ public class KafkaTopicConfigurationProperties {
     // village
     private Topic villageCreated;
     private Topic villageConquered;
+
+    // loyalty
+    private Topic villageLoyaltyCreated;
+    private Topic loyaltyAdded;
+    private Topic loyaltySubtracted;
+    private Topic loyaltyReset;
+
     // village effect
     private Topic villageEffectCreated;
 
@@ -133,6 +140,12 @@ public class KafkaTopicConfigurationProperties {
                 // village
                 villageCreated,
                 villageConquered,
+                // loyalty
+                villageLoyaltyCreated,
+                loyaltyAdded,
+                loyaltySubtracted,
+                loyaltyReset,
+
                 villageEffectCreated
         );
     }

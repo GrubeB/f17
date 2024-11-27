@@ -29,6 +29,8 @@ import pl.app.army.unit.service.UnitService;
 import pl.app.army.village_army.application.port.in.VillageArmyCommand;
 import pl.app.army.village_army.application.port.in.VillageArmyService;
 import pl.app.army.village_army.query.dto.VillageArmyDto;
+import pl.app.village.loyalty.application.port.in.VillageLoyaltyCommand;
+import pl.app.village.loyalty.application.port.in.VillageLoyaltyService;
 import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
 import pl.app.village.village.query.VillageDtoQueryService;
@@ -57,6 +59,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
     private final VillageDtoQueryService villageDtoQueryService;
 
     private final VillageService villageService;
+    private final VillageLoyaltyService villageLoyaltyService;
     private final VillageArmyService villageArmyService;
     private final VillageInfrastructureService villageInfrastructureService;
     private final VillageResourceService villageResourceService;
@@ -145,7 +148,7 @@ class ArmyWalkServiceImpl implements ArmyWalkService {
         if (attack.getLoyaltyDecrease() < 0) {
             return Mono.empty();
         }
-        return villageService.subtractLoyalty(new VillageCommand.SubtractLoyaltyCommand(attack.getDefenderVillageId(), attack.getLoyaltyDecrease()))
+        return villageLoyaltyService.subtract(new VillageLoyaltyCommand.SubtractLoyaltyCommand(attack.getDefenderVillageId(), attack.getLoyaltyDecrease()))
                 .then();
     }
 

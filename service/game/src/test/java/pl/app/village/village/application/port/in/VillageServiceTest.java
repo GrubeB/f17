@@ -50,7 +50,6 @@ class VillageServiceTest extends AbstractIntegrationTest {
         StepVerifier.create(service.cratePlayerVillage(command))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
-                    assertThat(next.getVillageLoyalty().getLoyalty()).isEqualTo(Village.VillageLoyalty.LOYALTY_MAX);
                 }).verifyComplete();
 
         verify(mongoTemplate, times(1)).insert(any(Village.class));
