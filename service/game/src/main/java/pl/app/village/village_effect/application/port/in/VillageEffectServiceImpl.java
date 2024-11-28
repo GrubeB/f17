@@ -13,9 +13,11 @@ import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.village.village_effect.application.domain.VillageEffect;
 import pl.app.village.village_effect.application.domain.VillageEffectEvent;
 import pl.app.village.village_effect.application.domain.VillageEffectException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.function.Function;
 
 
@@ -39,7 +41,7 @@ class VillageEffectServiceImpl implements VillageEffectService {
                             var domain = new VillageEffect(command.getVillageId());
                             var event = new VillageEffectEvent.VillageEffectCreatedEvent(domain.getVillageId());
                             return mongoTemplate.insert(domain)
-                                    .flatMap(saved -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageEffectCreated().getName(), saved.getVillageId(), event)))
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageEffectCreated().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
                         }))
         ).doOnSubscribe(subscription ->
@@ -52,19 +54,23 @@ class VillageEffectServiceImpl implements VillageEffectService {
     }
 
     @Override
-    public Mono<VillageEffect> add(VillageEffectCommand.AddEffectCommand command) {
+    public Mono<VillageEffect> start(VillageEffectCommand.StartEffectCommand command) {
         return Mono.fromCallable(() ->
                 villageEffectDomainRepository.fetchByVillageId(command.getVillageId())
                         .flatMap(domain -> {
-                            domain.add(new VillageEffect.Effect(command.getEffectType(), command.getValue(), Instant.now(), Instant.now().plus(command.getDuration())));
-                            return mongoTemplate.save(domain);
+                            domain.start(new VillageEffect.Effect(command.getEffectType(), command.getValue(), Instant.now(), Instant.now().plus(command.getDuration())));
+                            var event = new VillageEffectEvent.VillageEffectStartedEvent(domain.getVillageId());
+
+                            return mongoTemplate.save(domain)
+                                    .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageEffectStarted().getName(), domain.getVillageId(), event)))
+                                    .thenReturn(domain);
                         })
         ).doOnSubscribe(subscription ->
-                logger.debug("adding effect to village: {}", command.getVillageId())
+                logger.debug("starting effect in village: {}", command.getVillageId())
         ).flatMap(Function.identity()).doOnSuccess(domain ->
-                logger.debug("added effect to village: {}", domain.getVillageId())
+                logger.debug("started effect in village: {}", domain.getVillageId())
         ).doOnError(e ->
-                logger.error("exception occurred while adding effect to village: {}, exception: {}", command.getVillageId(), e.toString())
+                logger.error("exception occurred while starting effect in village: {}, exception: {}", command.getVillageId(), e.toString())
         );
     }
 
@@ -73,8 +79,14 @@ class VillageEffectServiceImpl implements VillageEffectService {
         return Mono.fromCallable(() ->
                 villageEffectDomainRepository.fetchByVillageId(command.getVillageId())
                         .flatMap(domain -> {
-                            domain.removeInvalidEffect();
-                            return mongoTemplate.save(domain);
+                            Set<VillageEffect.Effect> effects = domain.removeInvalidEffects();
+                            if (effects.isEmpty()) {
+                                return Mono.just(domain);
+                            }
+                            return Flux.fromIterable(effects)
+                                    .map(e -> new VillageEffectEvent.VillageEffectExpiredEvent(domain.getVillageId()))
+                                    .flatMap(e -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageEffectExpired().getName(), domain.getVillageId(), e)))
+                                    .then(mongoTemplate.save(domain));
                         })
         ).doOnSubscribe(subscription ->
                 logger.debug("removing effect from village: {}", command.getVillageId())
@@ -82,6 +94,29 @@ class VillageEffectServiceImpl implements VillageEffectService {
                 logger.debug("removed effect from village: {}", domain.getVillageId())
         ).doOnError(e ->
                 logger.error("exception occurred while removing effect from village: {}, exception: {}", command.getVillageId(), e.toString())
+        );
+    }
+
+    @Override
+    public Mono<VillageEffect> reject(VillageEffectCommand.RejectAllEffectsCommand command) {
+        return Mono.fromCallable(() ->
+                villageEffectDomainRepository.fetchByVillageId(command.getVillageId())
+                        .flatMap(domain -> {
+                            Set<VillageEffect.Effect> effects = domain.rejectAllEffects();
+                            if (effects.isEmpty()) {
+                                return Mono.just(domain);
+                            }
+                            return Flux.fromIterable(effects)
+                                    .map(e -> new VillageEffectEvent.VillageEffectRejectedEvent(domain.getVillageId()))
+                                    .flatMap(e -> Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageEffectRejected().getName(), domain.getVillageId(), e)))
+                                    .then(mongoTemplate.save(domain));
+                        })
+        ).doOnSubscribe(subscription ->
+                logger.debug("rejecting effect in village: {}", command.getVillageId())
+        ).flatMap(Function.identity()).doOnSuccess(domain ->
+                logger.debug("rejected effect in village: {}", domain.getVillageId())
+        ).doOnError(e ->
+                logger.error("exception occurred while rejecting effect in village: {}, exception: {}", command.getVillageId(), e.toString())
         );
     }
 }

@@ -81,6 +81,9 @@ public class KafkaTopicConfigurationProperties {
 
     // village effect
     private Topic villageEffectCreated;
+    private Topic villageEffectStarted;
+    private Topic villageEffectExpired;
+    private Topic villageEffectRejected;
 
     public List<String> getAllTopicNames() {
         return getAllTopics().stream()
@@ -146,7 +149,10 @@ public class KafkaTopicConfigurationProperties {
                 loyaltySubtracted,
                 loyaltyReset,
 
-                villageEffectCreated
+                villageEffectCreated,
+                villageEffectStarted,
+                villageEffectExpired,
+                villageEffectRejected
         );
     }
 

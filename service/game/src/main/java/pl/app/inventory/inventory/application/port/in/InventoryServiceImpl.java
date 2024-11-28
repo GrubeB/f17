@@ -141,7 +141,7 @@ class InventoryServiceImpl implements InventoryService {
                                             case IRON -> EffectType.IRON_BUFF;
                                             default -> throw new InventoryException.CanNotUseItemException();
                                         };
-                                        yield villageEffectService.add(new VillageEffectCommand.AddEffectCommand(command.getDomainObjectId(), effectType,
+                                        yield villageEffectService.start(new VillageEffectCommand.StartEffectCommand(command.getDomainObjectId(), effectType,
                                                 resourceBuffItem.getDuration(), resourceBuffItem.getValue()));
                                     }
                                     throw new InventoryException.CanNotUseItemException();

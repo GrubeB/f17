@@ -123,7 +123,10 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getLoyaltyReset()).stream(),
 
                     // village effect
-                    createTopicFromConfig(topicNames.getVillageEffectCreated()).stream()
+                    createTopicFromConfig(topicNames.getVillageEffectCreated()).stream(),
+                    createTopicFromConfig(topicNames.getVillageEffectStarted()).stream(),
+                    createTopicFromConfig(topicNames.getVillageEffectExpired()).stream(),
+                    createTopicFromConfig(topicNames.getVillageEffectRejected()).stream()
             ).flatMap(Stream::sequential).toArray(NewTopic[]::new);
             return new KafkaAdmin.NewTopics(array);
         }

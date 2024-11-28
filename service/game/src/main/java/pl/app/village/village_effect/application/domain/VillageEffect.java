@@ -8,9 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Document(collection = "village_effect")
@@ -25,14 +24,23 @@ public class VillageEffect {
         this.effects = new LinkedList<>();
     }
 
-    public void add(Effect effect) {
+    public void start(Effect effect) {
         this.effects.removeIf(e -> Objects.equals(e.getType(), effect.getType()));
         this.effects.add(effect);
     }
 
-    public void removeInvalidEffect() {
+    public Set<Effect> removeInvalidEffects() {
         var now = Instant.now();
-        this.effects.removeIf(e -> e.getTo().isBefore(now));
+        var expiredEffects = effects.stream().filter(e -> e.getTo().isBefore(now)).collect(Collectors.toSet());
+        this.effects.removeAll(expiredEffects);
+        return expiredEffects;
+    }
+
+    public Set<Effect> rejectAllEffects() {
+        var now = Instant.now();
+        var rejectedEffects = new HashSet<>(effects);
+        this.effects.removeAll(rejectedEffects);
+        return rejectedEffects;
     }
 
     @Getter

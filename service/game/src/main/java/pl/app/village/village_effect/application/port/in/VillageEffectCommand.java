@@ -20,7 +20,7 @@ public interface VillageEffectCommand {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class AddEffectCommand implements Serializable {
+    class StartEffectCommand implements Serializable {
         private ObjectId villageId;
         private EffectType effectType;
         private Duration duration;
@@ -31,6 +31,13 @@ public interface VillageEffectCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     class RemoveInvalidEffectsCommand implements Serializable {
+        private ObjectId villageId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class RejectAllEffectsCommand implements Serializable {
         private ObjectId villageId;
     }
 }

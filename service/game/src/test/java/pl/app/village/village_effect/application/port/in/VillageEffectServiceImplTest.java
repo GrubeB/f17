@@ -26,9 +26,9 @@ class VillageEffectServiceImplTest extends AbstractIntegrationTest {
     private VillageService villageService;
 
     @Test
-    void add() {
+    void start() {
         Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
-        StepVerifier.create(service.add(new VillageEffectCommand.AddEffectCommand(village.getId(), EffectType.WOOD_BUFF, Duration.ofDays(2), 20)))
+        StepVerifier.create(service.start(new VillageEffectCommand.StartEffectCommand(village.getId(), EffectType.WOOD_BUFF, Duration.ofDays(2), 20)))
                 .assertNext(next -> {
                     Assertions.assertThat(next.getEffects().size()).isEqualTo(1);
                 })
@@ -38,7 +38,7 @@ class VillageEffectServiceImplTest extends AbstractIntegrationTest {
     @Test
     void remove() throws InterruptedException {
         Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
-        service.add(new VillageEffectCommand.AddEffectCommand(village.getId(), EffectType.WOOD_BUFF, Duration.ofSeconds(2), 20)).block();
+        service.start(new VillageEffectCommand.StartEffectCommand(village.getId(), EffectType.WOOD_BUFF, Duration.ofSeconds(2), 20)).block();
         Thread.sleep(4000);
         StepVerifier.create(service.remove(new VillageEffectCommand.RemoveInvalidEffectsCommand(village.getId())))
                 .assertNext(next -> {

@@ -24,14 +24,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-class UpcomingExpiredEffectManager {
+class VillageExpiredEffectPolicy {
     private final VillageEffectService villageEffectService;
     private final Sinks.Many<VillageEffect> sink = Sinks.many().multicast().onBackpressureBuffer();
     private final Flux<VillageEffect> flux = sink.asFlux();
 
     private final Set<ObjectId> ids = ConcurrentHashMap.newKeySet();
 
-    public UpcomingExpiredEffectManager(VillageEffectService villageEffectService) {
+    public VillageExpiredEffectPolicy(VillageEffectService villageEffectService) {
         this.villageEffectService = villageEffectService;
 
         flux
@@ -62,10 +62,10 @@ class UpcomingExpiredEffectManager {
     @ConditionalOnProperty(value = "app.schedulers.enable", matchIfMissing = true)
     @Component
     @RequiredArgsConstructor
-    public static class UpcomingExpiredEffectManagerDataPuller {
-        private static final Logger logger = LoggerFactory.getLogger(UpcomingExpiredEffectManagerDataPuller.class);
+    public static class DataPuller {
+        private static final Logger logger = LoggerFactory.getLogger(DataPuller.class);
 
-        private final UpcomingExpiredEffectManager upcomingExpiredEffectManager;
+        private final VillageExpiredEffectPolicy villageExpiredEffectPolicy;
         private final VillageEffectDomainRepository villageEffectDomainRepository;
 
         @Scheduled(cron = "*/30 * * ? * *")
@@ -73,7 +73,7 @@ class UpcomingExpiredEffectManager {
             logger.trace("adding upcoming expired effects");
             var startTime = Instant.now();
             villageEffectDomainRepository.fetchVillageEffectWithEnding(Duration.ofSeconds(31))
-                    .doOnNext(upcomingExpiredEffectManager::add)
+                    .doOnNext(villageExpiredEffectPolicy::add)
                     .doOnComplete(() -> logger.trace("added upcoming expired effects - {}", Duration.between(startTime, Instant.now())))
                     .subscribe();
         }
