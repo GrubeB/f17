@@ -29,11 +29,11 @@ public class VillageQuery {
 
     @ReadOnlyProperty
     @DocumentReference(lookup = "{'_id':?#{#self.ownerId} }")
-    private VillageLoyalty villageLoyalty;
+    private Player player;
 
     @ReadOnlyProperty
-    @DocumentReference(lookup = "{'_id':?#{#self.ownerId} }")
-    private Player player;
+    @DocumentReference(lookup = "{'_id':?#{#self._id} }")
+    private VillageLoyalty villageLoyalty;
 
     @ReadOnlyProperty
     @DocumentReference(lookup = "{'_id':?#{#self._id} }")

@@ -31,7 +31,7 @@ class VillageLoyaltyServiceImpl implements VillageLoyaltyService {
         return Mono.fromCallable(() -> {
             var domain = new VillageLoyalty(command.getVillageId());
             var event = new VillageLoyaltyEvent.VillageLoyaltyCreatedEvent(domain.getVillageId());
-            return mongoTemplate.save(domain)
+            return mongoTemplate.insert(domain)
                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageLoyaltyCreated().getName(), domain.getVillageId(), event)))
                     .thenReturn(domain);
         }).doOnSubscribe(subscription ->

@@ -82,7 +82,10 @@ public class KafkaConfig {
                     createTopicFromConfig(topicNames.getVillageSupportWithdraw()).stream(),
 
                     // attack
-                    createTopicFromConfig(topicNames.getAttackStarted()).stream(),
+                    createTopicFromConfig(topicNames.getArmyWalkStarted()).stream(),
+                    createTopicFromConfig(topicNames.getArmyWalkCancelled()).stream(),
+                    createTopicFromConfig(topicNames.getArmyWalkEnded()).stream(),
+
                     // building
                     createTopicFromConfig(topicNames.getVillageInfrastructureCreated()).stream(),
                     createTopicFromConfig(topicNames.getVillageInfrastructureBuildingLevelUp()).stream(),

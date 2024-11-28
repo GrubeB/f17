@@ -60,14 +60,14 @@ class VillageArmyServiceImpl implements VillageArmyService {
         );
     }
 
-
     @Override
     public Mono<VillageArmy> add(VillageArmyCommand.AddUnitsCommand command) {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
                         .flatMap(domain -> {
-                            domain.add(command.getArmy());
-                            var event = new VillageArmyEvent.UnitsAddedEvent(domain.getVillageId(), command.getArmy());
+                            Army army = Army.of(command.getArmy());
+                            domain.add(army);
+                            var event = new VillageArmyEvent.UnitsAddedEvent(domain.getVillageId(), army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsAdded().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -86,8 +86,9 @@ class VillageArmyServiceImpl implements VillageArmyService {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
                         .flatMap(domain -> {
-                            domain.subtract(command.getArmy());
-                            var event = new VillageArmyEvent.UnitsSubtractedEvent(domain.getVillageId(), command.getArmy());
+                            Army army = Army.of(command.getArmy());
+                            domain.subtract(army);
+                            var event = new VillageArmyEvent.UnitsSubtractedEvent(domain.getVillageId(), army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsAdded().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -106,8 +107,9 @@ class VillageArmyServiceImpl implements VillageArmyService {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
                         .flatMap(domain -> {
-                            domain.block(command.getArmy());
-                            var event = new VillageArmyEvent.UnitsBlockedEvent(domain.getVillageId(), command.getArmy());
+                            Army army = Army.of(command.getArmy());
+                            domain.block(army);
+                            var event = new VillageArmyEvent.UnitsBlockedEvent(domain.getVillageId(), army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsBlocked().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -126,8 +128,9 @@ class VillageArmyServiceImpl implements VillageArmyService {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getVillageId())
                         .flatMap(domain -> {
-                            domain.unblock(command.getArmy());
-                            var event = new VillageArmyEvent.UnitsUnlockedEvent(domain.getVillageId(), command.getArmy());
+                            Army army = Army.of(command.getArmy());
+                            domain.unblock(army);
+                            var event = new VillageArmyEvent.UnitsUnlockedEvent(domain.getVillageId(),army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsUnlocked().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -146,8 +149,9 @@ class VillageArmyServiceImpl implements VillageArmyService {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getSupportedVillageId())
                         .flatMap(domain -> {
-                            domain.addSupport(command.getSupportingVillageId(), command.getArmy());
-                            var event = new VillageArmyEvent.VillageSupportAddedEvent(domain.getVillageId(), command.getSupportingVillageId(), command.getArmy());
+                            Army army = Army.of(command.getArmy());
+                            domain.addSupport(command.getSupportingVillageId(),army);
+                            var event = new VillageArmyEvent.VillageSupportAddedEvent(domain.getVillageId(), command.getSupportingVillageId(),army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageSupportAdded().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -166,8 +170,9 @@ class VillageArmyServiceImpl implements VillageArmyService {
         return Mono.fromCallable(() ->
                 villageArmyDomainRepository.fetchByVillageId(command.getSupportedVillageId())
                         .flatMap(domain -> {
-                            domain.removeSupport(command.getSupportingVillageId(), command.getArmy());
-                            var event = new VillageArmyEvent.VillageSupportWithdrawEvent(domain.getVillageId(), command.getSupportingVillageId(), command.getArmy());
+                            Army army = Army.of(command.getArmy());
+                            domain.removeSupport(command.getSupportingVillageId(),army);
+                            var event = new VillageArmyEvent.VillageSupportWithdrawEvent(domain.getVillageId(), command.getSupportingVillageId(),army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageSupportWithdraw().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);

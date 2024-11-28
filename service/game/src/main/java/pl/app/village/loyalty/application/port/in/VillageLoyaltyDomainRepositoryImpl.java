@@ -22,7 +22,7 @@ class VillageLoyaltyDomainRepositoryImpl implements VillageLoyaltyDomainReposito
     @Override
     public Mono<VillageLoyalty> fetchById(ObjectId villageId) {
         return mongoTemplate.query(VillageLoyalty.class)
-                .matching(Query.query(Criteria.where("id").is(villageId)))
+                .matching(Query.query(Criteria.where("_id").is(villageId)))
                 .one()
                 .switchIfEmpty(Mono.error(() -> VillageLoyaltyException.NotFoundVillageLoyaltyException.fromId(villageId.toHexString())));
     }

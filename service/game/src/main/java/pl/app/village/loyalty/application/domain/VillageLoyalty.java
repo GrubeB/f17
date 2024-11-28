@@ -3,6 +3,7 @@ package pl.app.village.loyalty.application.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pl.app.village.village.application.domain.VillageType;
 
@@ -17,6 +18,7 @@ public class VillageLoyalty {
     public static final Integer LOYALTY_MIN = -10;
     public static final Integer LOYALTY_AFTER_CONQUERING = 25;
     public static final Integer LOYALTY_PER_HOUR = 1;
+    @Id
     private ObjectId villageId;
     private Integer loyalty;
     private Instant lastLoyaltyRefresh;

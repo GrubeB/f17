@@ -33,7 +33,9 @@ public class KafkaTopicConfigurationProperties {
     private Topic villageSupportWithdraw;
 
     // attack
-    private Topic attackStarted;
+    private Topic armyWalkStarted;
+    private Topic armyWalkCancelled;
+    private Topic armyWalkEnded;
 
     // building
     private Topic villageInfrastructureCreated;
@@ -110,7 +112,10 @@ public class KafkaTopicConfigurationProperties {
                 unitsUnlocked,
                 villageSupportAdded,
                 villageSupportWithdraw,
-
+                // attack
+                armyWalkStarted,
+                armyWalkCancelled,
+                armyWalkEnded,
                 // building
                 villageInfrastructureCreated,
                 villageInfrastructureBuildingLevelUp,
@@ -149,6 +154,7 @@ public class KafkaTopicConfigurationProperties {
                 loyaltySubtracted,
                 loyaltyReset,
 
+                // village effect
                 villageEffectCreated,
                 villageEffectStarted,
                 villageEffectExpired,
