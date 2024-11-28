@@ -44,6 +44,7 @@ public interface BuilderException {
             super(message);
         }
     }
+
     class FailedToStartBuildingConstructionException extends InvalidStateException {
         public FailedToStartBuildingConstructionException() {
             super("failed to start building construction");

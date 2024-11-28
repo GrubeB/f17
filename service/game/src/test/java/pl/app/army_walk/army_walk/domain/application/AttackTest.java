@@ -3,14 +3,14 @@ package pl.app.army_walk.army_walk.domain.application;
 import org.assertj.core.api.Assertions;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
-import pl.app.inventory.shared.Officers;
-import pl.app.map.map.application.domain.Position;
-import pl.app.map.map.application.domain.Province;
-import pl.app.resource.share.Resource;
 import pl.app.army.unit.model.Army;
 import pl.app.army.unit.model.Unit;
 import pl.app.army.unit.model.UnitType;
 import pl.app.army.unit.service.UnitServiceImpl;
+import pl.app.inventory.shared.Officers;
+import pl.app.map.map.application.domain.Position;
+import pl.app.map.map.application.domain.Province;
+import pl.app.resource.share.Resource;
 
 import java.util.Map;
 

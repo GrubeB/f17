@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import pl.app.village.village.application.domain.Village;
 import pl.app.village.village.application.domain.VillageException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component

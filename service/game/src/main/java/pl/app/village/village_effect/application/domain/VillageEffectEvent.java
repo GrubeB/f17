@@ -15,18 +15,21 @@ public interface VillageEffectEvent {
     class VillageEffectCreatedEvent implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class VillageEffectStartedEvent implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class VillageEffectExpiredEvent implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

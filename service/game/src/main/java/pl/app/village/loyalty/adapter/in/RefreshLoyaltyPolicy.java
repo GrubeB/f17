@@ -9,9 +9,6 @@ import org.springframework.stereotype.Component;
 import pl.app.village.loyalty.application.port.in.VillageLoyaltyCommand;
 import pl.app.village.loyalty.application.port.in.VillageLoyaltyDomainRepository;
 import pl.app.village.loyalty.application.port.in.VillageLoyaltyService;
-import pl.app.village.village.application.port.in.VillageCommand;
-import pl.app.village.village.application.port.in.VillageDomainRepository;
-import pl.app.village.village.application.port.in.VillageService;
 
 import java.time.Duration;
 import java.time.Instant;

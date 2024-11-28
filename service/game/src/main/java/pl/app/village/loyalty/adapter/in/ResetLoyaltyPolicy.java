@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import pl.app.army.recruiter.application.port.in.RecruiterCommand;
-import pl.app.army.recruiter.application.port.in.RecruiterService;
 import pl.app.village.loyalty.application.port.in.VillageLoyaltyCommand;
 import pl.app.village.loyalty.application.port.in.VillageLoyaltyService;
 import pl.app.village.village.application.domain.VillageEvent;

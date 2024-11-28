@@ -7,12 +7,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import pl.app.army_walk.battle.Battle;
-import pl.app.inventory.shared.Officers;
-import pl.app.resource.share.Resource;
 import pl.app.army.unit.model.Army;
 import pl.app.army.unit.model.Unit;
 import pl.app.army.unit.model.UnitType;
+import pl.app.army_walk.battle.Battle;
+import pl.app.inventory.shared.Officers;
+import pl.app.resource.share.Resource;
 
 import java.time.Instant;
 import java.time.LocalTime;

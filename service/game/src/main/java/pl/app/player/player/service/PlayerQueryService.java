@@ -8,5 +8,6 @@ import reactor.core.publisher.Mono;
 
 public interface PlayerQueryService {
     Flux<PlayerDto> fetchAll();
+
     Mono<PlayerDto> fetchById(@NonNull ObjectId id);
 }

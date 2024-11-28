@@ -11,10 +11,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.inventory.inventory.application.port.in.InventoryCommand;
-import pl.app.inventory.inventory.application.port.in.InventoryService;
 import pl.app.gold_coin.gold_coin.application.port.in.PlayerGoldCoinCommand;
 import pl.app.gold_coin.gold_coin.application.port.in.PlayerGoldCoinService;
+import pl.app.inventory.inventory.application.port.in.InventoryCommand;
+import pl.app.inventory.inventory.application.port.in.InventoryService;
 import pl.app.money.player_money.application.port.in.PlayerMoneyCommand;
 import pl.app.money.player_money.application.port.in.PlayerMoneyService;
 import pl.app.player.player.model.Player;
@@ -93,7 +93,7 @@ class PlayerServiceImpl implements PlayerService {
     @Override
     public Mono<Void> deleteById(@NonNull ObjectId id) {
         return Mono.fromCallable(() ->
-                mongoTemplate.remove(Query.query(Criteria.where("_id").is(id)),Player.class)
+                mongoTemplate.remove(Query.query(Criteria.where("_id").is(id)), Player.class)
                         .then()
         ).doOnSubscribe(subscription ->
                 logger.debug("deleting player: {}", id)

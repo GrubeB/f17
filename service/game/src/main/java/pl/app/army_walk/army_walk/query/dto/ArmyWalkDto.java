@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import pl.app.army.unit.model.Army;
 import pl.app.army_walk.army_walk.domain.application.ArmyWalkType;
 import pl.app.map.map.application.domain.Position;
 import pl.app.resource.share.Resource;
-import pl.app.army.unit.model.Army;
 
 import java.io.Serializable;
 import java.time.Duration;

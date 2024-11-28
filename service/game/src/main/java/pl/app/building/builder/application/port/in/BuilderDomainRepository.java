@@ -11,5 +11,6 @@ public interface BuilderDomainRepository {
     Mono<Builder> fetchByVillageId(ObjectId villageId);
 
     Flux<Builder> fetchBuildersWithConstructEnding(Duration withinTime);
+
     Flux<Builder> fetchBuildersWithConstructionStarting(Duration withinTime);
 }

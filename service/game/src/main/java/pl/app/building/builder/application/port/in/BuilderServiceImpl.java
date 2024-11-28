@@ -14,7 +14,6 @@ import pl.app.building.builder.application.domain.BuilderEvent;
 import pl.app.building.builder.application.domain.BuilderException;
 import pl.app.building.building.service.BuildingLevelService;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureDomainRepository;
-import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 import pl.app.config.KafkaTopicConfigurationProperties;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;

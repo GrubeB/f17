@@ -31,6 +31,7 @@ public interface VillageArmyEvent {
         private ObjectId villageId;
         private Army army;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -38,6 +39,7 @@ public interface VillageArmyEvent {
         private ObjectId villageId;
         private Army army;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -45,6 +47,7 @@ public interface VillageArmyEvent {
         private ObjectId villageId;
         private Army army;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -53,6 +56,7 @@ public interface VillageArmyEvent {
         private ObjectId supportingVillageId;
         private Army army;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

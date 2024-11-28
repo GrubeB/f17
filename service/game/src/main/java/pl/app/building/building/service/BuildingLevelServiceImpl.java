@@ -22,6 +22,7 @@ import static pl.app.building.building.model.BuildingType.*;
 @Component
 @NoArgsConstructor
 class BuildingLevelServiceImpl implements BuildingLevelService {
+    private static final Integer DIVIDER = 100;
     private final Set<AcademyLevel> academyLevels = Set.of(
             new AcademyLevel(1, new Resource(60_000, 60_000, 60_000, 80), Duration.of(10, HOURS), Set.of(new Requirement(HEADQUARTERS, 20)))
     );
@@ -374,7 +375,6 @@ class BuildingLevelServiceImpl implements BuildingLevelService {
             new WarehouseLevel(19, new Resource(19000, 24000, 15000, 24), Duration.of(18, HOURS), new HashSet<>(), 320000),
             new WarehouseLevel(20, new Resource(24000, 30000, 18000, 26), Duration.of(20, HOURS), new HashSet<>(), 400000)
     );
-
     private final Map<BuildingType, Map<Integer, ? extends BuildingLevel>> map = new HashMap<>() {{
         put(HEADQUARTERS, headquartersLevels.stream().collect(Collectors.toMap(BuildingLevel::getLevel, e -> e)));
         put(TIMBER_CAMP, timberCampLevels.stream().collect(Collectors.toMap(BuildingLevel::getLevel, e -> e)));
@@ -393,17 +393,16 @@ class BuildingLevelServiceImpl implements BuildingLevelService {
         put(TAVERN, tavernLevels.stream().collect(Collectors.toMap(BuildingLevel::getLevel, e -> e)));
         put(ACADEMY, academyLevels.stream().collect(Collectors.toMap(BuildingLevel::getLevel, e -> e)));
     }};
-    private static final Integer DIVIDER = 100;
     private final Map<BuildingType, Map<Integer, ? extends BuildingLevel>> mapWithIncreasedSpeed = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                        return entry.getValue().entrySet().stream().collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                e -> {
-                                    BuildingLevel bl = e.getValue();
-                                    bl.setDuration(bl.getDuration().dividedBy(DIVIDER));
-                                    return bl;
-                                }
-                        ));
-                    }));
+        return entry.getValue().entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                e -> {
+                    BuildingLevel bl = e.getValue();
+                    bl.setDuration(bl.getDuration().dividedBy(DIVIDER));
+                    return bl;
+                }
+        ));
+    }));
 
     @Override
     public Mono<Map<Integer, ? extends BuildingLevel>> fetchAll(BuildingType type) {

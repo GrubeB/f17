@@ -7,9 +7,6 @@ import org.springframework.stereotype.Component;
 import pl.app.army.recruiter.application.port.in.RecruiterCommand;
 import pl.app.army.recruiter.application.port.in.RecruiterDomainRepository;
 import pl.app.army.recruiter.application.port.in.RecruiterService;
-import pl.app.building.builder.application.port.in.BuilderCommand;
-import pl.app.building.builder.application.port.in.BuilderDomainRepository;
-import pl.app.building.builder.application.port.in.BuilderService;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

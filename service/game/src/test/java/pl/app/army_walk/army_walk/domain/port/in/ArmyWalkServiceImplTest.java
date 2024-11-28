@@ -6,6 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import pl.app.army.unit.model.Army;
+import pl.app.army.unit.model.UnitType;
+import pl.app.army.village_army.application.port.in.VillageArmyCommand;
+import pl.app.army.village_army.application.port.in.VillageArmyService;
 import pl.app.army_walk.army_walk.domain.application.ArmyWalk;
 import pl.app.army_walk.army_walk.domain.application.ArmyWalkType;
 import pl.app.common.shared.test.AbstractIntegrationTest;
@@ -17,10 +21,6 @@ import pl.app.inventory.shared.Officers;
 import pl.app.player.player.service.PlayerService;
 import pl.app.player.player.service.dto.PlayerCreateDto;
 import pl.app.resource.share.Resource;
-import pl.app.army.unit.model.Army;
-import pl.app.army.unit.model.UnitType;
-import pl.app.army.village_army.application.port.in.VillageArmyCommand;
-import pl.app.army.village_army.application.port.in.VillageArmyService;
 import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
 import pl.app.village.village.query.VillageDtoQueryService;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
+class ArmyWalkServiceImplTest extends AbstractIntegrationTest {
 
     @Autowired
     private ArmyWalkServiceImpl service;
@@ -72,7 +72,8 @@ class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
     }
 
     @Test
-    void sendArmy_shouldThrow_whenThereIsNotEnoughOfficers() {var player = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
+    void sendArmy_shouldThrow_whenThereIsNotEnoughOfficers() {
+        var player = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
         var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
         var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();
@@ -85,7 +86,8 @@ class ArmyWalkServiceImplTest {//extends AbstractIntegrationTest {
     }
 
     @Test
-    void sendArmy_shouldSendArmyAndRemoveItem_whenThereOfficers() {var player = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
+    void sendArmy_shouldSendArmyAndRemoveItem_whenThereOfficers() {
+        var player = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
         var village1 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
         var village2 = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
         villageArmyService.add(new VillageArmyCommand.AddUnitsCommand(village1.getId(), Army.of(Map.of(UnitType.SPEARMAN, 100)))).block();

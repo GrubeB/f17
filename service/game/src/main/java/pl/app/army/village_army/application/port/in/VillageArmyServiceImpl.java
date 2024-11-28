@@ -38,6 +38,7 @@ class VillageArmyServiceImpl implements VillageArmyService {
 
     private final VillageArmyDomainRepository villageArmyDomainRepository;
     private final VillageResourceService villageResourceService;
+    private final UnitService unitService;
 
     @Override
     public Mono<VillageArmy> crate(VillageArmyCommand.CreateVillageArmyCommand command) {
@@ -130,7 +131,7 @@ class VillageArmyServiceImpl implements VillageArmyService {
                         .flatMap(domain -> {
                             Army army = Army.of(command.getArmy());
                             domain.unblock(army);
-                            var event = new VillageArmyEvent.UnitsUnlockedEvent(domain.getVillageId(),army);
+                            var event = new VillageArmyEvent.UnitsUnlockedEvent(domain.getVillageId(), army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getUnitsUnlocked().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -150,8 +151,8 @@ class VillageArmyServiceImpl implements VillageArmyService {
                 villageArmyDomainRepository.fetchByVillageId(command.getSupportedVillageId())
                         .flatMap(domain -> {
                             Army army = Army.of(command.getArmy());
-                            domain.addSupport(command.getSupportingVillageId(),army);
-                            var event = new VillageArmyEvent.VillageSupportAddedEvent(domain.getVillageId(), command.getSupportingVillageId(),army);
+                            domain.addSupport(command.getSupportingVillageId(), army);
+                            var event = new VillageArmyEvent.VillageSupportAddedEvent(domain.getVillageId(), command.getSupportingVillageId(), army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageSupportAdded().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -171,8 +172,8 @@ class VillageArmyServiceImpl implements VillageArmyService {
                 villageArmyDomainRepository.fetchByVillageId(command.getSupportedVillageId())
                         .flatMap(domain -> {
                             Army army = Army.of(command.getArmy());
-                            domain.removeSupport(command.getSupportingVillageId(),army);
-                            var event = new VillageArmyEvent.VillageSupportWithdrawEvent(domain.getVillageId(), command.getSupportingVillageId(),army);
+                            domain.removeSupport(command.getSupportingVillageId(), army);
+                            var event = new VillageArmyEvent.VillageSupportWithdrawEvent(domain.getVillageId(), command.getSupportingVillageId(), army);
                             return mongoTemplate.save(domain)
                                     .then(Mono.fromFuture(kafkaTemplate.send(topicNames.getVillageSupportWithdraw().getName(), domain.getVillageId(), event)))
                                     .thenReturn(domain);
@@ -185,8 +186,6 @@ class VillageArmyServiceImpl implements VillageArmyService {
                 logger.error("exception occurred while subtracting support in village's army: {}, exception: {}", command.getSupportedVillageId(), e.toString())
         );
     }
-
-    private final UnitService unitService;
 
     @Override
     public Mono<VillageArmy> removeAllUnitsFromVillage(VillageArmyCommand.RemoveAllUnitsFromVillageCommand command) {

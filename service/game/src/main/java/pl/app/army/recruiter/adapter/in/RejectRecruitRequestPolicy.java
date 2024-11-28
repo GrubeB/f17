@@ -10,9 +10,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import pl.app.army.recruiter.application.port.in.RecruiterCommand;
 import pl.app.army.recruiter.application.port.in.RecruiterService;
-import pl.app.building.builder.application.port.in.BuilderCommand;
-import pl.app.building.builder.application.port.in.BuilderService;
-import pl.app.building.village_infrastructure.application.domain.VillageInfrastructureEvent;
 import pl.app.village.village.application.domain.VillageEvent;
 
 @ConditionalOnProperty(value = "app.kafka.listeners.enable", matchIfMissing = true)

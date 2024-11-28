@@ -11,10 +11,6 @@ import org.springframework.stereotype.Component;
 import pl.app.building.builder.application.port.in.BuilderCommand;
 import pl.app.building.builder.application.port.in.BuilderService;
 import pl.app.building.village_infrastructure.application.domain.VillageInfrastructureEvent;
-import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 @ConditionalOnProperty(value = "app.kafka.listeners.enable", matchIfMissing = true)
 @Component("pl.app.building.builder.adapter.in.RejectConstructionPolicy")

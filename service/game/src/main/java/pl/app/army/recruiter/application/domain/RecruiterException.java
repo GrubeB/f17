@@ -54,6 +54,7 @@ public interface RecruiterException {
             super(message);
         }
     }
+
     class FailedToStartRequestException extends InvalidStateException {
         public FailedToStartRequestException() {
             super("failed to start recruiter request");

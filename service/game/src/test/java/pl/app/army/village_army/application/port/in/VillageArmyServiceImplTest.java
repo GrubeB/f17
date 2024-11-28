@@ -6,9 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import pl.app.common.shared.test.AbstractIntegrationTest;
 import pl.app.army.unit.model.Army;
 import pl.app.army.unit.model.UnitType;
+import pl.app.common.shared.test.AbstractIntegrationTest;
 import reactor.test.StepVerifier;
 
 import java.util.Map;

@@ -24,18 +24,21 @@ public interface RecruiterCommand {
         private UnitType type;
         private Integer amount;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class StartRecruitRequestCommand implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class FinishRecruitRequestCommand implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -43,6 +46,7 @@ public interface RecruiterCommand {
         private ObjectId villageId;
         private ObjectId requestId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

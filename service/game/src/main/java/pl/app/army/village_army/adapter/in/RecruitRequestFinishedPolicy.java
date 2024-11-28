@@ -12,9 +12,6 @@ import pl.app.army.recruiter.application.domain.RecruiterEvent;
 import pl.app.army.unit.model.Army;
 import pl.app.army.village_army.application.port.in.VillageArmyCommand;
 import pl.app.army.village_army.application.port.in.VillageArmyService;
-import pl.app.building.builder.application.domain.BuilderEvent;
-import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
-import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
 
 import java.util.Map;
 

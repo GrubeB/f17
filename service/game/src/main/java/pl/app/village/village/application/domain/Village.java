@@ -5,9 +5,6 @@ import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Duration;
-import java.time.Instant;
-
 @Getter
 @Setter
 @Document(collection = "village")

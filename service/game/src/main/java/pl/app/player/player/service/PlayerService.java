@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 
 public interface PlayerService {
     Mono<PlayerDto> create(@Valid PlayerCreateDto dto);
+
     Mono<PlayerDto> update(@NonNull ObjectId id, PlayerUpdateDto dto);
+
     Mono<Void> deleteById(@NonNull ObjectId id);
 }

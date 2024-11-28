@@ -93,6 +93,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
         verify(kafkaTemplate, times(1))
                 .send(eq(topicNames.getConstructAdded().getName()), any(), any(BuilderEvent.ConstructAddedEvent.class));
     }
+
     @Test
     void start_shouldStart_whenThereIsConstructionIsQueue() {
         var village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
@@ -108,6 +109,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
         verify(kafkaTemplate, times(1))
                 .send(eq(topicNames.getConstructStarted().getName()), any(), any(BuilderEvent.ConstructStartedEvent.class));
     }
+
     @Test
     void finish_shouldFinish_whenIsAfterToDate() throws InterruptedException {
         var village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
@@ -134,7 +136,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
         service.add(new BuilderCommand.AddBuildingToConstructCommand(village.getId(), BuildingType.IRON_MINE)).block();
         Mockito.reset(mongoTemplate, kafkaTemplate);
 
-        StepVerifier.create(service.reject(new BuilderCommand.RejectBuildingConstructCommand(village.getId(),BuildingType.IRON_MINE)))
+        StepVerifier.create(service.reject(new BuilderCommand.RejectBuildingConstructCommand(village.getId(), BuildingType.IRON_MINE)))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
                 }).verifyComplete();
@@ -153,7 +155,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
         service.add(new BuilderCommand.AddBuildingToConstructCommand(village.getId(), BuildingType.IRON_MINE)).block();
         Mockito.reset(mongoTemplate, kafkaTemplate, villageResourceService);
 
-        StepVerifier.create(service.cancel(new BuilderCommand.CancelBuildingConstructCommand(village.getId(), BuildingType.IRON_MINE,2)))
+        StepVerifier.create(service.cancel(new BuilderCommand.CancelBuildingConstructCommand(village.getId(), BuildingType.IRON_MINE, 2)))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
                 }).verifyComplete();
@@ -162,6 +164,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
         verify(kafkaTemplate, times(3))
                 .send(eq(topicNames.getConstructCanceled().getName()), any(), any(BuilderEvent.ConstructCanceledEvent.class));
     }
+
     @Test
     void cancel_shouldCancelConstructAndRescheduleRemainderConstructions() {
         var village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(ObjectId.get())).block();
@@ -173,7 +176,7 @@ class BuilderServiceImplTest extends AbstractIntegrationTest {
         service.add(new BuilderCommand.AddBuildingToConstructCommand(village.getId(), BuildingType.IRON_MINE)).block();
         Mockito.reset(mongoTemplate, kafkaTemplate, villageResourceService);
 
-        StepVerifier.create(service.cancel(new BuilderCommand.CancelBuildingConstructCommand(village.getId(), BuildingType.IRON_MINE,1)))
+        StepVerifier.create(service.cancel(new BuilderCommand.CancelBuildingConstructCommand(village.getId(), BuildingType.IRON_MINE, 1)))
                 .assertNext(next -> {
                     assertThat(next).isNotNull();
                     assertThat(next.getConstructs().size()).isEqualTo(2);

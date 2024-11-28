@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import pl.app.army.unit.model.UnitType;
 import pl.app.building.building.model.BuildingType;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureCommand;
 import pl.app.building.village_infrastructure.application.port.in.VillageInfrastructureService;
@@ -18,7 +19,6 @@ import pl.app.player.player.service.dto.PlayerCreateDto;
 import pl.app.resource.share.Resource;
 import pl.app.resource.village_resource.application.port.in.VillageResourceCommand;
 import pl.app.resource.village_resource.application.port.in.VillageResourceService;
-import pl.app.army.unit.model.UnitType;
 import pl.app.village.village.application.domain.Village;
 import pl.app.village.village.application.port.in.VillageCommand;
 import pl.app.village.village.application.port.in.VillageService;
@@ -61,28 +61,30 @@ class RecruiterServiceTest extends AbstractIntegrationTest {
                 })
                 .verifyComplete();
     }
+
     @Test
-    void start_shouldStart_whenThereIsRequestInQueue(){
+    void start_shouldStart_whenThereIsRequestInQueue() {
         var player = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
         Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
-        service.add(new RecruiterCommand.AddRecruitRequestCommand(village.getId(), UnitType.SPEARMAN,  1)).block();
+        service.add(new RecruiterCommand.AddRecruitRequestCommand(village.getId(), UnitType.SPEARMAN, 1)).block();
 
         StepVerifier.create(service.start(new RecruiterCommand.StartRecruitRequestCommand(village.getId())))
-                .assertNext(next->{
+                .assertNext(next -> {
                     Assertions.assertThat(next).isNotNull();
                     Assertions.assertThat(next.getRequests().size()).isEqualTo(1);
                 })
                 .verifyComplete();
     }
+
     @Test
     void finish_shouldFinish_whenIsAfterToDate() throws InterruptedException {
         var player = playerService.create(PlayerCreateDto.builder().accountId(ObjectId.get().toHexString()).build()).block();
         Village village = villageService.cratePlayerVillage(new VillageCommand.CreatePlayerVillageCommand(player.getPlayerId())).block();
-        service.add(new RecruiterCommand.AddRecruitRequestCommand(village.getId(), UnitType.SPEARMAN,  1)).block();
+        service.add(new RecruiterCommand.AddRecruitRequestCommand(village.getId(), UnitType.SPEARMAN, 1)).block();
         service.start(new RecruiterCommand.StartRecruitRequestCommand(village.getId())).block();
         Thread.sleep(91_000);
         StepVerifier.create(service.finish(new RecruiterCommand.FinishRecruitRequestCommand(village.getId())))
-                .assertNext(next->{
+                .assertNext(next -> {
                     Assertions.assertThat(next).isNotNull();
                     Assertions.assertThat(next.getRequests().size()).isEqualTo(0);
                 })

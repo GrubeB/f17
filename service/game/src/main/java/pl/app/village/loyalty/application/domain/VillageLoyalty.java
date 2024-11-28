@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import pl.app.village.village.application.domain.VillageType;
 
 import java.time.Duration;
 import java.time.Instant;

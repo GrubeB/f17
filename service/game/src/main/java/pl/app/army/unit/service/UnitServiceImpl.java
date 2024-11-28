@@ -2,9 +2,9 @@ package pl.app.army.unit.service;
 
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import pl.app.resource.share.Resource;
 import pl.app.army.unit.model.Unit;
 import pl.app.army.unit.model.UnitType;
+import pl.app.resource.share.Resource;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static pl.app.building.building.model.BuildingType.*;
 import static pl.app.army.unit.model.UnitAttackType.*;
 import static pl.app.army.unit.model.UnitType.*;
+import static pl.app.building.building.model.BuildingType.*;
 
 @Component
 @NoArgsConstructor

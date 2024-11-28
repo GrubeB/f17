@@ -23,6 +23,7 @@ public interface BuilderCommand {
         private ObjectId villageId;
         private BuildingType type;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -45,6 +46,7 @@ public interface BuilderCommand {
         private BuildingType type;
         private Integer toLevel;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

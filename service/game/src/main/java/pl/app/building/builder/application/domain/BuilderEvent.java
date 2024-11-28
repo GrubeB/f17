@@ -16,6 +16,7 @@ public interface BuilderEvent {
     class BuilderCreatedEvent implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -26,6 +27,7 @@ public interface BuilderEvent {
         private Instant from;
         private Instant to;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -36,6 +38,7 @@ public interface BuilderEvent {
         private Instant from;
         private Instant to;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -46,6 +49,7 @@ public interface BuilderEvent {
         private Instant from;
         private Instant to;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -56,6 +60,7 @@ public interface BuilderEvent {
         private Instant from;
         private Instant to;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

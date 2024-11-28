@@ -14,6 +14,7 @@ public interface VillageLoyaltyCommand {
     class CreateVillageLoyaltyCommand implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -28,6 +29,7 @@ public interface VillageLoyaltyCommand {
     class RefreshLoyaltyCommand implements Serializable {
         private ObjectId villageId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

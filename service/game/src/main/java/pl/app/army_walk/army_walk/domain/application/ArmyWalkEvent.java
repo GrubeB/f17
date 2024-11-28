@@ -14,12 +14,14 @@ public interface ArmyWalkEvent {
     class ArmyWalkStarted implements Serializable {
         private ObjectId armyWalkId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     class ArmyWalkCancelled implements Serializable {
         private ObjectId armyWalkId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

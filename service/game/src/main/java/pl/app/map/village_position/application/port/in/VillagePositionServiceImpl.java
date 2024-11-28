@@ -1,16 +1,12 @@
 package pl.app.map.village_position.application.port.in;
 
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import pl.app.config.KafkaTopicConfigurationProperties;
-import pl.app.map.map.application.port.in.MapDomainRepository;
 import pl.app.map.village_position.application.domain.VillagePosition;
 import pl.app.map.village_position.application.domain.VillagePositionException;
 import pl.app.map.village_position.application.domain.VillagePositionProvider;

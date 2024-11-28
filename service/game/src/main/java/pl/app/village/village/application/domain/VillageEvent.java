@@ -16,6 +16,7 @@ public interface VillageEvent {
         private VillageType villageType;
         private ObjectId ownerId;
     }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

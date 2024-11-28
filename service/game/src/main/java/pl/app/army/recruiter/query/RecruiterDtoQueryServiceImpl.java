@@ -10,9 +10,9 @@ import org.springframework.data.mongodb.repository.support.ReactiveMongoReposito
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import pl.app.common.mapper.BaseMapper;
 import pl.app.army.recruiter.application.domain.Recruiter;
 import pl.app.army.recruiter.query.dto.RecruiterDto;
+import pl.app.common.mapper.BaseMapper;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
